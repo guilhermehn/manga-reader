@@ -34,6 +34,9 @@
   "supernew"      : false,
   "validthis"     : false,
   "devel"         : true,
-  "node"          : true,
-  "mocha"         : true
+  "jquery"        : true,
+  "mocha"         : true,
+  "globals": {
+    "chrome": true
+  }
 }
