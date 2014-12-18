@@ -127,11 +127,11 @@ function defaultParams () {
 }
 
 function getParameters () {
-  var params = localStorage.parameters;
+  var params = localStorage.getItem('parameters');
   var res;
   if (params === undefined || params === null || params === 'null') {
     res = defaultParams();
-    localStorage.parameters = JSON.stringify(res);
+    localStorage.setItem('parameters', JSON.stringify(res));
   }
   else {
     res = JSON.parse(params);
@@ -166,7 +166,7 @@ function getParameters () {
     initParam(res, 'markwhendownload', 0);
     initParam(res, 'sendstats', 1);
     initParam(res, 'shownotifws', 1);
-    localStorage.parameters = JSON.stringify(res);
+    localStorage.getItem('parameters', JSON.stringify(res));
   }
   return res;
 }
@@ -190,7 +190,7 @@ function isInMangaListId (url) {
 }
 
 function isMirrorActivated (mirrorName) {
-  var states = localStorage.mirrorStates;
+  var states = localStorage.getItem('mirrorStates');
   var lstTmp = JSON.parse(states);
   if (lstTmp.length > 0) {
     for (var j = 0; j < lstTmp.length; j++) {
@@ -210,7 +210,7 @@ function mangaListLoaded (mirror, lst) {
 }
 
 function activateMirror (mirrorName) {
-  var states = localStorage.mirrorStates;
+  var states = localStorage.getItem('mirrorStates');
   var lstTmp = JSON.parse(states);
   if (lstTmp.length > 0) {
     for (var j = 0; j < lstTmp.length; j++) {
@@ -219,7 +219,7 @@ function activateMirror (mirrorName) {
           mirror : mirrorName,
           activated : true
         };
-        localStorage.mirrorStates = JSON.stringify(lstTmp);
+        localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
         try {
           for (var i = 0; i < mirrors.length; i++) {
             if (mirrors[i].mirrorName === mirrorName) {
@@ -367,7 +367,7 @@ function refreshTag () {
 
 function saveList () {
   try {
-    localStorage.mangas = getJSONList();
+    localStorage.getItem('mangas', getJSONList());
     try {
       refreshTag();
     }
@@ -384,7 +384,7 @@ function refreshUpdateWith (update) {
   try {
     var params = getParameters();
     params.updated = update;
-    localStorage.parameters = JSON.stringify(params);
+    localStorage.getItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -395,7 +395,7 @@ function refreshSync () {
   try {
     var params = getParameters();
     params.lastsync = new Date().getTime();
-    localStorage.parameters = JSON.stringify(params);
+    localStorage.getItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -567,11 +567,11 @@ function instantiateMirrors () {
       activated : true
     };
   }
-  localStorage.mirrorStates = JSON.stringify(lst);
+  localStorage.getItem('mirrorStates', JSON.stringify(lst));
 }
 
 function initMirrorState () {
-  var states = localStorage.mirrorStates;
+  var states = localStorage.getItem('mirrorStates');
   if (states === undefined || states === null || states === 'null') {
     instantiateMirrors();
   }
@@ -596,7 +596,7 @@ function initMirrorState () {
         }
       }
       if (toUpdate) {
-        localStorage.mirrorStates = JSON.stringify(lstTmp);
+        localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
       }
     }
     else {
@@ -644,7 +644,7 @@ function refreshAllLasts (refreshTimer, perform) {
     var i;
     if (perform === undefined || perform === true) {
       console.log('Refreshing chapters at ' + new Date());
-      localStorage.lastChaptersUpdate = new Date().getTime();
+      localStorage.getItem('lastChaptersUpdate', new Date().getTime());
       var nbToRef = 0;
       for (i = 0; i < mangaList.length; i++) {
         if (getMangaMirror(mangaList[i].mirror) !== null) {
@@ -680,7 +680,7 @@ function refreshAllLasts (refreshTimer, perform) {
   var nextTime = getParameters().updatechap;
   if (refreshTimer) {
     clearTimeout(timeoutChap);
-    nextTime =  -(new Date().getTime() - localStorage.lastChaptersUpdate - nextTime);
+    nextTime =  -(new Date().getTime() - localStorage.getItem('lastChaptersUpdate') - nextTime);
   }
   console.log('Next time to refresh chapters list : ' + nextTime);
   timeoutChap = setTimeout(function () {
@@ -692,7 +692,7 @@ function refreshMangaLists (refreshTimer, perform) {
   try {
     if (perform === undefined || perform === true) {
       console.log('Refreshing mangas lists at ' + new Date());
-      localStorage.lastMangasUpdate = new Date().getTime();
+      localStorage.getItem('lastMangasUpdate', new Date().getTime());
       for (var i = 0; i < mirrors.length; i++) {
         if (mirrors[i].canListFullMangas && isMirrorActivated(mirrors[i].mirrorName)) {
           mirrors[i].getMangaList('', mangaListLoaded);
@@ -708,7 +708,7 @@ function refreshMangaLists (refreshTimer, perform) {
 
   if (refreshTimer) {
     clearTimeout(timeoutMg);
-    nextTime =  - (new Date().getTime() - localStorage.lastMangasUpdate - nextTime);
+    nextTime =  - (new Date().getTime() - localStorage.getItem('lastMangasUpdate') - nextTime);
   }
 
   console.log('Next time to refresh manga list : ' + nextTime);
@@ -750,7 +750,7 @@ function refreshWebsites (refreshTimer, perform) {
   try {
     if (perform === undefined || perform === true) {
       console.log('Refreshing websites implementations at ' + new Date());
-      localStorage.lastWsUpdate = new Date().getTime();
+      localStorage.getItem('lastWsUpdate', new Date().getTime());
       updateWebsitesFromRepository(function () {
         updateMirrors(function () {});
       });
@@ -762,7 +762,7 @@ function refreshWebsites (refreshTimer, perform) {
   var nextTime = updatews;
   if (refreshTimer) {
     clearTimeout(timeoutWs);
-    nextTime =  - (new Date().getTime() - localStorage.lastWsUpdate - nextTime);
+    nextTime =  - (new Date().getTime() - localStorage.getItem('lastWsUpdate') - nextTime);
   }
   console.log('Next time to refresh websites implementations : ' + nextTime);
   timeoutWs = setTimeout(function () {
@@ -818,7 +818,7 @@ function refreshUpdate () {
     var params = getParameters();
     params.updated = new Date().getTime();
     params.changesSinceSync = 1;
-    localStorage.parameters = JSON.stringify(params);
+    localStorage.getItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -853,7 +853,7 @@ function init () {
       }
     }
 
-    var list = localStorage.mangas;
+    var list = localStorage.getItem('mangas');
     mangaList = [];
 
     if (!(list === undefined || list === null || list === 'null')) {
@@ -867,7 +867,7 @@ function init () {
       }
     }
 
-    var bms = localStorage.bookmarks;
+    var bms = localStorage.getItem('bookmarks');
     if (bms !== undefined) {
       bookmarks = JSON.parse(bms);
     }
@@ -876,14 +876,14 @@ function init () {
     }
 
     var pars = getParameters();
-    var ancVersion = localStorage.version;
+    var ancVersion = localStorage.getItem('version');
     if (ancVersion === undefined || ancVersion === null || ancVersion === 'null') {
       ancVersion = null;
     }
 
     var curVersion = chrome.extension.getVersion();
     if (ancVersion === null || curVersion !== ancVersion) {
-      localStorage.version = curVersion;
+      localStorage.getItem('version', curVersion);
       if (pars.openupdate === 1) {
         if (chrome.extension.isBeta()) {
           chrome.tabs.getAllInWindow(undefined, function (tabs) {
@@ -908,7 +908,7 @@ function init () {
           });
         }
       }
-      localStorage.versionViewRelease = localStorage.version;
+      localStorage.getItem('versionViewRelease', localStorage.getItem('version'));
     }
 
     if (chrome.extension.isBeta()) {
@@ -934,7 +934,7 @@ function init () {
       console.log('synchronization started');
       sync.start();
     }
-    if (!localStorage.lastChaptersUpdate) {
+    if (!localStorage.getItem('lastChaptersUpdate')) {
       refreshAllLasts();
     }
     else {
@@ -942,7 +942,7 @@ function init () {
         refreshAllLasts();
       }
       else {
-        nextTime = new Date().getTime() - localStorage.lastChaptersUpdate - pars.updatechap;
+        nextTime = new Date().getTime() - localStorage.getItem('lastChaptersUpdate') - pars.updatechap;
         if (nextTime > 0) {
           refreshAllLasts();
         }
@@ -954,11 +954,11 @@ function init () {
         }
       }
     }
-    if (!localStorage.lastMangasUpdate) {
+    if (!localStorage.getItem('lastMangasUpdate')) {
       refreshMangaLists();
     }
     else {
-      nextTime = new Date().getTime() - localStorage.lastMangasUpdate - pars.updatemg;
+      nextTime = new Date().getTime() - localStorage.getItem('lastMangasUpdate') - pars.updatemg;
       if (nextTime > 0) {
         refreshMangaLists();
       }
@@ -968,11 +968,11 @@ function init () {
         refreshNewMirrorsMangaLists();
       }
     }
-    if (!localStorage.lastWsUpdate) {
+    if (!localStorage.getItem('lastWsUpdate')) {
       refreshWebsites();
     }
     else {
-      nextTime = new Date().getTime() - localStorage.lastWsUpdate - updatews;
+      nextTime = new Date().getTime() - localStorage.getItem('lastWsUpdate') - updatews;
       if (nextTime > 0) {
         refreshWebsites();
       }
@@ -1172,7 +1172,7 @@ function editCategory (request, callback) {
 
 function activatedMirrors () {
   var list = [];
-  var states = localStorage.mirrorStates;
+  var states = localStorage.getItem('mirrorStates');
   var lstTmp = JSON.parse(states);
   if (lstTmp.length > 0) {
     for (var j = 0; j < lstTmp.length; j++) {
@@ -1210,7 +1210,7 @@ function desactivateMirror (mirrorName) {
     }
   }
   if (nb === 0) {
-    var states = localStorage.mirrorStates;
+    var states = localStorage.getItem('mirrorStates');
     var lstTmp = JSON.parse(states);
     if (lstTmp.length > 0) {
       for (j = 0; j < lstTmp.length; j++) {
@@ -1219,7 +1219,7 @@ function desactivateMirror (mirrorName) {
             mirror : mirrorName,
             activated : false
           };
-          localStorage.mirrorStates = JSON.stringify(lstTmp);
+          localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
           wssql.webdb.empty(mirrorName, function () {});
           break;
         }
@@ -1275,7 +1275,7 @@ function addBookmark (obj) {
     bookmarks[posFound].note = obj.note;
   }
 
-  localStorage.bookmarks = JSON.stringify(bookmarks);
+  localStorage.getItem('bookmarks', JSON.stringify(bookmarks));
 }
 
 function deleteBookmark (obj) {
@@ -1301,7 +1301,7 @@ function deleteBookmark (obj) {
   }
   if (isFound) {
     bookmarks.remove(posFound, posFound);
-    localStorage.bookmarks = JSON.stringify(bookmarks);
+    localStorage.getItem('bookmarks', JSON.stringify(bookmarks));
   }
 }
 
@@ -1602,7 +1602,7 @@ chrome.runtime.onMessage.addListener(
           }
         }
 
-        localStorage.parameters = JSON.stringify(obj);
+        localStorage.getItem('parameters', JSON.stringify(obj));
         if (ancParams.displayzero !== obj.displayzero) {
           refreshTag();
         }
@@ -1678,7 +1678,7 @@ chrome.runtime.onMessage.addListener(
 
       case 'searchMirrorsState': {
         sendResponse({
-          res: localStorage.searchMirrorsState
+          res: localStorage.getItem('searchMirrorsState')
         });
         break;
       }
@@ -1726,7 +1726,7 @@ chrome.runtime.onMessage.addListener(
       case 'deletepub': {
         var params = getParameters();
         params.pub = 0;
-        localStorage.parameters = JSON.stringify(params);
+        localStorage.getItem('parameters', JSON.stringify(params));
         sendResponse({});
         break;
       }
@@ -1881,34 +1881,34 @@ chrome.runtime.onMessage.addListener(
       }
 
       case 'hideBar': {
-        if (localStorage.isBarVisible === 1) {
-          localStorage.isBarVisible = 0;
+        if (localStorage.getItem('isBarVisible') === 1) {
+          localStorage.setItem('isBarVisible', 0);
           console.log('hiding bar');
         }
         else {
-          localStorage.isBarVisible = 1;
+          localStorage.getItem('isBarVisible', 1);
         }
         sendResponse({
-          res: localStorage.isBarVisible
+          res: localStorage.getItem('isBarVisible')
         });
         break;
       }
 
       case 'showBar': {
-        localStorage.isBarVisible = 1;
+        localStorage.getItem('isBarVisible', 1);
         sendResponse({});
         break;
       }
 
       case 'barState': {
-        if (localStorage.isBarVisible === undefined) {
+        if (typeof localStorage.getItem('isBarVisible') === 'undefined') {
           sendResponse({
             barVis: 1
           });
         }
         else {
           sendResponse({
-            barVis: localStorage.isBarVisible
+            barVis: localStorage.getItem('isBarVisible')
           });
         }
         break;
@@ -2026,7 +2026,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 function hasDesactivatedOnce () {
-  var states = localStorage.mirrorStates;
+  var states = localStorage.getItem('mirrorStates');
   var lstTmp = JSON.parse(states);
   var nbActi = 0;
   if (lstTmp.length > 0) {
@@ -2123,7 +2123,7 @@ function refreshUpdateSyncSite (update) {
     var params = getParameters();
     params.syncAMR = update;
     params.changesSinceSync = 0;
-    localStorage.parameters = JSON.stringify(params);
+    localStorage.getItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -2134,7 +2134,7 @@ function resetUpdate () {
   try {
     var params = getParameters();
     params.updated = undefined;
-    localStorage.parameters = JSON.stringify(params);
+    localStorage.getItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -2348,7 +2348,7 @@ function importBookmarks (bms, merge) {
     }
   }
 
-  localStorage.bookmarks = JSON.stringify(bookmarks);
+  localStorage.getItem('bookmarks', JSON.stringify(bookmarks));
   return textOut;
 }
 
