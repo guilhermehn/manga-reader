@@ -6,28 +6,30 @@ var states;
 $(function () {
   // Load mirrors definitions
   chrome.runtime.sendMessage({
-    action: "actmirrors"
+    action: 'actmirrors'
   }, function (res) {
     mirrors = res;
+
     //  access localStorage via background
     chrome.runtime.sendMessage({
-      action: "searchMirrorsState"
+      action: 'searchMirrorsState'
     }, function (locms) {
       if (locms.res !== undefined) {
         states = JSON.parse(locms.res);
       }
+
       update();
     });
   });
 });
 
 function update () {
-  var tmpcn = $(".manganameforamr").size();
+  var tmpcn = $('.manganameforamr').size();
   if (tmpcn !== nbclasses) {
-    $(".amrfind").remove();
-    $("<img class=\"amrfind\" src=\"" + chrome.extension.getURL("img/find.png") + "\"></img>").appendTo($(".manganameforamr"));
-    $(".amrfind").css("float", "right");
-    $(".amrfind").click(clickSearch);
+    $('.amrfind').remove();
+    $('<img class=\'amrfind\' src=\'' + chrome.extension.getURL('img/find.png') + '\'></img>').appendTo($('.manganameforamr'));
+    $('.amrfind').css('float', 'right');
+    $('.amrfind').click(clickSearch);
   }
   nbclasses = tmpcn;
   if (nbclasses < 200) {
@@ -36,38 +38,51 @@ function update () {
 }
 
 function clickSearch () {
-  loadSearch($(this).closest("td"), $(this).closest('td').text());
+  var $this = $(this);
+  var $td = $this.closest('td');
+  loadSearch($td, $td.text());
 }
 
 function isMirrorEnabled (mirrorName) {
-  if (states !== undefined) {
-    for (var i = 0; i < states.length; i++) {
+  if (typeof states !== 'undefined') {
+    var i = -1;
+    var length = states.length;
+
+    while (++i < length) {
       if (states[i].mirror === mirrorName) {
         return states[i].state;
       }
     }
   }
+
   return true;
 }
 
 function loadSearch (td, toSearch) {
-  td.data("nbToLoad", mirrors.length);
-  td.data("ancNbToLoad", mirrors.length);
-  $(".amrfind", td).attr("src", chrome.extension.getURL("img/load16.gif"));
-  $(".amrfind", td).unbind("click");
+  td.data('nbToLoad', mirrors.length);
+  td.data('ancNbToLoad', mirrors.length);
+
+  var $find = $('.amrfind', td);
+
+  $find
+    .attr('src', chrome.extension.getURL('img/load16.gif'))
+    .unbind('click');
 
   var tr;
   var restd;
+  var imgs = chrome.extension.getURL('img/');
+  var returnImg = chrome.extension.getURL('img/return.png');
+
   // Create result zone if needed
-  if (td.closest("tr").next().is(".searchResultstr")) {
-    tr = td.closest("tr").next();
-    restd = $(".resultssearch", tr);
+  if (td.closest('tr').next().is('.searchResultstr')) {
+    tr = td.closest('tr').next();
+    restd = $('.resultssearch', tr);
     restd.empty();
   }
   else {
-    tr = $("<tr class='searchResultstr'><td><img class='return' src='" + chrome.extension.getURL("img/return.png") + "'/></td><td class='resultssearch' colspan='2'></td></tr>");
-    restd = $(".resultssearch", tr);
-    td.closest("tr").after(tr);
+    tr = $('<tr class=\'searchResultstr\'><td><img class=\'return\' src=\'' + returnImg + '\'/></td><td class=\'resultssearch\' colspan=\'2\'></td></tr>');
+    restd = $('.resultssearch', tr);
+    td.closest('tr').after(tr);
   }
 
   // Fill it
@@ -90,13 +105,13 @@ function loadSearch (td, toSearch) {
             }
           }
         }
-        td.data("nbToLoad", td.data("nbToLoad") - 1);
+        td.data('nbToLoad', td.data('nbToLoad') - 1);
       }
       else {
         //  Request mirror to search.
         //  call background to search res
         chrome.runtime.sendMessage({
-          action: "searchManga",
+          action: 'searchManga',
           mirrorName: mirrors[i].mirrorName,
           search: toSearch
         }, function (resp) {
@@ -109,79 +124,81 @@ function loadSearch (td, toSearch) {
               addResult(restd, obj, toSearch);
             }
           }
-          td.data("nbToLoad", td.data("nbToLoad") - 1);
+          td.data('nbToLoad', td.data('nbToLoad') - 1);
         });
       }
     }
     else {
-      td.data("nbToLoad", td.data("nbToLoad") - 1);
-      td.data("ancNbToLoad", td.data("ancNbToLoad") - 1);
+      td.data('nbToLoad', td.data('nbToLoad') - 1);
+      td.data('ancNbToLoad', td.data('ancNbToLoad') - 1);
     }
   }
   waitForEndLoad(td);
 }
 
 function waitForEndLoad (td) {
-  if (td.data("nbToLoad") !== td.data("ancNbToLoad")) {
-    td.data("ancNbToLoad", td.data("nbToLoad"));
+  if (td.data('nbToLoad') !== td.data('ancNbToLoad')) {
+    td.data('ancNbToLoad', td.data('nbToLoad'));
   }
-  if (td.data("nbToLoad") !== 0) {
+  if (td.data('nbToLoad') !== 0) {
     setTimeout(function () {
       waitForEndLoad(td);
     }, 500);
   }
   else {
-    $(".amrfind", td).attr("src", chrome.extension.getURL("img/find.png"));
-    $(".amrfind", td).click(clickSearch);
+    $('.amrfind', td).attr('src', chrome.extension.getURL('img/find.png'));
+    $('.amrfind', td).click(clickSearch);
   }
 }
 
 function addResult (tdRes, obj, name) {
   var found = false;
-  $(".mirrorsearchimg", tdRes).each(function () {
-    if ($(this).data("mirrorname") === obj.mirror) {
+
+  $('.mirrorsearchimg', tdRes).each(function () {
+    if ($(this).data('mirrorname') === obj.mirror) {
       found = true;
     }
   });
+
   if (!found) {
     var urlCur = obj.url;
     var mirrorCur = obj.mirror;
-    var img = $("<img class='mirrorsearchimg' src='" + chrome.extension.getURL(getMangaMirror(obj.mirror).mirrorIcon) + "' title=\"" + name + " on " + obj.mirror + "\" />");
-    img.data("urlmirror", urlCur);
-    img.data("mirrorname", obj.mirror);
-    img.data("manganame", name);
-    var divelt = $("<div class='eltmirrorsearch'><img class='addsinglemg' src='" + chrome.extension.getURL("img/addlt.png") + "' title='Add this manga in your list on " + obj.mirror + "'/></div>");
+    var img = $('<img class=\'mirrorsearchimg\' src=\'' + chrome.extension.getURL(getMangaMirror(obj.mirror).mirrorIcon) + '\' title=\'' + name + ' on ' + obj.mirror + '\' />');
+    img.data('urlmirror', urlCur);
+    img.data('mirrorname', obj.mirror);
+    img.data('manganame', name);
+    var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'' + chrome.extension.getURL('img/addlt.png') + '\' title=\'Add this manga in your list on ' + obj.mirror + '\'/></div>');
     divelt.prepend(img);
     divelt.appendTo(tdRes);
     // events binding
     bindEvents();
     // Sort mangas pictures
-    $(".eltmirrorsearch", tdRes).sortElements(function (a, b) {
-      var at = $(".mirrorsearchimg", $(a)).data("mirrorname");
-      var bt = $(".mirrorsearchimg", $(b)).data("mirrorname");
+    $('.eltmirrorsearch', tdRes).sortElements(function (a, b) {
+      var at = $('.mirrorsearchimg', $(a)).data('mirrorname');
+      var bt = $('.mirrorsearchimg', $(b)).data('mirrorname');
       return at > bt ? 1 : -1;
     });
   }
 }
 
 function bindEvents () {
-  $(".mirrorsearchimg").unbind("click");
+  $('.mirrorsearchimg').unbind('click');
 
-  $(".mirrorsearchimg").click(function () {
+  $('.mirrorsearchimg').click(function () {
     chrome.runtime.sendMessage({
-      action: "opentab",
-      url: $(this).data("urlmirror")
+      action: 'opentab',
+      url: $(this).data('urlmirror')
     }, function (response) {});
   });
 
-  $(".addsinglemg").unbind("click");
-  $(".addsinglemg").click(function () {
-    var img = $("img.mirrorsearchimg", $(this).closest(".eltmirrorsearch"));
+  $('.addsinglemg').unbind('click');
+  $('.addsinglemg').click(function () {
+    var img = $('img.mirrorsearchimg', $(this).closest('.eltmirrorsearch'));
     var obj = {
-      action: "readManga",
-      mirror: img.data("mirrorname"),
-      url: img.data("urlmirror"),
-      name: img.data("manganame")
+      action: 'readManga',
+      mirror: img.data('mirrorname'),
+      url: img.data('urlmirror'),
+      name: img.data('manganame')
     };
 
     sendExtRequestS(obj, $(this), function () {
@@ -190,25 +207,26 @@ function bindEvents () {
 }
 
 function formatMgName (name) {
-  if (name === undefined || name === null || name === "null") {
-    return "";
+  if (typeof name === 'undefined' || name === null || name === 'null') {
+    return '';
   }
-  return name.trim().replace(/[^0-9A-Za-z]/g, "").toUpperCase();
+
+  return name.trim().replace(/[^0-9A-Za-z]/g, '').toUpperCase();
 }
 
 // Used to request background page action
 function sendExtRequestS (request, button, callback, backsrc) {
   // Prevent a second request
-  if (button.data("currentlyClicked")) {
+  if (button.data('currentlyClicked')) {
     return;
   }
-  button.data("currentlyClicked", true);
+  button.data('currentlyClicked', true);
 
   // Display a loading image
   var ancSrc;
-  if (button.is("img")) {
-    ancSrc = button.attr("src");
-    button.attr("src", chrome.extension.getURL("img/load16.gif"));
+  if (button.is('img')) {
+    ancSrc = button.attr('src');
+    button.attr('src', chrome.extension.getURL('img/load16.gif'));
   }
   // Call the action
   chrome.runtime.sendMessage(request, function () {
@@ -216,13 +234,13 @@ function sendExtRequestS (request, button, callback, backsrc) {
     // Do the callback
     callback();
     // Removes the loading image
-    if (button.is("img")) {
+    if (button.is('img')) {
       if (backsrc) {
-        button.attr("src", ancSrc);
+        button.attr('src', ancSrc);
       }
     }
     // Restore request
-    button.removeData("currentlyClicked");
+    button.removeData('currentlyClicked');
   // }, 1000);
   });
 }
@@ -263,15 +281,16 @@ jQuery.fn.sortElements = (function () {
       //  Since the element itself will change position, we have
       //  to have some way of storing its original position in
       //  the DOM. The easiest way is to have a 'flag' node:
-      var nextSibling = parentNode.insertBefore(document.createTextNode(""), sortElement.nextSibling);
+      var nextSibling = parentNode.insertBefore(document.createTextNode(''), sortElement.nextSibling);
 
       return function () {
         if (parentNode === this) {
-          throw new Error("You can't sort elements if any one is a descendant of another.");
+          throw new Error('You can\'t sort elements if any one is a descendant of another.');
         }
 
         //  Insert before flag:
         parentNode.insertBefore(this, nextSibling);
+
         //  Remove flag:
         parentNode.removeChild(nextSibling);
       };

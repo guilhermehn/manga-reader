@@ -79,7 +79,7 @@ Date.prototype.getWeek = function (dowOffset) {
 };
 
 function initParam (object, paramName, defaultVal) {
-  if (object[paramName] === undefined || object[paramName] === null || object[paramName] === 'null') {
+  if (typeof object[paramName] === 'undefined' || object[paramName] === null || object[paramName] === 'null') {
     object[paramName] = defaultVal;
   }
 }
@@ -129,7 +129,7 @@ function defaultParams () {
 function getParameters () {
   var params = localStorage.getItem('parameters');
   var res;
-  if (params === undefined || params === null || params === 'null') {
+  if (typeof params === 'undefined' || params === null || params === 'null') {
     res = defaultParams();
     localStorage.setItem('parameters', JSON.stringify(res));
   }
@@ -433,7 +433,7 @@ function getJSONListToSync () {
 // Here we shouldn't be using this...
 var sync = new BSync({
   getUpdate : function () {
-    //console.log('GET UPDATE');
+    // console.log('GET UPDATE');
     var params = getParameters();
     return params.updated;
   },
@@ -441,12 +441,15 @@ var sync = new BSync({
   onRead : function (json, bookmark) {
     console.log('Reading incoming synchronisation');
 
-    if (!(json === undefined || json === null || json === 'null')) {
+    if (!(typeof json === 'undefined' || json === null || json === 'null')) {
       console.log(' - Updating incoming entries');
+
       // var lstTmp = $A(eval('(' + json.mangas + ')')); --> remove prototype usage
+
       var lstTmp = JSON.parse(json.mangas);
       var i;
       var tmpManga;
+
       for (i = 0; i < lstTmp.length; i++) {
         tmpManga = new MangaElt(lstTmp[i]);
         console.log('\t - Reading manga entry : ' + tmpManga.name + ' in mirror : ' + tmpManga.mirror);
@@ -461,12 +464,13 @@ var sync = new BSync({
           mangaList[last].refreshLast();
         }
         else {
-          //Verify chapter last
+          // Verify chapter last
           console.log('\t  --> Manga found in current list, verify last chapter read. incoming : ' + tmpManga.lastChapterReadURL + '; current : ' + mangaExist.lastChapterReadURL);
           mangaExist.consult(tmpManga);
           saveList();
         }
       }
+
       console.log(' - Deleting mangas not in incoming list');
       var deleteAr = [];
       for (i = 0; i < mangaList.length; i++) {
@@ -497,8 +501,8 @@ var sync = new BSync({
     console.log('Writing current configuration to synchronise');
     var params = getParameters();
     this.write({
-      'mangas' : getJSONListToSync(),
-      'updated' : params.updated,
+      mangas : getJSONListToSync(),
+      updated : params.updated
     });
     refreshSync();
   }
@@ -543,10 +547,10 @@ function isReady (statusReadyT, reasonT) {
     return;
   }
 
-  if (statusReadyT === undefined && reasonT === undefined) {
+  if (typeof statusReadyT === 'undefined' && typeof reasonT === 'undefined') {
     return {
-      'statusReady' : statusReady,
-      'reason' : reason
+      statusReady : statusReady,
+      reason : reason
     };
   }
 }
@@ -572,7 +576,7 @@ function instantiateMirrors () {
 
 function initMirrorState () {
   var states = localStorage.getItem('mirrorStates');
-  if (states === undefined || states === null || states === 'null') {
+  if (typeof states === 'undefined' || states === null || states === 'null') {
     instantiateMirrors();
   }
   else {
@@ -642,46 +646,56 @@ function refreshManga (mg, waiter, pos) {
 function refreshAllLasts (refreshTimer, perform) {
   try {
     var i;
-    if (perform === undefined || perform === true) {
+    if (typeof perform === 'undefined' || perform === true) {
       console.log('Refreshing chapters at ' + new Date());
+
       localStorage.getItem('lastChaptersUpdate', new Date().getTime());
+
       var nbToRef = 0;
+      var pos = 0;
+      var mirror;
+
       for (i = 0; i < mangaList.length; i++) {
         if (getMangaMirror(mangaList[i].mirror) !== null) {
           nbToRef++;
         }
       }
-      var waiter = new WaitForAllLists(nbToRef, function () {
-        saveList();
-      }, getParameters().refreshspin);
-      var pos = 0;
+
+      var waiter = new WaitForAllLists(nbToRef, saveList, getParameters().refreshspin);
+
       for (i = 0; i < mangaList.length; i++) {
-        if (getMangaMirror(mangaList[i].mirror) !== null) {
-          if (getMangaMirror(mangaList[i].mirror).savebandwidth === undefined || !getMangaMirror(mangaList[i].mirror).savebandwidth) {
+        mirror = getMangaMirror(mangaList[i].mirror);
+        if (mirror !== null) {
+          if (mirror.savebandwidth === undefined || !mirror.savebandwidth) {
             refreshManga(mangaList[i], waiter, pos);
             pos++;
           }
         }
       }
+
       for (i = 0; i < mangaList.length; i++) {
-        if (getMangaMirror(mangaList[i].mirror) !== null) {
-          if (getMangaMirror(mangaList[i].mirror).savebandwidth !== undefined && getMangaMirror(mangaList[i].mirror).savebandwidth) {
+        mirror = getMangaMirror(mangaList[i].mirror);
+        if (mirror !== null) {
+          if (mirror.savebandwidth !== undefined && mirror.savebandwidth) {
             refreshManga(mangaList[i], waiter, pos);
             pos++;
           }
         }
       }
+
       waiter.wait();
     }
   }
   catch (e) {
     console.log(e);
   }
+
   var nextTime = getParameters().updatechap;
   if (refreshTimer) {
     clearTimeout(timeoutChap);
     nextTime =  -(new Date().getTime() - localStorage.getItem('lastChaptersUpdate') - nextTime);
   }
+
   console.log('Next time to refresh chapters list : ' + nextTime);
   timeoutChap = setTimeout(function () {
     refreshAllLasts();
@@ -708,7 +722,7 @@ function refreshMangaLists (refreshTimer, perform) {
 
   if (refreshTimer) {
     clearTimeout(timeoutMg);
-    nextTime =  - (new Date().getTime() - localStorage.getItem('lastMangasUpdate') - nextTime);
+    nextTime = -(new Date().getTime() - localStorage.getItem('lastMangasUpdate') - nextTime);
   }
 
   console.log('Next time to refresh manga list : ' + nextTime);
@@ -1333,8 +1347,7 @@ function getBookmark (obj) {
   };
 }
 
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     var mangaExist;
     var i;
     switch (request.action) {
