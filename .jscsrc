@@ -55,7 +55,7 @@
   "requireSpaceAfterLineComment": true,
   "requireFunctionDeclarations": true,
   "disallowNewlineBeforeBlockStatements": true,
-  "validateQuoteMarks": "'",
+  // "validateQuoteMarks": "'",
   "validateIndentation": 2,
   "validateParameterSeparator": ", ",
   "safeContextKeyword": ["self"]

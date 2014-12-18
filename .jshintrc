@@ -12,7 +12,7 @@
   "noempty"       : true,
   "nonew"         : false,
   "plusplus"      : false,
-  "quotmark"      : "single",
+  "quotmark"      : "double",
   "undef"         : true,
   "unused"        : true,
   "maxdepth"      : false,
