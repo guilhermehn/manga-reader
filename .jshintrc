@@ -1,5 +1,4 @@
 {
-  "maxerr"        : 50,
   "camelcase"     : true,
   "curly"         : true,
   "eqeqeq"        : true,
@@ -12,7 +11,7 @@
   "noempty"       : true,
   "nonew"         : false,
   "plusplus"      : false,
-  "quotmark"      : "double",
+  "quotmark"      : "single",
   "undef"         : true,
   "unused"        : true,
   "maxdepth"      : false,

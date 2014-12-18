@@ -20,13 +20,16 @@
 // The propose of this file is to unificate and deduplicate
 // javascript code that repeats itself in several files.
 
-function getMangaMirror(mirror) {
-    "use strict";
-    var i;
-    for (i = 0; i < mirrors.length; i += 1) {
-        if (mirrors[i].mirrorName === mirror) {
-            return mirrors[i];
-        }
+function getMangaMirror (mirror) {
+  'use strict';
+
+  var i = -1;
+
+  while (++i < mirrors.length) {
+    if (mirrors[i].mirrorName === mirror) {
+      return mirrors[i];
     }
-    return null;
+  }
+
+  return null;
 }
