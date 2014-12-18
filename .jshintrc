@@ -34,6 +34,7 @@
   "supernew"      : false,
   "validthis"     : false,
   "devel"         : true,
+  "browser"       : true,
   "jquery"        : true,
   "mocha"         : true,
   "globals": {
