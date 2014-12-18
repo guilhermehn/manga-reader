@@ -112,112 +112,70 @@ function setMirrorState (mirrorName, state) {
   }
 }
 
-function loadSearch () {
-  loadSelectors();
-
-  for (var i = 0; i < mirrors.length; i++) {
-    var newItem = $('<div class=\'mirrorF\'><table><tr><td class=\'mirrorIcon\'><img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\'/></td></tr><tr><td class=\'mirrorStatus\'><img src=\'' + chrome.extension.getURL('img/gray.png') + '\'/></td></tr></table></div>');
-    newItem.appendTo($('#filMirrors'));
-    if (!isMirrorEnable(mirrors[i].mirrorName)) {
-      $('.mirrorIcon img', newItem).addClass('disabled');
-      $('.mirrorStatus img', newItem).hide();
-    }
-  }
-
-  $('.mirrorIcon img').click(function () {
+function toggleMirrorsSelection (selected) {
+  $('.mirrorIcon img').each(function () {
     var $this = $(this);
-    $this.toggleClass('disabled');
 
-    var $tr = $('img', $this.closest('tr').next());
-    var disabled = $this.hasClass('disabled');
-
-    $tr[disabled ? 'hide' : 'show']();
-    setMirrorState($this.attr('title'), !disabled);
+    $this[selected ? 'removeClass' : 'addClass']('disabled');
+    $('img', $this.closest('tr').next())[selected ? 'show' : 'hide']();
+    setMirrorState($this.attr('title'), selected);
   });
+}
 
-  if (typeof localStorage.getItem('searchAllRequest') !== 'undefined') {
-    document.getElementById('searchBoxInput').value = localStorage.getItem('searchAllRequest');
-  }
-
-  var listTmpSearch = localStorage['searchAll'];
-  var listTmpSearchLst = [];
-
-  if (!(typeof listTmpSearch === 'undefined' || listTmpSearch === null || listTmpSearch === 'null')) {
-    var lstTmp = JSON.parse(listTmpSearch);
-    for (i = 0; i < lstTmp.length; i++) {
-      listTmpSearchLst[i] = lstTmp[i];
-    }
-  }
-
-  if (listTmpSearchLst.length > 0) {
-    fillListOfSearchAll(listTmpSearchLst);
-  }
+function saveSelectedLanguage () {
+  localStorage.setItem('searchLanguage', $('#selectors select option:selected').val());
 }
 
 function loadSelectors () {
-  var selAll = $('<img src=\'' + IMAGE_PATH + 'select_all.png' + '\' title=\'Select all\'/>');
-  var selNone = $('<img src=\'' + IMAGE_PATH + 'select_none.png' + '\' title=\'Select none\'/>');
-  var selUsed = $('<img src=\'' + IMAGE_PATH + 'bookmark.png' + '\' title=\'Select all on which i have at least one manga in my list\'/>');
+  var selectAllMirrorsButton = $('<img src=\'' + IMAGE_PATH + 'select_all.png' + '\' title=\'Select all\'/>');
+  var selectNoMirrorsButton = $('<img src=\'' + IMAGE_PATH + 'select_none.png' + '\' title=\'Select none\'/>');
+  var selectAlreadyUsedMirrorsButton = $('<img src=\'' + IMAGE_PATH + 'bookmark.png' + '\' title=\'Select all on which i have at least one manga in my list\'/>');
 
-  var $options = $('#selectors select option');
+  var $selectors = $('#selectors');
+  var $options = $selectors.find('select option');
   var $first = $options.filter(':first');
-  var $selected = $('#selectors select option:selected');
+  var $selected = $options.filter(':selected');
 
-  selAll.click(function () {
-    $('.mirrorIcon img').each(function () {
-      var $this = $(this);
-
-      $this.removeClass('disabled');
-      $('img', $this.closest('tr').next()).show();
-      setMirrorState($this.attr('title'), true);
-    });
+  selectAllMirrorsButton.click(function () {
+    toggleMirrorsSelection(true);
 
     $first.attr('selected', true);
-    localStorage.setItem('searchLanguage', $selected.val());
+    saveSelectedLanguage();
   });
 
-  selNone.click(function () {
-    $('.mirrorIcon img').each(function () {
-      var $this = $(this);
-
-      $this.addClass('disabled');
-      $('img', $this.closest('tr').next()).hide();
-      setMirrorState($this.attr('title'), false);
-    });
+  selectNoMirrorsButton.click(function () {
+    toggleMirrorsSelection(false);
 
     $first.attr('selected', true);
-    localStorage.setItem('searchLanguage', $selected.val());
+    saveSelectedLanguage();
   });
 
-  selUsed.click(function () {
-    var unused = MgUtil.getUnusedNames(mirrors, JSON.parse(localStorage['mangas']));
+  selectAlreadyUsedMirrorsButton.click(function () {
+    var unused = MgUtil.getUnusedNames(mirrors, JSON.parse(localStorage.getItem('mangas')));
 
     $('.mirrorIcon img').each(function (index) {
+      var $this = $(this);
       var isFound = false;
+
       for (var i = 0; i < unused.length; i++) {
-        if (unused[i] === $(this).attr('title')) {
+        if (unused[i] === $this.attr('title')) {
           isFound = true;
           break;
         }
       }
-      if (isFound) {
-        $(this).addClass('disabled');
-        $('img', $(this).closest('tr').next()).hide();
-        setMirrorState($(this).attr('title'), false);
-      }
-      else {
-        $(this).removeClass('disabled');
-        $('img', $(this).closest('tr').next()).show();
-        setMirrorState($(this).attr('title'), true);
-      }
+
+      $this[isFound ? 'addClass' : 'removeClass']('disabled');
+      $('img', $this.closest('tr').next())[isFound ? 'hide' : 'show']();
+      setMirrorState($this.attr('title'), !isFound);
     });
-    $('#selectors select option:first').attr('selected', true);
-    localStorage['searchLanguage'] = $('#selectors select option:selected').val();
+
+    $first.attr('selected', true);
+    localStorage.setItem('searchLanguage', $options.filter(':selected').val());
   });
 
-  selAll.appendTo($('#selectors'));
-  selNone.appendTo($('#selectors'));
-  selUsed.appendTo($('#selectors'));
+  selectAllMirrorsButton.appendTo($selectors);
+  selectNoMirrorsButton.appendTo($selectors);
+  selectAlreadyUsedMirrorsButton.appendTo($selectors);
 
   var sel = MgUtil.getLanguageSelect(mirrors);
 
@@ -265,6 +223,49 @@ function loadSelectors () {
   sel.appendTo(spansel);
   spansel.appendTo($('#selectors'));
 }
+
+function loadSearch () {
+  loadSelectors();
+
+  for (var i = 0; i < mirrors.length; i++) {
+    var newItem = $('<div class=\'mirrorF\'><table><tr><td class=\'mirrorIcon\'><img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\'/></td></tr><tr><td class=\'mirrorStatus\'><img src=\'' + chrome.extension.getURL('img/gray.png') + '\'/></td></tr></table></div>');
+    newItem.appendTo($('#filMirrors'));
+    if (!isMirrorEnable(mirrors[i].mirrorName)) {
+      $('.mirrorIcon img', newItem).addClass('disabled');
+      $('.mirrorStatus img', newItem).hide();
+    }
+  }
+
+  $('.mirrorIcon img').click(function () {
+    var $this = $(this);
+    $this.toggleClass('disabled');
+
+    var $tr = $('img', $this.closest('tr').next());
+    var disabled = $this.hasClass('disabled');
+
+    $tr[disabled ? 'hide' : 'show']();
+    setMirrorState($this.attr('title'), !disabled);
+  });
+
+  if (typeof localStorage.getItem('searchAllRequest') !== 'undefined') {
+    document.getElementById('searchBoxInput').value = localStorage.getItem('searchAllRequest');
+  }
+
+  var listTmpSearch = localStorage['searchAll'];
+  var listTmpSearchLst = [];
+
+  if (!(typeof listTmpSearch === 'undefined' || listTmpSearch === null || listTmpSearch === 'null')) {
+    var lstTmp = JSON.parse(listTmpSearch);
+    for (i = 0; i < lstTmp.length; i++) {
+      listTmpSearchLst[i] = lstTmp[i];
+    }
+  }
+
+  if (listTmpSearchLst.length > 0) {
+    fillListOfSearchAll(listTmpSearchLst);
+  }
+}
+
 function search () {
   var toFind = document.getElementById("searchBoxInput").value;
   if (toFind.length === 0) {
