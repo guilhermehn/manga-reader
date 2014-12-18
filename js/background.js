@@ -828,7 +828,7 @@ function refreshUpdate () {
 /* Initialise the list of followed mangas */
 function init () {
   getMirrors(function (mirrorsT) {
-    var mirrors = mirrorsT;
+    mirrors = mirrorsT;
     var i;
 
     var doDeleteMirs = false;
