@@ -136,6 +136,7 @@ function loadSelectors () {
   var $first = $options.filter(':first');
   var $selected = $options.filter(':selected');
 
+  // Select all mirrors
   selectAllMirrorsButton.click(function () {
     toggleMirrorsSelection(true);
 
@@ -143,6 +144,7 @@ function loadSelectors () {
     saveSelectedLanguage();
   });
 
+  // Deselect all mirrors
   selectNoMirrorsButton.click(function () {
     toggleMirrorsSelection(false);
 
@@ -150,22 +152,19 @@ function loadSelectors () {
     saveSelectedLanguage();
   });
 
+  // Select only mirrors already used
   selectAlreadyUsedMirrorsButton.click(function () {
-    var unused = MgUtil.getUnusedNames(mirrors, JSON.parse(localStorage.getItem('mangas')));
+    var unused = MgUtil.getUsedMirrors(mirrors, JSON.parse(localStorage.getItem('mangas')));
 
     $('.mirrorIcon img').each(function (index) {
       var $this = $(this);
-      var isFound = false;
+      var title = $this.attr('title');
+      var isFound = unused.some(function (mirror) {
+        return mirror === title;
+      });
 
-      for (var i = 0; i < unused.length; i++) {
-        if (unused[i] === $this.attr('title')) {
-          isFound = true;
-          break;
-        }
-      }
-
-      $this[isFound ? 'addClass' : 'removeClass']('disabled');
-      $('img', $this.closest('tr').next())[isFound ? 'hide' : 'show']();
+      $this[isFound ? 'removeClass' : 'addClass']('disabled');
+      $('img', $this.closest('tr').next())[isFound ? 'show' : 'hide']();
       setMirrorState($this.attr('title'), !isFound);
     });
 
