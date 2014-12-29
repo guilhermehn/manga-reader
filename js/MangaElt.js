@@ -1,4 +1,5 @@
-﻿/**
+﻿/*globals getMangaMirror, saveList*/
+/**
 
   This file is part of All Mangas Reader.
 
@@ -27,14 +28,12 @@ HTMLLinkElement.prototype.mirror = null;
 HTMLInputElement.prototype.mirror = null;
 
 Array.prototype.remove = function (from, to) {
-  "use strict";
   var rest = this.slice((to || from) + 1 || this.length);
   this.length = from < 0 ? this.length + from : from;
   return this.push.apply(this, rest);
 };
 
-function MangaElt(obj) {
-  "use strict";
+function MangaElt (obj) {
   this.mirror = obj.mirror;
   this.name = obj.name;
   this.url = obj.url;
@@ -42,7 +41,7 @@ function MangaElt(obj) {
   this.lastChapterReadName = obj.lastChapterReadName || null;
   this.listChaps = [];
   if (obj.listChaps) {
-    this.listChaps = JSON.parse(obj.listChaps)
+    this.listChaps = JSON.parse(obj.listChaps);
   }
   this.read = obj.read || 0;
   this.update = obj.update || 1;
@@ -50,7 +49,7 @@ function MangaElt(obj) {
   this.cats = obj.cats || [];
   if (obj.cats) {
     this.cats = JSON.parse(obj.cats);
-  }  
+  }
   this.ts = obj.ts || Math.round((new Date()).getTime() / 1000);
   this.upts = obj.upts || 0;
 
@@ -58,10 +57,10 @@ function MangaElt(obj) {
     if (fromSite === undefined) {
       fromSite = false;
     }
-    var posOld = -1,
-      posNew = -1,
-      isNew = false,
-      i;
+
+    var posOld = -1;
+    var posNew = -1;
+    var i;
 
     for (i = 0; i < this.listChaps.length; i += 1) {
       if (this.listChaps[i][1] === this.lastChapterReadURL) {
@@ -72,7 +71,7 @@ function MangaElt(obj) {
       }
     }
     if (posNew === -1) {
-      //New chapter is not in chapters list --> Reload chapter list
+      // New chapter is not in chapters list --> Reload chapter list
       if (getMangaMirror(this.mirror) !== null && this.update === 1) {
         getMangaMirror(this.mirror).getListChaps(this.url, this.name, this, function (lst, obj2) {
           if (lst.length > 0) {
@@ -98,7 +97,8 @@ function MangaElt(obj) {
           }
         });
       }
-    } else {
+    }
+    else {
       if (fromSite || (posNew < posOld || posOld === -1)) {
         this.lastChapterReadURL = obj.lastChapterReadURL;
         this.lastChapterReadName = obj.lastChapterReadName;
@@ -107,14 +107,14 @@ function MangaElt(obj) {
         }
       }
     }
-    
-    //if the current manga doesnt have a name, and the request does, then we fix the current name
-    if(this.name === "" && obj.name !== this.name){
+
+    // if the current manga doesnt have a name, and the request does, then we fix the current name
+    if(this.name === '' && obj.name !== this.name){
       this.name=obj.name;
     }
 
-    //This happens when incoming updates comes from sync
-    //if obj.display, obj.read, obj.cats, MAJ this....
+    // This happens when incoming updates comes from sync
+    // if obj.display, obj.read, obj.cats, MAJ this....
     if (obj.display) {
       this.display = obj.display;
     }
@@ -134,7 +134,7 @@ function MangaElt(obj) {
 
   this.refreshLast = function (doSave, callback) {
     if (this.update === 1) {
-      //Refresh the last existing chapter of this manga
+      // Refresh the last existing chapter of this manga
       if (!doSave) {
         doSave = true;
       }
@@ -142,7 +142,7 @@ function MangaElt(obj) {
         hasBeenTimeout = false,
         timeOutRefresh = setTimeout(function () {
           hasBeenTimeout = true;
-          console.log("Refreshing " + myself.url + " has been timeout... seems unreachable...");
+          console.log('Refreshing ' + myself.url + ' has been timeout... seems unreachable...');
           if (callback !== undefined && typeof callback === 'function') {
             callback(myself);
           }
@@ -164,10 +164,17 @@ function MangaElt(obj) {
               // if oldLastChap === undefined --> new manga added --> no notifications (Issue #40)
               if ((newLastChap !== oldLastChap) && (oldLastChap !== undefined)) {
                 if (obj.read === 0 && (parameters.shownotifications === 1)) {
-                  urls = $.map(obj.listChaps, function (chap) {return chap[1]; });
-                  mangaData = {name: obj.name, mirror: obj.mirror, url: urls[urls.indexOf(obj.lastChapterReadURL) - 1]};
+                  urls = $.map(obj.listChaps, function (chap) {
+                    return chap[1];
+                  });
+
+                  mangaData = {
+                    name: obj.name,
+                    mirror: obj.mirror,
+                    url: urls[urls.indexOf(obj.lastChapterReadURL) - 1]
+                  };
                   // Notification data added to variables to be used by the old or by the new notification API.
-                  var description = "... has new chapter(s) on " + mangaData.mirror + "! Click anywhere to open the next unread chapter.";
+                  var description = '... has new chapter(s) on ' + mangaData.mirror + '! Click anywhere to open the next unread chapter.';
                   var title = mangaData.name;
                   var icon = chrome.extension.getURL('img/icon-32.png');
                   var url = mangaData.url;
@@ -183,27 +190,31 @@ function MangaElt(obj) {
                     }
                     if (myself.lastNotificationID === undefined) {
                       myself.lastNotificationID = 1;
-                    } else {
+                    }
+                    else {
                       // lastNotificationID can, if the browser is open a sufficient amount of time
                       // and a lot of new manga chapters are found, grow beyond the number upper limit.
                       // But this is so unlikely to happen...
                       myself.lastNotificationID++;
                     }
-                    myself.notifications["amr" + myself.lastNotificationID] = url;
+
+                    myself.notifications['amr' + myself.lastNotificationID] = url;
+
                     // Callback function to notification click.
-                    var notificationClickCallback = function(id) {
+                    function notificationClickCallback (id) {
                       if (myself.notifications[id] !== undefined) {
                         chrome.tabs.create({
-                          "url" : myself.notifications[id]
+                          url : myself.notifications[id]
                         });
                         // It deletes the used URL to avoid unbounded object growing.
                         // Well, if the notification isn't clicked the said growing is not avoided.
                         // If this proves to be a issue a close callback should be added too.
                         delete myself.notifications[id];
                       }
-                    };
+                    }
+
                     var notificationOptions = {
-                      type: "basic",
+                      type: 'basic',
                       title: title,
                       message: description,
                       iconUrl: icon
@@ -213,10 +224,11 @@ function MangaElt(obj) {
                     chrome.notifications.onClicked.addListener(notificationClickCallback);
                     // And finally opens de notification. The third parameter is a creation callback,
                     // which I think is not needed here.
-                    chrome.notifications.create("amr" + myself.lastNotificationID, notificationOptions, function() {});
+                    chrome.notifications.create('amr' + myself.lastNotificationID, notificationOptions, function () {});
                   }
                 }
-                //Set upts to now (means : 'last time we found a new chapter is now');
+
+                // Set upts to now (means : 'last time we found a new chapter is now');
                 obj.upts = new Date().getTime();
               }
               if (obj.lastChapterReadURL === null) {
@@ -235,9 +247,9 @@ function MangaElt(obj) {
           });
         }
       }, 10);
-    } else {
+    }
+    else {
       callback(this);
     }
   };
 }
-
