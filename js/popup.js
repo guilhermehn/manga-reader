@@ -22,11 +22,11 @@ var mangas;
 var parameters;
 var bookmarks;
 
-function openTab (urlToOpen) {
+function openTab (urlToOpen, cb) {
   chrome.runtime.sendMessage({
     action : 'opentab',
     url : urlToOpen
-  }, function (response) {});
+  }, cb ? cb : $.noop);
 }
 
 function sendExtRequest (request, button, callback, backsrc) {
@@ -75,17 +75,18 @@ function isList () {
   return ($('#main').is('.list'));
 }
 
-function closestEltData (elt) {
-  if (isList()) {
-    if ($('.mgline', $(elt).closest('.manga')).size() >= 1) {
-      return $(elt).closest('.mgline');
-    }
-    return $(elt).closest('.manga');
+function closestEltData (el) {
+  var $el = $(el);
+  var $manga = $el.closest('.manga');
+
+  if (isList() && ($('.mgline', $manga).size() >= 1)) {
+    return $el.closest('.mgline');
   }
-  if ($('.mgelt', $(elt).closest('.manga')).size() >= 1) {
-    return $(elt).closest('.mgelt');
+  else if ($('.mgelt', $manga).size() >= 1) {
+    return $el.closest('.mgelt');
   }
-  return $(elt).closest('.manga');
+
+  return $manga;
 }
 
 function actionPlay () {
