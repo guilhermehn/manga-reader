@@ -774,50 +774,72 @@ function testChapters () {
       $('<span>List of chapters successfully loaded (' + lst.length + ' chapters loaded)</span>').appendTo(res);
       var sel = $('<select id="lstChaps"></select>');
       var selUrls = $('<select></select>');
+
       for (var i = 0; i < lst.length; i++) {
         $(new Option(lst[i][0], lst[i][1])).appendTo(sel);
         $(new Option(lst[i][1], lst[i][1])).appendTo(selUrls);
       }
+
       $('<br />').appendTo(res);
       sel.css('max-width', '300px');
       sel.appendTo(res);
       var al = $('<input type=\'button\' value=\'Go\'/>');
+
       al.click(function () {
         window.open($(this).prev().val());
       });
+
       al.appendTo(res);
+
       var als = $('<input type=\'button\' value=\'Source\'/>');
+
       als.click(function () {
         window.open('view-source:' + $(this).prev().prev().val());
       });
+
       als.appendTo(res);
+
       $('<br />').appendTo(res);
+
       selUrls.css('max-width', '300px');
       selUrls.appendTo(res);
+
       var alu = $('<input type=\'button\' value=\'Go\'/>');
+
       alu.click(function () {
         window.open($(this).prev().val());
       });
+
       alu.appendTo(res);
+
       var alsu = $('<input type=\'button\' value=\'Source\'/>');
+
       alsu.click(function () {
         window.open('view-source:' + $(this).prev().prev().val());
       });
+
       alsu.appendTo(res);
+
       $('<br />').appendTo(res);
+
       // Add a button
       $('<span>Select a chapter in the first list and click on the test button to load tests for this chapter :</span>').appendTo(res);
+
       var but = $('<input type=\'button\' value=\'Test\'/>');
       but.appendTo(res);
       but.click(testMirrorForChap);
+
       modifyComment('listchaps', 'List of chapters loaded. Check that the chapters corresponds to those on the web sites. Check the URLs too... <b>Verify that the list of chapter is in descending order. The latest Chapter must be the first on the list </b>');
     }
+
     modifyResult('listchaps', res);
 
     if (isOk) {
       modifyStatut('listchaps', 'O');
+
       if ($('#auto').is(':checked')) {
         var index = Math.floor(Math.random() * $('option', $('#lstChaps')).size());
+
         $('option:nth-child(' + index + ')', $('#lstChaps')).attr('selected', 'selected');
         testMirrorForChap();
       }
