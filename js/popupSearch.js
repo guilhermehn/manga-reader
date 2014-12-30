@@ -179,15 +179,15 @@ function bindSearchGlobActs () {
   });
 }
 
-function fillCurrentLstSingleMg (lstCur) {
+function fillCurrentListSingleManga (lstCur) {
   var nameCur = lstCur[lstCur.length - 1].name;
   var trCur = $('<tr></tr>');
   var tdHead = $('<td class=\'mangaName\'></td>');
 
-  $('<span>' + nameCur + '</span><div class=\'optmgsearch\'><img class=\'externsearch\' src=\'img/external.png\' title=\'Open all occurences of this manga on their respective websites\'/><img class=\'addsearch\' src=\'img/add.png\' title=\'Add all occurences of this manga in your manga list\'/></div>').appendTo(tdHead);
+  tdHead.append('<span>' + nameCur + '</span><div class=\'optmgsearch\'><img class=\'externsearch\' src=\'img/external.png\' title=\'Open all occurences of this manga on their respective websites\'/><img class=\'addsearch\' src=\'img/add.png\' title=\'Add all occurences of this manga in your manga list\'/></div>');
 
-  tdHead.appendTo(trCur);
-  trCur.appendTo($('#allres'));
+  trCur.append(tdHead);
+  $('#allres').append(trCur);
 
   var tdMgs = $('<td class=\'listMirror\'></td>');
 
@@ -197,61 +197,68 @@ function fillCurrentLstSingleMg (lstCur) {
     if (getMangaMirror(lstCur[i].mirror) !== null) {
       var urlCur = lstCur[i].url;
       var img = $('<img class=\'mirrorsearchimg\' src=\'' + getMangaMirror(lstCur[i].mirror).mirrorIcon + '\' title=\'' + nameCur + ' on ' + lstCur[i].mirror + '\' />');
-      img.data('urlmirror', urlCur);
-      img.data('mirrorname', lstCur[i].mirror);
-      img.data('manganame', nameCur);
+
+      img.data({
+        urlmirror: urlCur,
+        mirrorname: lstCur[i].mirror,
+        manganame: nameCur
+      });
+
       var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'img/addlt.png\' title=\'Add this manga in your list on ' + lstCur[i].mirror + '\'/></div>');
+
       divelt.prepend(img);
       divelt.appendTo(tdMgs);
     }
   }
 }
 
-function fillListOfSearchAll (lst) {
+function fillListOfSearchAll (list) {
+  var $resultCounter = $('#result-count');
   $('#resTr').css('display', 'table-row');
   $('#results').empty();
 
-  if (lst.length > 0) {
+  if (list.length > 0) {
     $('#nores').hide();
     $('#results')
       .show()
       .append('<table cellpadding=\'0\' cellspacing=\'0\' id=\'allres\'></table>');
 
     var ancName = '';
-    var lstCur = [];
+    var listCur = [];
     var resultLength = 0;
 
-    for (var j = 0; j < lst.length; j++) {
-      if (ancName !== '' && lstCur.length > 0 && formatMgName(lst[j].name) !== ancName) {
-        fillCurrentLstSingleMg(lstCur);
+    list.forEach(function (item) {
+      if (ancName !== '' && listCur.length > 0 && formatMgName(item.name) !== ancName) {
+        fillCurrentListSingleManga(listCur);
         resultLength++;
-        lstCur = [];
+        listCur = [];
       }
 
-      lstCur[lstCur.length] = lst[j];
-      ancName = formatMgName(lst[j].name);
-    }
+      listCur[listCur.length] = item;
+      ancName = formatMgName(item.name);
+    });
 
-    if (lstCur.length > 0) {
-      fillCurrentLstSingleMg(lstCur);
+    if (listCur.length > 0) {
+      fillCurrentListSingleManga(listCur);
     }
 
     bindSearchGlobActs();
-    if (resultLength !== 0) {
-      $('#result-count').show();
 
-      if (lst.length >= 900 || isOver) {
-        $('#result-count').html('<span>' + resultLength + ' manga found (' + lst.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
+    if (resultLength !== 0) {
+      $resultCounter.show();
+
+      if (list.length >= 900 || isOver) {
+        $resultCounter.html('<span>' + resultLength + ' manga found (' + list.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
       }
       else {
-        $('#result-count').text(resultLength + ' manga found (' + lst.length + ' places to read them)');
+        $resultCounter.text(resultLength + ' manga found (' + list.length + ' places to read them)');
       }
     }
   }
   else {
     $('#nores').show();
     $('#results').hide();
-    $('#result-count').hide();
+    $resultCounter.hide();
   }
 }
 
