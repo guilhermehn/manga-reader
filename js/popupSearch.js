@@ -212,9 +212,10 @@ function fillListOfSearchAll (lst) {
   $('#results').empty();
 
   if (lst.length > 0) {
-    $('#nores').css('display', 'none');
-    $('#results').css('display', 'block');
-    $('<table cellpadding=\'0\' cellspacing=\'0\' id=\'allres\'></table>').appendTo($('#results'));
+    $('#nores').hide();
+    $('#results')
+      .show()
+      .append('<table cellpadding=\'0\' cellspacing=\'0\' id=\'allres\'></table>');
 
     var ancName = '';
     var lstCur = [];
@@ -237,20 +238,20 @@ function fillListOfSearchAll (lst) {
 
     bindSearchGlobActs();
     if (resultLength !== 0) {
-      $('#nbRes').css('display', 'block');
+      $('#result-count').show();
 
       if (lst.length >= 900 || isOver) {
-        $('#nbRes').html('<span>' + resultLength + ' manga found (' + lst.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
+        $('#result-count').html('<span>' + resultLength + ' manga found (' + lst.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
       }
       else {
-        $('#nbRes').text(resultLength + ' manga found (' + lst.length + ' places to read them)');
+        $('#result-count').text(resultLength + ' manga found (' + lst.length + ' places to read them)');
       }
     }
   }
   else {
     $('#nores').show();
     $('#results').hide();
-    $('#nbRes').hide();
+    $('#result-count').hide();
   }
 }
 

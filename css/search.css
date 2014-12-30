@@ -59,7 +59,7 @@ tr.firstLine {
   display: none;
 }
 
-#nbRes, #nores {
+#result-count, #nores {
   font-weight: bold;
   width: 100%;
   text-align: center;
