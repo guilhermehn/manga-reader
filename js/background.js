@@ -1,4 +1,4 @@
-﻿/*globals document, BSync, localStorage, MangaElt, wssql, $, chrome, getMirrors, getMangaMirror, updateWebsitesFromRepository, getFilledMirrorsDesc, getActivatedMirrorsWithList, doesCurrentPageMatchManga, translate, importImplentationFromId, releaseImplentationFromId, pstat, XMLHttpRequest, amrcsql*/
+/*globals document, BSync, localStorage, MangaElt, wssql, $, chrome, getMirrors, getMangaMirror, updateWebsitesFromRepository, getFilledMirrorsDesc, getActivatedMirrorsWithList, doesCurrentPageMatchManga, translate, importImplentationFromId, releaseImplentationFromId, pstat, XMLHttpRequest, amrcsql*/
 /**
 
   This file is part of All Mangas Reader.
@@ -1615,23 +1615,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           }
         }
 
-        localStorage.getItem('parameters', JSON.stringify(obj));
-        if (ancParams.displayzero !== obj.displayzero) {
-          refreshTag();
-        }
+        localStorage.setItem('parameters', JSON.stringify(obj));
+
         if (ancParams.nocount !== obj.nocount) {
           drawIcon(false);
+        }
+
+        if (ancParams.displayzero !== obj.displayzero || ancParams.groupmgs !== obj.groupmgs) {
           refreshTag();
         }
-        if (ancParams.groupmgs !== obj.groupmgs) {
-          refreshTag();
-        }
-        if (ancParams.updatechap !== obj.updatechap) {
-          refreshAllLasts(true, false);
-        }
-        if (ancParams.updatemg !== obj.updatemg) {
+
+        if (ancParams.updatemg !== obj.updatemg || ancParams.updatechap !== obj.updatechap) {
           refreshMangaLists(true, false);
         }
+
         sendResponse({});
         break;
       }
