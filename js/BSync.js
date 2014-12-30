@@ -10,7 +10,6 @@ function eachSync (obj, fn, context) {
 
 function BSync (OPT) {
   this.options = {};
-
   this.initialize(OPT);
 
   return this;
@@ -187,7 +186,7 @@ BSync.prototype.getFolder = function () {
 
 BSync.prototype.traverse = function (_34) {
   var self = this;
-  var _36 = [];
+  var bookmarks = [];
   var _37;
   var _38;
   var folder = this.folder;
@@ -227,7 +226,7 @@ BSync.prototype.traverse = function (_34) {
       if (ts) {
         // console.log('Bookmark : ' + results.title + ' date : ' + ts + ' ; curTS : ' + _3c);
         if (self.options.deleteOther) {
-          _36.push(bookmark);
+          bookmarks.push(bookmark);
         }
         if (bookmark.url.indexOf('void') !== -1 && (ts > _3c)) {
           _37 = bookmark;
@@ -254,7 +253,7 @@ BSync.prototype.traverse = function (_34) {
     }
 
     if (self.options.deleteOther) {
-      _36.forEach(function (b, i) {
+      bookmarks.forEach(function (b, i) {
         if (String(b.id) !== String(_37.id)) {
           try {
             chrome.bookmarks.remove(String(b.id));
