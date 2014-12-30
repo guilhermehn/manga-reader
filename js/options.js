@@ -1,22 +1,4 @@
 ﻿/*globals MgUtil, translate, amrcRoot, loadMenu*/
-/**
-
-  This file is part of All Mangas Reader.
-
-  All Mangas Reader is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  All Mangas Reader is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
 
 var mirrors;
 var mangas;
@@ -24,7 +6,6 @@ var actmirrors;
 var i = 0;
 
 // Opens an url in new tab
-
 function openTab (urlToOpen) {
   chrome.runtime.sendMessage({
     action: 'opentab',
@@ -33,7 +14,6 @@ function openTab (urlToOpen) {
 }
 
 // Saves options to localStorage. TODO: Save options using the sync call.
-
 function saveOptions () {
   var obj = {};
   var colPicks = $('.colorPicker');
@@ -190,7 +170,6 @@ function loadSelectors () {
 }
 
 // Used to request background page action
-
 function sendExtRequest (request, button, callback, backsrc) {
   // Prevent a second request
   if (button.data('currentlyClicked')) {
