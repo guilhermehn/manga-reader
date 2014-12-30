@@ -1,218 +1,7 @@
-﻿/*globals document, chrome, jQuery, $ */
+﻿/*globals document, chrome, jQuery, $, getMangaMirror*/
 var nbclasses = 0;
 var mirrors;
 var states;
-
-$(function () {
-  // Load mirrors definitions
-  chrome.runtime.sendMessage({
-    action: 'actmirrors'
-  }, function (res) {
-    mirrors = res;
-
-    //  access localStorage via background
-    chrome.runtime.sendMessage({
-      action: 'searchMirrorsState'
-    }, function (locms) {
-      if (locms.res !== undefined) {
-        states = JSON.parse(locms.res);
-      }
-
-      update();
-    });
-  });
-});
-
-function update () {
-  var tmpcn = $('.manganameforamr').size();
-  if (tmpcn !== nbclasses) {
-    $('.amrfind').remove();
-    $('<img class=\'amrfind\' src=\'' + chrome.extension.getURL('img/find.png') + '\'></img>').appendTo($('.manganameforamr'));
-    $('.amrfind').css('float', 'right');
-    $('.amrfind').click(clickSearch);
-  }
-  nbclasses = tmpcn;
-  if (nbclasses < 200) {
-    setTimeout(update, 500);
-  }
-}
-
-function clickSearch () {
-  var $this = $(this);
-  var $td = $this.closest('td');
-  loadSearch($td, $td.text());
-}
-
-function isMirrorEnabled (mirrorName) {
-  if (typeof states !== 'undefined') {
-    var i = -1;
-    var length = states.length;
-
-    while (++i < length) {
-      if (states[i].mirror === mirrorName) {
-        return states[i].state;
-      }
-    }
-  }
-
-  return true;
-}
-
-function loadSearch (td, toSearch) {
-  td.data('nbToLoad', mirrors.length);
-  td.data('ancNbToLoad', mirrors.length);
-
-  var $find = $('.amrfind', td);
-
-  $find
-    .attr('src', chrome.extension.getURL('img/load16.gif'))
-    .unbind('click');
-
-  var tr;
-  var restd;
-  var imgs = chrome.extension.getURL('img/');
-  var returnImg = chrome.extension.getURL('img/return.png');
-
-  // Create result zone if needed
-  if (td.closest('tr').next().is('.searchResultstr')) {
-    tr = td.closest('tr').next();
-    restd = $('.resultssearch', tr);
-    restd.empty();
-  }
-  else {
-    tr = $('<tr class=\'searchResultstr\'><td><img class=\'return\' src=\'' + returnImg + '\'/></td><td class=\'resultssearch\' colspan=\'2\'></td></tr>');
-    restd = $('.resultssearch', tr);
-    td.closest('tr').after(tr);
-  }
-
-  // Fill it
-  for (var i = 0; i < mirrors.length; i++) {
-    if (isMirrorEnabled(mirrors[i].mirrorName)) {
-      if (mirrors[i].canListFullMangas) {
-        //  Search in manga list matching entries
-        var listManga = mirrors[i].listmgs;
-        if (listManga !== undefined) {
-          var listMangaCtx = JSON.parse(listManga);
-          if (listMangaCtx.length > 0) {
-            for (var j = 0; j < listMangaCtx.length; j++) {
-              if (formatMgName(listMangaCtx[j][0]) === formatMgName(toSearch)) {
-                var obj = {};
-                obj.url = listMangaCtx[j][1];
-                obj.name = listMangaCtx[j][0];
-                obj.mirror = mirrors[i].mirrorName;
-                addResult(restd, obj, toSearch);
-              }
-            }
-          }
-        }
-        td.data('nbToLoad', td.data('nbToLoad') - 1);
-      }
-      else {
-        //  Request mirror to search.
-        //  call background to search res
-        chrome.runtime.sendMessage({
-          action: 'searchManga',
-          mirrorName: mirrors[i].mirrorName,
-          search: toSearch
-        }, function (resp) {
-          for (var j = 0; j < resp.list.length; j++) {
-            if (formatMgName(resp.list[j][0]) === (formatMgName(toSearch))) {
-              var obj = {};
-              obj.url = resp.list[j][1];
-              obj.name = resp.list[j][0];
-              obj.mirror = resp.mirrorName;
-              addResult(restd, obj, toSearch);
-            }
-          }
-          td.data('nbToLoad', td.data('nbToLoad') - 1);
-        });
-      }
-    }
-    else {
-      td.data('nbToLoad', td.data('nbToLoad') - 1);
-      td.data('ancNbToLoad', td.data('ancNbToLoad') - 1);
-    }
-  }
-  waitForEndLoad(td);
-}
-
-function waitForEndLoad (td) {
-  if (td.data('nbToLoad') !== td.data('ancNbToLoad')) {
-    td.data('ancNbToLoad', td.data('nbToLoad'));
-  }
-  if (td.data('nbToLoad') !== 0) {
-    setTimeout(function () {
-      waitForEndLoad(td);
-    }, 500);
-  }
-  else {
-    $('.amrfind', td).attr('src', chrome.extension.getURL('img/find.png'));
-    $('.amrfind', td).click(clickSearch);
-  }
-}
-
-function addResult (tdRes, obj, name) {
-  var found = false;
-
-  $('.mirrorsearchimg', tdRes).each(function () {
-    if ($(this).data('mirrorname') === obj.mirror) {
-      found = true;
-    }
-  });
-
-  if (!found) {
-    var urlCur = obj.url;
-    var mirrorCur = obj.mirror;
-    var img = $('<img class=\'mirrorsearchimg\' src=\'' + chrome.extension.getURL(getMangaMirror(obj.mirror).mirrorIcon) + '\' title=\'' + name + ' on ' + obj.mirror + '\' />');
-    img.data('urlmirror', urlCur);
-    img.data('mirrorname', obj.mirror);
-    img.data('manganame', name);
-    var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'' + chrome.extension.getURL('img/addlt.png') + '\' title=\'Add this manga in your list on ' + obj.mirror + '\'/></div>');
-    divelt.prepend(img);
-    divelt.appendTo(tdRes);
-    // events binding
-    bindEvents();
-    // Sort mangas pictures
-    $('.eltmirrorsearch', tdRes).sortElements(function (a, b) {
-      var at = $('.mirrorsearchimg', $(a)).data('mirrorname');
-      var bt = $('.mirrorsearchimg', $(b)).data('mirrorname');
-      return at > bt ? 1 : -1;
-    });
-  }
-}
-
-function bindEvents () {
-  $('.mirrorsearchimg').unbind('click');
-
-  $('.mirrorsearchimg').click(function () {
-    chrome.runtime.sendMessage({
-      action: 'opentab',
-      url: $(this).data('urlmirror')
-    }, function (response) {});
-  });
-
-  $('.addsinglemg').unbind('click');
-  $('.addsinglemg').click(function () {
-    var img = $('img.mirrorsearchimg', $(this).closest('.eltmirrorsearch'));
-    var obj = {
-      action: 'readManga',
-      mirror: img.data('mirrorname'),
-      url: img.data('urlmirror'),
-      name: img.data('manganame')
-    };
-
-    sendExtRequestS(obj, $(this), function () {
-    }, true);
-  });
-}
-
-function formatMgName (name) {
-  if (typeof name === 'undefined' || name === null || name === 'null') {
-    return '';
-  }
-
-  return name.trim().replace(/[^0-9A-Za-z]/g, '').toUpperCase();
-}
 
 // Used to request background page action
 function sendExtRequestS (request, button, callback, backsrc) {
@@ -243,6 +32,210 @@ function sendExtRequestS (request, button, callback, backsrc) {
     button.removeData('currentlyClicked');
   // }, 1000);
   });
+}
+
+function formatMgName (name) {
+  if (!name || name === 'null') {
+    return '';
+  }
+
+  return name.trim().replace(/[^0-9A-Za-z]/g, '').toUpperCase();
+}
+
+function isMirrorEnabled (mirrorName) {
+  if (typeof states !== 'undefined') {
+    var i = -1;
+    var length = states.length;
+
+    while (++i < length) {
+      if (states[i].mirror === mirrorName) {
+        return states[i].state;
+      }
+    }
+  }
+
+  return true;
+}
+
+function bindEvents () {
+  $('.mirrorsearchimg').unbind('click');
+
+  $('.mirrorsearchimg').click(function () {
+    chrome.runtime.sendMessage({
+      action: 'opentab',
+      url: $(this).data('urlmirror')
+    }, function (response) {});
+  });
+
+  $('.addsinglemg').unbind('click');
+  $('.addsinglemg').click(function () {
+    var img = $('img.mirrorsearchimg', $(this).closest('.eltmirrorsearch'));
+    var obj = {
+      action: 'readManga',
+      mirror: img.data('mirrorname'),
+      url: img.data('urlmirror'),
+      name: img.data('manganame')
+    };
+
+    sendExtRequestS(obj, $(this), function () {
+    }, true);
+  });
+}
+
+function addResult (tdRes, obj, name) {
+  var found = false;
+
+  $('.mirrorsearchimg', tdRes).each(function () {
+    if ($(this).data('mirrorname') === obj.mirror) {
+      found = true;
+    }
+  });
+
+  if (!found) {
+    var urlCur = obj.url;
+    var img = $('<img class=\'mirrorsearchimg\' src=\'' + chrome.extension.getURL(getMangaMirror(obj.mirror).mirrorIcon) + '\' title=\'' + name + ' on ' + obj.mirror + '\' />');
+
+    img.data('urlmirror', urlCur);
+    img.data('mirrorname', obj.mirror);
+    img.data('manganame', name);
+
+    var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'' + chrome.extension.getURL('img/addlt.png') + '\' title=\'Add this manga in your list on ' + obj.mirror + '\'/></div>');
+
+    divelt.prepend(img);
+    divelt.appendTo(tdRes);
+
+    // events binding
+    bindEvents();
+
+    // Sort mangas pictures
+    $('.eltmirrorsearch', tdRes).sortElements(function (a, b) {
+      var at = $('.mirrorsearchimg', $(a)).data('mirrorname');
+      var bt = $('.mirrorsearchimg', $(b)).data('mirrorname');
+
+      return at > bt ? 1 : -1;
+    });
+  }
+}
+
+function loadSearch (td, toSearch) {
+  var formattedMangaName = formatMgName(toSearch);
+
+  td.data('nbToLoad', mirrors.length);
+  td.data('ancNbToLoad', mirrors.length);
+
+  var $find = $('.amrfind', td);
+
+  $find
+    .attr('src', chrome.extension.getURL('img/load16.gif'))
+    .unbind('click');
+
+  var tr;
+  var restd;
+  var returnImg = chrome.extension.getURL('img/return.png');
+
+  var $closestTr = td.closest('tr');
+
+  // Create result zone if needed
+  if ($closestTr.next().is('.searchResultstr')) {
+    tr = $closestTr.next();
+    restd = $('.resultssearch', tr);
+    restd.empty();
+  }
+  else {
+    tr = $('<tr class=\'searchResultstr\'><td><img class=\'return\' src=\'' + returnImg + '\'/></td><td class=\'resultssearch\' colspan=\'2\'></td></tr>');
+    restd = $('.resultssearch', tr);
+    $closestTr.after(tr);
+  }
+
+  // Fill it
+  for (var i = 0; i < mirrors.length; i++) {
+    if (isMirrorEnabled(mirrors[i].mirrorName)) {
+      if (mirrors[i].canListFullMangas) {
+        //  Search in manga list matching entries
+        var listManga = mirrors[i].listmgs;
+        if (listManga !== undefined) {
+          var listMangaCtx = JSON.parse(listManga);
+          if (listMangaCtx.length > 0) {
+            for (var j = 0; j < listMangaCtx.length; j++) {
+              if (formatMgName(listMangaCtx[j][0]) === formattedMangaName) {
+                var obj = {};
+                obj.url = listMangaCtx[j][1];
+                obj.name = listMangaCtx[j][0];
+                obj.mirror = mirrors[i].mirrorName;
+                addResult(restd, obj, toSearch);
+              }
+            }
+          }
+        }
+        td.data('nbToLoad', td.data('nbToLoad') - 1);
+      }
+      else {
+        //  Request mirror to search.
+        //  call background to search res
+        chrome.runtime.sendMessage({
+          action: 'searchManga',
+          mirrorName: mirrors[i].mirrorName,
+          search: toSearch
+        }, function (resp) {
+          for (var j = 0; j < resp.list.length; j++) {
+            if (formatMgName(resp.list[j][0]) === formattedMangaName) {
+              var obj = {};
+              obj.url = resp.list[j][1];
+              obj.name = resp.list[j][0];
+              obj.mirror = resp.mirrorName;
+              addResult(restd, obj, toSearch);
+            }
+          }
+          td.data('nbToLoad', td.data('nbToLoad') - 1);
+        });
+      }
+    }
+    else {
+      td.data('nbToLoad', td.data('nbToLoad') - 1);
+      td.data('ancNbToLoad', td.data('ancNbToLoad') - 1);
+    }
+  }
+  waitForEndLoad(td);
+}
+
+function clickSearch () {
+  var $this = $(this);
+  var $td = $this.closest('td');
+  loadSearch($td, $td.text());
+}
+
+function waitForEndLoad (td) {
+  var nbToLoad = td.data('nbToLoad');
+
+  if (nbToLoad !== td.data('ancNbToLoad')) {
+    td.data('ancNbToLoad', nbToLoad);
+  }
+
+  if (nbToLoad !== 0) {
+    setTimeout(waitForEndLoad.bind(null, td), 500);
+  }
+  else {
+    $('.amrfind', td)
+      .attr('src', chrome.extension.getURL('img/find.png'))
+      .click(clickSearch);
+  }
+}
+
+function update () {
+  var tmpcn = $('.manganameforamr').size();
+
+  if (tmpcn !== nbclasses) {
+    $('.amrfind').remove();
+    $('<img class=\'amrfind\' src=\'' + chrome.extension.getURL('img/find.png') + '\'></img>').appendTo($('.manganameforamr'));
+    $('.amrfind').css('float', 'right');
+    $('.amrfind').click(clickSearch);
+  }
+
+  nbclasses = tmpcn;
+
+  if (nbclasses < 200) {
+    setTimeout(update, 500);
+  }
 }
 
 /**
@@ -301,3 +294,23 @@ jQuery.fn.sortElements = (function () {
     });
   };
 })();
+
+$(function () {
+  // Load mirrors definitions
+  chrome.runtime.sendMessage({
+    action: 'actmirrors'
+  }, function (res) {
+    mirrors = res;
+
+    //  access localStorage via background
+    chrome.runtime.sendMessage({
+      action: 'searchMirrorsState'
+    }, function (locms) {
+      if (locms.res !== undefined) {
+        states = JSON.parse(locms.res);
+      }
+
+      update();
+    });
+  });
+});
