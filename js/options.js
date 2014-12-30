@@ -1,4 +1,4 @@
-﻿/*globals MgUtil*/
+﻿/*globals MgUtil, translate, amrcRoot*/
 /**
 
   This file is part of All Mangas Reader.
@@ -123,14 +123,13 @@ function switchOnglet (ong, tab) {
 }
 
 function loadSelectors () {
-  var selAll = $('<img src=\'' + chrome.extension.getURL('img/select_all.png') + '\' title=\'' + translate('options_act_all') + '\'/>'),
-    selNone = $('<img src=\'' + chrome.extension.getURL('img/select_none.png') + '\' title=\'' + translate('options_deact_all') + '\'/>'),
-    sel = MgUtil.getLanguageSelect(mirrors),
-    spansel = $('<span class=\'custom-select\'></span>');
+  var selAll = $('<img src=\'' + chrome.extension.getURL('img/select_all.png') + '\' title=\'' + translate('options_act_all') + '\'/>');
+  var selNone = $('<img src=\'' + chrome.extension.getURL('img/select_none.png') + '\' title=\'' + translate('options_deact_all') + '\'/>');
+  var sel = MgUtil.getLanguageSelect(mirrors);
+  var spansel = $('<span class=\'custom-select\'></span>');
 
   selAll.click(function () {
-
-    $('#allmirrors tr:visible input[type=\'checkbox\']').each(function (index) {
+    $('#allmirrors tr:visible input[type=\'checkbox\']').each(function () {
       if (!$(this).is(':checked')) {
         $(this).prop('checked', true);
         var mirrorName = $('.mirrorName', $(this).parent().parent()).attr('name');
@@ -145,7 +144,7 @@ function loadSelectors () {
   });
 
   selNone.click(function () {
-    $('#allmirrors tr:visible input[type=\'checkbox\']').each(function (index) {
+    $('#allmirrors tr:visible input[type=\'checkbox\']').each(function () {
       if ($(this).is(':checked')) {
         $(this).prop('checked', false);
         var mirrorName = $('.mirrorName', $(this).parent().parent()).attr('name');
@@ -161,29 +160,27 @@ function loadSelectors () {
   selNone.appendTo($('#selectors'));
 
   sel.change(function () {
+    var lang = $('option:selected', $(this)).val();
+    var langMirrors;
 
-    var lang = $('option:selected', $(this)).val(),
-      langMirrors;
     if (lang === 'all') {
       $('#allmirrors tr').show();
     }
     else {
       langMirrors = MgUtil.getMirrorsFromLocale(mirrors, lang);
 
-      $('#allmirrors tr .mirrorName').each(function (index) {
+      $('#allmirrors tr .mirrorName').each(function () {
+        var $this = $(this);
         var isFound = false;
+
         for (i = 0; i < langMirrors.length; ++i) {
-          if (langMirrors[i] === $(this).attr('name')) {
+          if (langMirrors[i] === $this.attr('name')) {
             isFound = true;
             break;
           }
         }
-        if (!isFound) {
-          $(this).closest('tr').hide();
-        }
-        else {
-          $(this).closest('tr').show();
-        }
+
+        $this.closest('tr')[isFound ? 'show' : 'hide']();
       });
     }
   });
