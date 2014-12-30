@@ -49,6 +49,14 @@
   padding-right: 10px;
 }
 
+#allmirrors tr {
+  background-color: #CCCCFF;
+}
+
+#allmirrors tr:nth-child(even) {
+  background-color: #DDDDFF;
+}
+
 #allmirrors thead td {
   text-align: center;
   font-weight: bold;
@@ -57,14 +65,6 @@
 
 #allmirrors thead tr {
   background-color: grey;
-}
-
-tr.odd {
-  background-color: #CCCCFF;
-}
-
-tr.even {
-  background-color: #DDDDFF;
 }
 
 tr.desactivate {

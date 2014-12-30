@@ -1,4 +1,4 @@
-﻿/*globals MgUtil, translate, amrcRoot*/
+﻿/*globals MgUtil, translate, amrcRoot, loadMenu*/
 /**
 
   This file is part of All Mangas Reader.
@@ -29,7 +29,7 @@ function openTab (urlToOpen) {
   chrome.runtime.sendMessage({
     action: 'opentab',
     url: urlToOpen
-  }, function () {});
+  }, $.noop);
 }
 
 // Saves options to localStorage. TODO: Save options using the sync call.
@@ -38,8 +38,8 @@ function saveOptions () {
   var obj = {};
   var colPicks = $('.colorPicker');
   obj.action = 'saveparameters';
-  obj.displayAds = (document.getElementById('adsCk').checked ? 0 : 1);
-  obj.displayChapters = (document.getElementById('chapsCk').checked ? 1 : 0);
+  obj.displayAds = document.getElementById('adsCk').checked ? 0 : 1;
+  obj.displayChapters = document.getElementById('chapsCk').checked ? 1 : 0;
 
   if (document.getElementById('modeChap1').checked) {
     obj.displayMode = 1;
@@ -53,16 +53,16 @@ function saveOptions () {
     }
   }
 
-  obj.popupMode = (document.getElementById('popupMode1').checked ? 1 : 2);
+  obj.popupMode = document.getElementById('popupMode1').checked ? 1 : 2;
   obj.omSite = 0;
-  obj.newTab = (document.getElementById('newTab').checked ? 1 : 0);
-  obj.sync = (document.getElementById('syncMg').checked ? 1 : 0);
-  obj.displayzero = (document.getElementById('displayZero').checked ? 1 : 0);
-  obj.pub = (document.getElementById('pubAMR').checked ? 1 : 0);
-  obj.dev = (document.getElementById('devAMR').checked ? 1 : 0);
-  obj.load = (document.getElementById('loadCk').checked ? 1 : 0);
-  obj.resize = (document.getElementById('resizeCk').checked ? 1 : 0);
-  obj.imgorder = (document.getElementById('imgorderCk').checked ? 1 : 0);
+  obj.newTab = document.getElementById('newTab').checked ? 1 : 0;
+  obj.sync = document.getElementById('syncMg').checked ? 1 : 0;
+  obj.displayzero = document.getElementById('displayZero').checked ? 1 : 0;
+  obj.pub = document.getElementById('pubAMR').checked ? 1 : 0;
+  obj.dev = document.getElementById('devAMR').checked ? 1 : 0;
+  obj.load = document.getElementById('loadCk').checked ? 1 : 0;
+  obj.resize = document.getElementById('resizeCk').checked ? 1 : 0;
+  obj.imgorder = document.getElementById('imgorderCk').checked ? 1 : 0;
 
   for (i = 0; i < colPicks.length; ++i) {
     if (colPicks[i].className.indexOf('active') !== -1) {
@@ -72,37 +72,37 @@ function saveOptions () {
   }
 
   // New options
-  obj.groupmgs = (document.getElementById('groupmgsCk').checked ? 1 : 0);
-  obj.openupdate = (document.getElementById('openupdateCk').checked ? 1 : 0);
+  obj.groupmgs = document.getElementById('groupmgsCk').checked ? 1 : 0;
+  obj.openupdate = document.getElementById('openupdateCk').checked ? 1 : 0;
   obj.updatechap = parseInt(document.getElementById('updatechap').value, 10);
   obj.updatemg = parseInt(document.getElementById('updatemg').value, 10);
-  obj.newbar = (document.getElementById('newbarCk').checked ? 1 : 0);
-  obj.addauto = (document.getElementById('addautoCk').checked ? 1 : 0);
+  obj.newbar = document.getElementById('newbarCk').checked ? 1 : 0;
+  obj.addauto = document.getElementById('addautoCk').checked ? 1 : 0;
 
-  obj.lrkeys = (document.getElementById('lrkeysCk').checked ? 1 : 0);
+  obj.lrkeys = document.getElementById('lrkeysCk').checked ? 1 : 0;
 
   obj.size = parseInt(document.getElementById('popupsize').value, 10);
 
-  obj.autobm = (document.getElementById('autobmCk').checked ? 1 : 0);
-  obj.prefetch = (document.getElementById('prefetchCk').checked ? 1 : 0);
+  obj.autobm = document.getElementById('autobmCk').checked ? 1 : 0;
+  obj.prefetch = document.getElementById('prefetchCk').checked ? 1 : 0;
 
-  obj.rightnext = (document.getElementById('rightnextCk').checked ? 1 : 0);
+  obj.rightnext = document.getElementById('rightnextCk').checked ? 1 : 0;
 
   // Notifications
-  obj.shownotifications = (document.getElementById('shownotificationsCk').checked ? 1 : 0);
+  obj.shownotifications = document.getElementById('shownotificationsCk').checked ? 1 : 0;
   obj.notificationtimer = parseInt(document.getElementById('notificationtimer').value, 10);
 
-  obj.refreshspin = (document.getElementById('refreshspinCk').checked ? 1 : 0);
-  obj.savebandwidth = (document.getElementById('savebandwidthCk').checked ? 1 : 0);
-  obj.checkmgstart = (document.getElementById('checkmgstartCk').checked ? 1 : 0);
+  obj.refreshspin = document.getElementById('refreshspinCk').checked ? 1 : 0;
+  obj.savebandwidth = document.getElementById('savebandwidthCk').checked ? 1 : 0;
+  obj.checkmgstart = document.getElementById('checkmgstartCk').checked ? 1 : 0;
 
-  obj.nocount = (document.getElementById('noCount').checked ? 1 : 0);
-  obj.displastup = (document.getElementById('displastup').checked ? 1 : 0);
-  obj.markwhendownload = (document.getElementById('markwhendownload').checked ? 1 : 0);
+  obj.nocount = document.getElementById('noCount').checked ? 1 : 0;
+  obj.displastup = document.getElementById('displastup').checked ? 1 : 0;
+  obj.markwhendownload = document.getElementById('markwhendownload').checked ? 1 : 0;
 
-  obj.sendstats = (document.getElementById('sendstats').checked ? 1 : 0);
+  obj.sendstats = document.getElementById('sendstats').checked ? 1 : 0;
 
-  obj.shownotifws = (document.getElementById('shownotifws').checked ? 1 : 0);
+  obj.shownotifws = document.getElementById('shownotifws').checked ? 1 : 0;
 
   if (isNaN(obj.notificationtimer)) {
     obj.notificationtimer = 0;
@@ -138,7 +138,7 @@ function loadSelectors () {
         chrome.runtime.sendMessage({
           action: 'activateMirror',
           mirror: mirrorName
-        }, function () {});
+        }, $.noop);
       }
     });
   });
@@ -151,7 +151,7 @@ function loadSelectors () {
         chrome.runtime.sendMessage({
           action: 'desactivateMirror',
           mirror: mirrorName
-        }, function () {});
+        }, $.noop);
       }
     });
   });
@@ -235,13 +235,8 @@ function sendExtRequest (request, button, callback, backsrc) {
     // }, 1000);
   });
 }
-// Don't create fuctions in loops
 
-function dummy (res) {
-  'use strict';
-}
 // Activate/Deactivate mirrors
-
 function restoreMirrors () {
   var bkg = chrome.extension.getBackgroundPage();
   mirrors = bkg.mirrors || [];
@@ -249,34 +244,47 @@ function restoreMirrors () {
   actmirrors = bkg.actMirrors || [];
 
   loadSelectors();
+
   mirrors.sort(function (a, b) {
     if (a.mirrorName < b.mirrorName) {
       return -1;
     }
+
     if (a.mirrorName === b.mirrorName) {
       return 0;
     }
+
     return 1;
   });
 
   $('#results').empty();
   $('<table id=\'allmirrors\'><thead><tr><td>' + translate('options_ws_name') + '</td><td>' + translate('options_ws_developer') + '</td><td>' + translate('options_ws_revision') + '</td><td>' + translate('options_ws_language') + '</td><td>' + translate('options_ws_activated') + '</td><td>' + translate('options_ws_discuss') + '</td></tr></thead><tbody></tbody></table>').appendTo($('#results'));
 
+  var trCur;
+  var tdHead;
+  var img;
+  var langstr;
+  var tdMgs;
+  var discuss;
+  var lang;
+  var nb;
+  var j;
+  var tdLang;
+  var release;
+  var isfound;
+  var ck;
+
   for (i = 0; i < mirrors.length; ++i) {
     if (mirrors[i].mirrorName !== undefined) {
-      var trCur = $('<tr></tr>'),
-        tdHead = $('<td class=\'mirrorName\' name=\'' + mirrors[i].mirrorName + '\'></td>'),
-        img = $('<img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\' />'),
-        langstr = '',
-        tdMgs = $('<td class=\'mirrorOpt\'></td>'),
-        discuss = $('<td class=\'discusstd\'><img class=\'discuss\' src=\'' + chrome.extension.getURL('img/comment.png') + '\' title=\'' + translate('options_ws_discuss_tit') + '\'/></td>'),
-        lang = mirrors[i].languages ? mirrors[i].languages.split(',') : undefined,
-        nb = 0,
-        j = 0,
-        tdLang,
-        release,
-        isfound,
-        ck;
+      trCur = $('<tr></tr>');
+      tdHead = $('<td class=\'mirrorName\' name=\'' + mirrors[i].mirrorName + '\'></td>');
+      img = $('<img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\' />');
+      langstr = '';
+      tdMgs = $('<td class=\'mirrorOpt\'></td>');
+      discuss = $('<td class=\'discusstd\'><img class=\'discuss\' src=\'' + chrome.extension.getURL('img/comment.png') + '\' title=\'' + translate('options_ws_discuss_tit') + '\'/></td>');
+      lang = mirrors[i].languages ? mirrors[i].languages.split(',') : undefined;
+      nb = 0;
+      j = 0;
 
       for (j = 0; j < mangas.length; ++j) {
         if (mangas[j].mirror === mirrors[i].mirrorName) {
@@ -325,7 +333,8 @@ function restoreMirrors () {
         chrome.runtime.sendMessage({
           action: 'desactivateMirror',
           mirror: mirrors[i].mirrorName
-        }, function () {});
+        }, $.noop);
+
         trCur.addClass('desactivateError');
       }
       else {
@@ -342,70 +351,63 @@ function restoreMirrors () {
         ck.prop('checked', isfound);
         ck.appendTo(tdMgs);
         ck.click(function () {
-          var mirrorName = $('.mirrorName', $(this).parent().parent()).attr('name');
-          if ($(this).is(':checked')) {
-            // activate the mirror
-            chrome.runtime.sendMessage({
-              action: 'activateMirror',
-              mirror: mirrorName
-            }, function () {});
-          }
-          else {
-            // desactivate the mirror
-            chrome.runtime.sendMessage({
-              action: 'desactivateMirror',
-              mirror: mirrorName
-            }, function () {});
-          }
+          var $this = $(this);
+          var mirrorName = $('.mirrorName', $this.parent().parent()).attr('name');
+
+          // activate the mirror if is checked
+          chrome.runtime.sendMessage({
+            action: $this.is(':checked') ? 'activateMirror' : 'desactivateMirror',
+            mirror: mirrorName
+          }, $.noop);
         });
       }
+
       trCur.appendTo($('#allmirrors tbody'));
     }
   }
 
   $('.discuss').click(function () {
     var amrcAlias = 'https://community.allmangasreader.com/';
-    if (amrcRoot.match(/ssl10\.ovh\.net/)) {
-      openTab(amrcAlias + 'comments.php?type=1&from=home&id=' + $(this).closest('td').data('idext'));
-    }
-    else {
-      openTab(amrcRoot + 'comments.php?type=1&from=home&id=' + $(this).closest('td').data('idext'));
-    }
+    var idext = $(this).closest('td').data('idext');
+
+    openTab(amrcRoot.match(/ssl10\.ovh\.net/) ? amrcAlias : amrcRoot + 'comments.php?type=1&from=home&id=' + idext);
   });
 
   $('.comebacktorelease').click(function () {
+    var $this = $(this);
     var req = {
       action: 'releaseimplementation',
-      id: $(this).closest('td').data('idext')
+      id: $this.closest('td').data('idext')
     };
-    sendExtRequest(req, $(this), function (response) {
+
+    sendExtRequest(req, $this, function () {
       window.location.href = 'options.html?tab=sites';
     }, true);
   });
 }
 
 // Restores select box state to saved value from localStorage.
-
 function restoreOptions () {
-  var response = chrome.extension.getBackgroundPage().getParameters(),
-    colPicks;
+  var response = chrome.extension.getBackgroundPage().getParameters();
+  var colPicks;
 
-  document.getElementById('adsCk').checked = (response.displayAds !== 1);
-  document.getElementById('chapsCk').checked = (response.displayChapters === 1);
-  document.getElementById('modeChap1').checked = (response.displayMode === 1);
-  document.getElementById('modeChap2').checked = (response.displayMode !== 1);
-  document.getElementById('wideMode1').checked = (response.displayMode === 2);
-  document.getElementById('wideMode2').checked = (response.displayMode === 3);
-  document.getElementById('popupMode1').checked = (response.popupMode === 1);
-  document.getElementById('popupMode2').checked = (response.popupMode === 2);
-  document.getElementById('newTab').checked = (response.newTab !== 0);
-  document.getElementById('syncMg').checked = (response.sync !== 0);
-  document.getElementById('displayZero').checked = (response.displayzero !== 0);
-  document.getElementById('pubAMR').checked = (response.pub !== 0);
-  document.getElementById('devAMR').checked = (response.dev !== 0);
-  document.getElementById('loadCk').checked = (response.load !== 0);
-  document.getElementById('resizeCk').checked = (response.resize !== 0);
-  document.getElementById('imgorderCk').checked = (response.imgorder !== 0);
+  document.getElementById('adsCk').checked = response.displayAds !== 1;
+  document.getElementById('chapsCk').checked = response.displayChapters === 1;
+  document.getElementById('modeChap1').checked = response.displayMode === 1;
+  document.getElementById('modeChap2').checked = response.displayMode !== 1;
+  document.getElementById('wideMode1').checked = response.displayMode === 2;
+  document.getElementById('wideMode2').checked = response.displayMode === 3;
+  document.getElementById('popupMode1').checked = response.popupMode === 1;
+  document.getElementById('popupMode2').checked = response.popupMode === 2;
+  document.getElementById('newTab').checked = response.newTab !== 0;
+  document.getElementById('syncMg').checked = response.sync !== 0;
+  document.getElementById('displayZero').checked = response.displayzero !== 0;
+  document.getElementById('pubAMR').checked = response.pub !== 0;
+  document.getElementById('devAMR').checked = response.dev !== 0;
+  document.getElementById('loadCk').checked = response.load !== 0;
+  document.getElementById('resizeCk').checked = response.resize !== 0;
+  document.getElementById('imgorderCk').checked = response.imgorder !== 0;
+
   // COLOR
   colPicks = $('.colorPicker');
   colPicks[response.color].className = 'colorPicker active';
@@ -464,18 +466,11 @@ function restoreOptions () {
     chrome.extension.getBackgroundPage().refreshMangaLists(true, true);
     $('#noteMg').show();
   });
-
-  $('#paypalus').click(function () {
-    openTab('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MPJ2DWQP67FHJ');
-  });
-
-  $('#paypaleuro').click(function () {
-    openTab('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PTFDEMDFNKQAG');
-  });
 }
 
 function init () {
   loadMenu('options');
+
   $('.article').show();
   $('.ongletCont:not(#ong1)').hide();
 
@@ -486,92 +481,54 @@ function init () {
   restoreOptions();
 }
 
-function switchColor (obj) {
-  var colPicks = $('.colorPicker'),
-    i;
-  for (i = 0; i < colPicks.length; ++i) {
-    colPicks[i].className = 'colorPicker';
-  }
-  obj.className += ' active';
+function switchColor (selectedColor) {
+  $('.colorPicker').removeClass('active');
+  $(selectedColor).addClass('active');
 }
 
 // Encapsulate events binding here so it waits for the DOM to be loaded...
 $(function () {
-  // window.addEventListener('load', init);
   init();
 
-  /* Examples
-  document.getElementById('myBtn').onclick=function(){displayDate()};
-
-  object.onchange=function(){SomeJavaScriptCode};
-  document.getElementsByTagName('input').onchange=function(){saveOptions()};
- */
   // Change the current tab show.
   $('#mangasWS').click(function () {
     switchOnglet($(this), 'ong1');
   });
+
   $('#AMR_options').click(function () {
     switchOnglet($(this), 'ong2');
   });
+
   $('#sync').click(function () {
     switchOnglet($(this), 'ong3');
   });
+
   $('#supportedWS').click(function () {
     switchOnglet($(this), 'ong4');
   });
 
   // Fix chapters options not showing/hiding when clicking
-  $('#chapsCk').on('click', function() {
+  $('#chapsCk').on('click', function () {
     if (this.checked) {
-        $('#chaptersOptions').show('table-row');
+      $('#chaptersOptions').show('table-row');
     }
     else {
-        $('#chaptersOptions').hide();
+      $('#chaptersOptions').hide();
     }
   });
 
-
   // Call saveOptions on every change made to input elements
-  // OLD WAY
-  /*var input = document.getElementsByTagName('input');
-  for (i = 0; i < input.length; ++i) {
-    input[i].addEventListener('change', saveOptions);
-  }*/
-  // DO IT the jQuery WAY
-  $('input').change(function () {
-    saveOptions();
-  });
+  $('input').change(saveOptions);
 
-  /*<td><div class='colorPicker' style='background-color:white' onclick='switchColor(this);saveOptions();\'></div></td>
-  <td><div class='colorPicker' style='background-color:black' onclick='switchColor(this);saveOptions();\'></div></td>
-  <td><div class='colorPicker' style='background-color:#DDDDDD' onclick='switchColor(this);saveOptions();\'></div></td>
-  <td><div class='colorPicker' style='background-color:#F0DDDD' onclick='switchColor(this);saveOptions();\'></div></td>
-  <td><div class='colorPicker' style='background-color:#EEEEFF' onclick='switchColor(this);saveOptions();\'></div></td>*/
+  // Switch selected color and save options on click
   $('.colorPicker').click(function () {
     switchColor(this);
     saveOptions();
   });
 
-  /* < select id = 'updatechap' onchange = 'saveOptions();' >
-  < select id = 'updatemg' onchange = 'saveOptions();' >
-  < select id = 'popupsize' onchange = 'saveOptions();' >
-  < select id = 'notificationtimer' onchange = 'saveOptions();' >*/
-  $('#updatechap').add($('#updatemg')).add($('#popupsize')).add($('#notificationtimer')).change(function () {
-    saveOptions();
-  });
-
-  // Bottom links
-  $('#forumlink').click(function () {
-    chrome.runtime.sendMessage({
-      action: 'opentab',
-      url: 'http://www.allmangasreader.com/forum/'
-    }, function () {});
-  });
-
-  $('#communitylink').click(function () {
-    chrome.runtime.sendMessage({
-      action: 'opentab',
-      url: 'http://community.allmangasreader.com/'
-    }, function () {});
-  });
+  $('#updatechap')
+    .add($('#updatemg'))
+    .add($('#popupsize'))
+    .add($('#notificationtimer'))
+    .change(saveOptions);
 });
