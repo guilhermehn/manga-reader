@@ -62,8 +62,6 @@
   }
 ];
 
-var dispIcons = false;
-
 function loadMenu (cur) {
   chrome.runtime.sendMessage({
     action: 'parameters'
