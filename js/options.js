@@ -1,4 +1,5 @@
-﻿/**
+﻿/*globals MgUtil*/
+/**
 
   This file is part of All Mangas Reader.
 
@@ -107,21 +108,17 @@ function saveOptions () {
     obj.notificationtimer = 0;
   }
 
-  chrome.runtime.sendMessage(obj, function (response) {
-    console.log(response);
-  });
+  chrome.runtime.sendMessage(obj);
 }
 
 function switchOnglet (ong, tab) {
   $('.tab').removeClass('checked');
   $(ong).addClass('checked');
-  $('.ongletCont').each(function (index) {
-    if ($(this).attr('id') === tab) {
-      $(this).show();
-    }
-    else {
-      $(this).hide();
-    }
+
+  $('.ongletCont').each(function () {
+    var $this = $(this);
+
+    $this[$this.attr('id') === tab ? 'show' : 'hide']();
   });
 }
 
