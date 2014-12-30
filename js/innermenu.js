@@ -73,13 +73,15 @@ function loadMenu (cur) {
 
     menusAMR.forEach(function (menu) {
       if (!menu.cond || menu.cond === 'lab' || response.dev !== 1) {
-        var li = $(menu.name === cur ? '<li class=\'selected\'></li>' : '<li><a href=\'' + menu.link + '\'></a></li>');
+        var li = $('<li></li>');
 
-        if (dispIcons) {
-          li.find('a').append('<img src=\'img/' + menu.icon + '\' title=\'' + menu.title + '\' />');
+        if (menu.name === cur) {
+          li
+            .addClass('selected')
+            .text(menu.title);
         }
         else {
-          li.append(menu.title);
+          li.append('<a href=\'' + menu.link + '\'>' + menu.title + '</a>');
         }
 
         $menu.append(li);
