@@ -108,8 +108,8 @@ function actionEnd () {
   openTab(opt.val());
 }
 
-function isInGroup (elt) {
-  var $manga = $(elt).closest('.manga');
+function isInGroup (el) {
+  var $manga = $(el).closest('.manga');
 
   if (isList()) {
     return ($('.mgline', $manga).size() >= 1);
@@ -118,8 +118,8 @@ function isInGroup (elt) {
   return ($('.mgelt', $manga).size() >= 1);
 }
 
-function groupHasNew (elt) {
-  var $manga = elt.closest('.manga');
+function groupHasNew (el) {
+  var $manga = $(el).closest('.manga');
 
   if (isList()) {
     return ($('.mgline.new', $manga).size() >= 1);
@@ -128,21 +128,23 @@ function groupHasNew (elt) {
   return ($('.mgelt.new', $manga).size() >= 1);
 }
 
-function findPlaceAfter (elt) {
-  var tit = formatMgName($('.mgname', elt.closest('.manga')).text().trim());
-  var eltNext = null;
+function findPlaceAfter (el) {
+  var tit = formatMgName($('.mgname', el.closest('.manga')).text().trim());
+  var elNext = null;
 
-  $('.manga:not(.new)').each(function (index) {
-    if (eltNext === null) {
-      var titTmp = $('.mgname', $(this)).text();
+  $('.manga:not(.new)').each(function () {
+    var $this = $(this);
+
+    if (elNext === null) {
+      var titTmp = $('.mgname', $this).text();
       titTmp = formatMgName(titTmp);
       if (titTmp > tit) {
-        eltNext = $(this);
+        elNext = $this;
       }
     }
   });
 
-  return eltNext;
+  return elNext;
 }
 
 function firstLastMg () {
@@ -162,6 +164,7 @@ function firstLastMg () {
 function moveMangaParent (elt) {
   var eltAfter = findPlaceAfter(elt);
   var toMove = elt.closest('.manga');
+
   if (eltAfter === null) {
     toMove.toggle('blind', {}, 250, function () {
       toMove.appendTo($('#main'));
@@ -178,23 +181,31 @@ function moveMangaParent (elt) {
   }
 }
 
-function isInFirstOfGroup (elt) {
-  if (isInGroup(elt)) {
+function isInFirstOfGroup (el) {
+  var $el = $(el);
+
+  if (isInGroup(el)) {
     if (isList()) {
-      return $(elt).closest('.mgline').is(':first-child');
+      return $el.closest('.mgline').is(':first-child');
     }
-    return $(elt).closest('.mgelt').is(':first-child');
+
+    return $el.closest('.mgelt').is(':first-child');
   }
+
   return true;
 }
 
-function getSecondElementOfGroup (elt) {
-  if (isInGroup(elt)) {
+function getSecondElementOfGroup (el) {
+  var $el = $(el);
+
+  if (isInGroup(el)) {
     if (isList()) {
-      return $($('.mgline', $(elt).closest('.manga'))[1]);
+      return $($('.mgline', $el.closest('.manga'))[1]);
     }
-    return $($('.mgelt', $(elt).closest('.manga'))[1]);
+
+    return $($('.mgelt', $el.closest('.manga'))[1]);
   }
+
   return null;
 }
 
@@ -506,7 +517,7 @@ function saveCategories () {
     }
     cats[cats.length] = cat;
   });
-  localStorage['categoriesStates'] = JSON.stringify(cats);
+  localStorage.setItem('categoriesStates', JSON.stringify(cats));
 }
 
 function bindCatsButtons () {
@@ -520,19 +531,19 @@ function bindCatsButtons () {
   });
   $('.actcatedit').unbind();
   $('.actcatedit').click(function (event) {
-    var _par = $(this).parent();
-    var cat = _par.text().trim();
-    _par.data('anccat', cat);
-    _par.empty();
-    _par.unbind();
+    var par = $(this).parent();
+    var cat = par.text().trim();
+    par.data('anccat', cat);
+    par.empty();
+    par.unbind();
     var inp = $('<input type=\'text\' value=\'' + cat + '\'/>');
-    inp.appendTo(_par);
+    inp.appendTo(par);
     inp.focus();
     inp.blur(function () {
-      var _par = $(this).parent();
-      _par.text(_par.data('anccat'));
+      var par = $(this).parent();
+      par.text(par.data('anccat'));
       var imgs = $('<img src=\'img/list10.gif\' class=\'actcatview\' title=\'View only mangas from this category\'/><img src=\'img/edit10.png\' class=\'actcatedit\' title=\'Edit this category\'/><img src=\'img/delete10.png\' class=\'actcatdelete\' title=\'Delete this category\'/>');
-      imgs.appendTo(_par);
+      imgs.appendTo(par);
       bindCatsButtons();
       $(this).remove();
       bindCategories();
@@ -544,14 +555,14 @@ function bindCatsButtons () {
           cat : $(this).parent().data('anccat'),
           newcat : $(this).val()
         };
-        var _par = $(this).parent();
+        var par = $(this).parent();
         var myself = this;
-        sendExtRequest(obj, _par, function () {
+        sendExtRequest(obj, par, function () {
           var newcat = $(myself).val();
-          var anccat = $(_par).data('anccat');
-          _par.text(newcat);
+          var anccat = $(par).data('anccat');
+          par.text(newcat);
           var imgs = $('<img src=\'img/list10.gif\' class=\'actcatview\' title=\'View only mangas from this category\'/><img src=\'img/edit10.png\' class=\'actcatedit\' title=\'Edit this category\'/><img src=\'img/delete10.png\' class=\'actcatdelete\' title=\'Delete this category\'/>');
-          imgs.appendTo(_par);
+          imgs.appendTo(par);
           $(myself).remove();
           $('.mgcategory').each(function (index) {
             if ($(this).text().trim() === anccat.trim()) {
@@ -589,8 +600,8 @@ function bindCatsButtons () {
       cat : catTxt
     };
     var _btn = $($(this).data('catbtn'));
-    var _par = $(_btn).parent();
-    sendExtRequest(obj, _par, function () {
+    var par = $(_btn).parent();
+    sendExtRequest(obj, par, function () {
       $('.mgcategory').each(function (index) {
         if ($(this).text().trim() === catTxt.trim()) {
           var _mg = $(this).closest('.manga');
@@ -600,7 +611,7 @@ function bindCatsButtons () {
           }
         }
       });
-      _par.remove();
+      par.remove();
       displayMangasByCat();
       saveCategories();
       $('.actdeleteglobcat').toggle('blind', {}, 250);
@@ -634,12 +645,12 @@ function bindCatsButtons () {
           };
         });
       }
-      var _par = $(this).parent();
-      sendExtRequest(obj, _par, function () {
-        var _cats = $('.mginfos .cats', $(_par).closest('.manga'));
-        $(_par).remove();
-        if ($('.mgcategory', _cats).size() === 0) {
-          _cats.text('No category for this manga');
+      var par = $(this).parent();
+      sendExtRequest(obj, par, function () {
+        var cats = $('.mginfos .cats', $(par).closest('.manga'));
+        $(par).remove();
+        if ($('.mgcategory', cats).size() === 0) {
+          cats.text('No category for this manga');
         }
         displayMangasByCat();
       });
@@ -650,13 +661,17 @@ function bindCatsButtons () {
         cat : catToDel,
         url : closestEltData($(this)).data('mgurl')
       };
-      var _par = $(this).parent();
-      sendExtRequest(obj, _par, function () {
-        var _cats = $('.mginfos .cats', $(_par).closest('.manga'));
-        $(_par).remove();
-        if ($('.mgcategory', _cats).size() === 0) {
-          _cats.text('No category for this manga');
+
+      var par = $(this).parent();
+
+      sendExtRequest(obj, par, function () {
+        var cats = $('.mginfos .cats', $(par).closest('.manga'));
+        $(par).remove();
+
+        if ($('.mgcategory', cats).size() === 0) {
+          cats.text('No category for this manga');
         }
+
         displayMangasByCat();
       });
     }
@@ -760,6 +775,36 @@ function addBookmarkInSel (bm, sel) {
   opt.appendTo(optgrp);
 }
 
+function diffTime (time) {
+  return ((new Date().getTime() - time) / 1000);
+}
+
+function getDaysDifference (diff) {
+  return Math.floor(diff / 86400);
+}
+
+function prettyDate (time) {
+  var diff = diffTime(time);
+  var dayDiff = getDaysDifference(diff);
+
+  if (isNaN(dayDiff) || dayDiff < 0) {
+    return;
+  }
+
+  return dayDiff === 0 && (diff < 60 && 'just now' || diff < 120 && '1 minute ago' || diff < 3600 && Math.floor(diff / 60) + ' minutes ago' || diff < 7200 && '1 hour ago' || diff < 86400 && Math.floor(diff / 3600) + ' hours ago') || dayDiff === 1 && 'Yesterday' || dayDiff < 7 && dayDiff + ' days ago' || dayDiff < 31 && Math.ceil(dayDiff / 7) + ' weeks ago' || Math.ceil(dayDiff / 30.43) + ' month ago';
+}
+
+function getPicTs (time) {
+  var diff = diffTime(time);
+  var dayDiff = getDaysDifference(diff);
+
+  if (isNaN(dayDiff) || dayDiff < 0) {
+    return;
+  }
+
+  return (diff < 86400 && 'img/day.png') || (dayDiff === 1 && 'img/day.png') || (dayDiff < 7 && 'img/week.png') || (dayDiff < 31 && 'img/month.png') || 'img/month.png';
+}
+
 function addLastUpdate (mg, where, wheretit) {
   var ts;
   if (mg.length) {
@@ -784,24 +829,6 @@ function addLastUpdate (mg, where, wheretit) {
   else {
     wheretit && wheretit.attr('title', 'Last time new chapter : never');
   }
-}
-
-function prettyDate (time) {
-  var diff = ((new Date().getTime() - time) / 1000);
-  var day_diff = Math.floor(diff / 86400);
-  if (isNaN(day_diff) || day_diff < 0) {
-    return;
-  }
-  return day_diff === 0 && (diff < 60 && 'just now' || diff < 120 && '1 minute ago' || diff < 3600 && Math.floor(diff / 60) + ' minutes ago' || diff < 7200 && '1 hour ago' || diff < 86400 && Math.floor(diff / 3600) + ' hours ago') || day_diff === 1 && 'Yesterday' || day_diff < 7 && day_diff + ' days ago' || day_diff < 31 && Math.ceil(day_diff / 7) + ' weeks ago' || Math.ceil(day_diff / 30.43) + ' month ago';
-}
-
-function getPicTs (time) {
-  var diff = ((new Date().getTime() - time) / 1000);
-  var day_diff = Math.floor(diff / 86400);
-  if (isNaN(day_diff) || day_diff < 0) {
-    return;
-  }
-  return (diff < 86400 && 'img/day.png') || (day_diff === 1 && 'img/day.png') || (day_diff < 7 && 'img/week.png') || (day_diff < 31 && 'img/month.png') || 'img/month.png';
 }
 
 function fillBookmarks (mg, where) {
