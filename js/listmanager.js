@@ -1,19 +1,19 @@
 ﻿/**
 
   This file is part of All Mangas Reader.
-  
+
   All Mangas Reader is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  
+
   All Mangas Reader is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
-  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>. 
+  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -36,20 +36,20 @@ $(function() {
   $("#mangalist").addClass("amralive");
   //Recover list from server;
   $("script").each(function(index) {
-    if ($(this).text().indexOf("var mglistaccount") != -1) {
+    if ($(this).text().indexOf("var mglistaccount") !== -1) {
       var pos = $(this).text().indexOf("var mglistaccount");
       var end = $(this).text().indexOf("];", pos);
       eval($(this).text().substring(pos, end+2));
       mglstacc = mglistaccount;
     }
-    if ($(this).text().indexOf("var mglistsync") != -1) {
+    if ($(this).text().indexOf("var mglistsync") !== -1) {
       var pos = $(this).text().indexOf("var mglistsync");
       var end = $(this).text().indexOf(";", pos);
       eval($(this).text().substring(pos, end+1));
       tsacc = mglistsync;
     }
   });
-  
+
   $.getScript(
     "js/mirroricons.js",
     function(resp) {
@@ -57,12 +57,12 @@ $(function() {
       icons = mirroricons;
     }
   );
-  
+
   $(".updateamrlist .button").click(clickOnUpdate);
-  
+
   $(".forceuploadamr").click(function() {onButtonClickAsync($(this), replaceServerList);});
   $(".forcedownloadamr").click(function() {onButtonClickAsync($(this), replaceLocalList);});
-  
+
 });
 
 function clickOnUpdate() {
@@ -71,18 +71,18 @@ function clickOnUpdate() {
   var _self = this;
   chrome.runtime.sendMessage({action: "mangaList"}, function(res) {
     var updtServ = updateServer(tsacc, res.ts, res.haschange);
-    
+
     var lstmerge;
     mglstext = res.lst;
-    
+
     $(_self).addClass("disabled");
     $(_self).unbind("click");
-    
+
     $("#mangalist").empty();
-    
+
     if (updtServ == 0 || updtServ == 2) {
       $("#mangalist").after($("<div class=\"rightbut validationamr\"><a class=\"button validateamr tip\">Validate<span>Click here to send the selected updates online.</span></a>&nbsp;&nbsp;<a class=\"button cancelamr tip\" onclick=\"loadList();\">Cancel<span>Back to your online list</span></a></div>"));
-      
+
       $(".globalamractions").hide();
       $(".validateamr").click(function() {onButtonClickAsync($(this), validateUpdateServer);});
       $(".cancelamr").click(function() {
@@ -95,11 +95,11 @@ function clickOnUpdate() {
       lstmerge = mergeLists(mglstacc, mglstext);
       //Sort entries for rendering
       lstmerge = sortList(lstmerge);
-      
+
       displayList(lstmerge, true);
     } else if (updtServ == 1) {
       $("#mangalist").after($("<div class=\"rightbut validationamr\"><a class=\"button validateamr tip\">Validate<span>Click here to update you local list with these changes.</span></a>&nbsp;&nbsp;<a class=\"button cancelamr tip\" onclick=\"loadList();\">Cancel<span>Back to your online list</span></a></div>"));
-      
+
       $(".globalamractions").hide();
       $(".validateamr").click(function() {onButtonClickAsync($(this), validateUpdateExt);});
       $(".cancelamr").click(function() {
@@ -108,11 +108,11 @@ function clickOnUpdate() {
         $(".updateamrlist .button").removeClass("disabled");
         $(".updateamrlist .button").click(clickOnUpdate);
       });
-      
+
       lstmerge = mergeLists(mglstext, mglstacc);
       //Sort entries for rendering
       lstmerge = sortList(lstmerge);
-  
+
       displayList(lstmerge, false);
     } else {
       $("<h3>Synchronization conflict : You have changes in your local list but server version is more recent. You must choose to download (erase your local changes) or upload (erase distant changes) your list.</h3>").appendTo($("#mangalist"));
@@ -123,21 +123,21 @@ function clickOnUpdate() {
         $(".updateamrlist .button").removeClass("disabled");
         $(".updateamrlist .button").click(clickOnUpdate);
       });
-      
-      
+
+
       //MANAGE CONFLICTS !! --> Not used now because quite difficult... Future...
       /*var lstmergeOutgoing = mergeLists(mglstacc, mglstext);
       var lstmergeIncoming = mergeLists(mglstext, mglstacc);
-      
+
       var lstConflicts = getAndRemoveConflictualEntries(lstmergeOutgoing, lstmergeIncoming);
-      
+
       if (lstConflicts.length > 0) {
         $("<h3>Synchronization conflict : You have changes in your local list but server version is more recent.</h3>").appendTo($("#mangalist"));
       } else {
         $("<h3>You have changes in your local list but server version is more recent, fortunaltely, no conflicts seems to exist. You can see below the incoming and outgoing entries. Click on validate to do these changes, else, click cancel and choose Download or Upload to solve the conflicts.</h3>").appendTo($("#mangalist"));
       }
       var tb = $("<table class=\"formfilllt\"></table>");
-      
+
       var trout = $("<tr><td class=\"rotatetd\"><div class=\"rotate\">Outgoing</div></td><td class=\"list\"></td>");
       //Sort entries for rendering
       lstmergeOutgoing = sortList(lstmergeOutgoing);
@@ -145,13 +145,13 @@ function clickOnUpdate() {
       var trin = $("<tr><td class=\"rotatetd\"><div class=\"rotate\">Incoming</div></td><td class=\"list\"></td>");
       lstmergeIncoming = sortList(lstmergeIncoming);
       displayList(lstmergeIncoming, false, $(".list", trin), true);
-      
+
       trout.appendTo(tb);
       trin.appendTo(tb);
       tb.appendTo($("#mangalist"));
-      
+
       $("#mangalist").after($("<div class=\"rightbut validationamr\"><a class=\"button validateamr tip\">Validate<span>Click here to do the changes.</span></a>&nbsp;&nbsp;<a class=\"button cancelamr tip\" onclick=\"loadList();\">Cancel<span>Back to your online list</span></a></div>"));
-      
+
       $(".globalamractions").hide();
       $(".validateamr").click(function() {onButtonClickAsync($(this), validateUpdateExt);}); //TODO CHANGE !!
       $(".cancelamr").click(function() {
@@ -178,10 +178,10 @@ function getAndRemoveConflictualEntries(outgoing, incoming) {
   var removeIncome = [];
   var removeOutgoing = [];
   var conflicts = [];
-  
+
   for (var i = 0; i < outgoing.length; i++) {
     var foundEx = findSameMgId(outgoing[i], incoming);
-    if (foundEx != -1) {
+    if (foundEx !== -1) {
       if (outgoing[i].change && incoming[foundEx].change) {
         removeOutgoing[removeOutgoing.length] = i;
         removeIncome[removeIncome.length] = foundEx;
@@ -196,17 +196,17 @@ function getAndRemoveConflictualEntries(outgoing, incoming) {
     removeIncome.sort(sortIntDesc);
     console.log(removeIncome);
     for (var i = removeIncome.length - 1; i >= 0; i--) {
-      incoming.remove(removeIncome[i], removeIncome[i]);  
+      incoming.remove(removeIncome[i], removeIncome[i]);
     }
   }
-  
+
   if (removeOutgoing.length > 0) {
     removeOutgoing.sort(sortIntDesc);
     for (var i = removeOutgoing.length - 1; i >= 0; i--) {
-      outgoing.remove(removeOutgoing[i], removeOutgoing[i]);  
+      outgoing.remove(removeOutgoing[i], removeOutgoing[i]);
     }
   }
-  
+
   return conflicts;
 }
 
@@ -251,20 +251,20 @@ function setChapNoTot(lst) {
 }
 function mergeLists(server, exten) {
   var lstres = [];
-  
+
   setChapNoTot(server);
   setChapNoTot(exten);
-  
+
   //First : look for changes in server list
   if (server.length > 0) {
     for (var i = 0; i < server.length; i++) {
       var foundEx = findSameMg(server[i], exten);
-      if (foundEx != null) {
+      if (foundEx !== null) {
         var toAdd = server[i];
         //Compare server and exten
         var lstChanges = [];
         //Compare chapters
-        if (foundEx.lastChapterReadURL != server[i].lastChapterReadURL) {
+        if (foundEx.lastChapterReadURL !== server[i].lastChapterReadURL) {
           lstChanges[lstChanges.length] = "chapter";
           toAdd.oldlastChapterReadURL = server[i].lastChapterReadURL;
           toAdd.oldlastChapterReadName = server[i].lastChapterReadName;
@@ -278,7 +278,7 @@ function mergeLists(server, exten) {
           toAdd.lastupdate = foundEx.lastUpdate;
         } else {
           //Check if there is new unread chapter (total chap number changed)
-          if (foundEx.nbchaps > 0 && (foundEx.nbchaps != server[i].nbchaps || foundEx.chapno != server[i].chapno)) {
+          if (foundEx.nbchaps > 0 && (foundEx.nbchaps !== server[i].nbchaps || foundEx.chapno !== server[i].chapno)) {
             lstChanges[lstChanges.length] = "newunread";
             toAdd.oldchapno = server[i].chapno;
             toAdd.oldnbchaps = server[i].nbchaps;
@@ -287,13 +287,13 @@ function mergeLists(server, exten) {
           }
         }
         //Compare read
-        if (foundEx.read != server[i].read) {
+        if (foundEx.read !== server[i].read) {
           lstChanges[lstChanges.length] = "read";
           toAdd.oldread = server[i].read;
           toAdd.read = foundEx.read;
         }
         //Compare display
-        if (foundEx.display != server[i].display) {
+        if (foundEx.display !== server[i].display) {
           lstChanges[lstChanges.length] = "display";
           toAdd.olddisplay = server[i].display;
           toAdd.display = foundEx.display;
@@ -353,7 +353,7 @@ function mergeLists(server, exten) {
           toAdd.oldcats = server[i].cats;
           toAdd.cats = foundEx.cats;
         }
-        
+
         //Add it to result
         if (lstChanges.length > 0) {
           toAdd.change = "update";
@@ -380,7 +380,7 @@ function mergeLists(server, exten) {
         newentry.url = exten[i].url;
         newentry.name = exten[i].name;
         newentry.lastChapterReadURL = exten[i].lastChapterReadURL;
-        if (exten[i].lastChapterReadName != undefined) {
+        if (exten[i].lastChapterReadName !== undefined) {
           newentry.lastChapterReadName = exten[i].lastChapterReadName;
         } else {
           newentry.lastChapterReadName = findRealName(exten[i]);
@@ -391,7 +391,7 @@ function mergeLists(server, exten) {
         newentry.display = exten[i].display;
         newentry.cats = exten[i].cats;
         newentry.lastupdate = exten[i].lastupdate;
-        
+
         newentry.change = "new";
         lstres[lstres.length] = newentry;
       }
@@ -403,7 +403,7 @@ function mergeLists(server, exten) {
 function sortList(mangas) {
   //Sort by name
   sortByShortName(mangas);
-  
+
   //Build groups
   var mangasGrps = [];
   var ancShName;
@@ -426,7 +426,7 @@ function sortList(mangas) {
     mgTemp[mgTemp.length] = mangas[i];
     ancShName = mangas[i].shortName;
   }
-  
+
   //Treat last group
   if (mgTemp.length == 1) {
     mangasGrps[mangasGrps.length] = mgTemp[0];
@@ -439,10 +439,10 @@ function sortList(mangas) {
       mangasGrps[pos][index] = val;
     });
   }
-  
+
   //Sort group by new
   sortByNewShortName(mangasGrps);
-  
+
   return mangasGrps;
 }
 
@@ -457,16 +457,16 @@ function sortByNewShortName(lst) {
     var a, b;
     if (aG.length) {a = aG[0];} else {a = aG;}
     if (bG.length) {b = bG[0];} else {b = bG;}
-    
+
     var isNewA = isNew(a);
     var isNewB = isNew(b);
-    
+
     if (isNewA && !isNewB) return -1;
     if (!isNewA && isNewB) return 1;
-    
+
     if (!a.shortName) a.shortName = formatMgName(a.name);
     if (!b.shortName) b.shortName = formatMgName(b.name);
-    
+
     if (a.shortName == b.shortName) {
       if (a.mirror == b.mirror) return 0;
       else if (a.mirror > b.mirror) return 1;
@@ -499,17 +499,17 @@ function sortByNewMirror(lst) {
   lst.sort(function(a, b) {
     var isNewA = isNew(a);
     var isNewB = isNew(b);
-    
+
     if (isNewA && !isNewB) return -1;
     if (!isNewA && isNewB) return 1;
-    
+
     return (a.mirror < b.mirror) ? -1 : ((a.mirror == b.mirror) ? 0 : 1);
   });
 }
 
 function findChapNo(extobj) {
   var pos = 0;
-  if (extobj.listChaps != undefined) {
+  if (extobj.listChaps !== undefined) {
     for (var i = 0; i < extobj.listChaps.length; i++) {
       if (extobj.listChaps[i][1] == extobj.lastChapterReadURL) {
         pos = extobj.listChaps.length - i;
@@ -521,7 +521,7 @@ function findChapNo(extobj) {
 }
 function findRealName(extobj) {
   var res = "";
-  if (extobj.listChaps != undefined) {
+  if (extobj.listChaps !== undefined) {
     for (var i = 0; i < extobj.listChaps.length; i++) {
       if (extobj.listChaps[i][1] == extobj.lastChapterReadURL) {
         res = extobj.listChaps[i][0];
@@ -532,7 +532,7 @@ function findRealName(extobj) {
   return res;
 }
 function findTotalChap(extobj) {
-  if (extobj.listChaps != undefined) {
+  if (extobj.listChaps !== undefined) {
     return extobj.listChaps.length;
   }
   return 0;
@@ -540,18 +540,18 @@ function findTotalChap(extobj) {
 
 function findSameMg(mg, lst) {
   for (var i = 0; i < lst.length; i++) {
-    if (mg.mirror == lst[i].mirror && 
+    if (mg.mirror == lst[i].mirror &&
       mg.url == lst[i].url) {
-      return lst[i];  
+      return lst[i];
     }
   }
   return null;
 }
 function findSameMgId(mg, lst) {
   for (var i = 0; i < lst.length; i++) {
-    if (mg.mirror == lst[i].mirror && 
+    if (mg.mirror == lst[i].mirror &&
       mg.url == lst[i].url) {
-      return i;  
+      return i;
     }
   }
   return -1;
@@ -559,13 +559,13 @@ function findSameMgId(mg, lst) {
 
 //Returns true if manga has new chapter
 function isNew(mg) {
-  return (mg.chapno != mg.nbchaps) && (mg.read == 0);
+  return (mg.chapno !== mg.nbchaps) && (mg.read == 0);
 }
 
-//Each entry contains : 
+//Each entry contains :
 // - mirror : mirror
 // - url : manga url
-// - name : manga name 
+// - name : manga name
 // - lastChapterReadURL : chapter url
 // - lastChapterReadName : chapter name
 // - chapno : position of chapter in chapters list
@@ -582,7 +582,7 @@ function isNew(mg) {
 // - oldcats : optional categories list if changed
 // - oldchapno : old position of chapter in chapters list
 // - oldnbchaps : old total number of chapters
-// - selected : default true : can be unselected by user 
+// - selected : default true : can be unselected by user
 function displayList(lst, updtSrv, where, noinfo) {
   if (where == undefined) {
     where = $("#mangalist");
@@ -590,11 +590,11 @@ function displayList(lst, updtSrv, where, noinfo) {
   if (noinfo == undefined) {
     noinfo = false;
   }
-  if (lst != null && lst.length == 0) {
+  if (lst !== null && lst.length == 0) {
     $("<h3>Your manga list is empty</h3>").appendTo(where);
   } else {
     var hasChanges = false;
-    if (lst != null) {
+    if (lst !== null) {
       for (var i = 0; i < lst.length; i++) {
         if (lst[i].length) {
           for (var j = 0; j < lst[i].length; j++) {
@@ -638,7 +638,7 @@ function displayList(lst, updtSrv, where, noinfo) {
       }
       $("tfoot .resume .title", tb).text(nbmgdiff + " manga read at " + nbmg + " places.");
       createProgression(nbchaps, totchap, $("tfoot", tb), true);
-      
+
       bindActions();
     } else {
       if (!noinfo) {
@@ -669,7 +669,7 @@ function bindActions() {
   $(".mgLst tbody tr .checker input").click(function(e) {
     if ($(this).closest("tr").is(".head")) {
       var n = $(this).closest("tr").next();
-      while (n.size() != 0 && !n.is(".head") && !n.is(".single")) {
+      while (n.size() !== 0 && !n.is(".head") && !n.is(".single")) {
         if ($(".checker input", n).size() > 0) {
           $(".checker input", n)[0].checked = this.checked;
         }
@@ -684,8 +684,8 @@ function bindActions() {
       var nbchecked = 0;
       var nbunchecked = 0;
       //console.log(n);
-      
-      while (n.size() != 0 && !n.is(".head") && !n.is(".single")) {
+
+      while (n.size() !== 0 && !n.is(".head") && !n.is(".single")) {
         if ($(".checker input", n).size() > 0) {
           if ($(".checker input", n).is(":checked")) {
             nbchecked++;
@@ -730,7 +730,7 @@ function checkMain(ck) {
       nbunchecked++;
     }
   });
-  
+
   var parCheck = $(".mgLst thead .checker input");
   if (nbchecked == 0) {
     parCheck.prop("checked", false);
@@ -776,7 +776,7 @@ function addMultipleMangas(mgs, where) {
     }
     nb += parseInt(mgs[i].chapno, 10);
     tot += parseInt(mgs[i].nbchaps, 10);
-    
+
     if (mgs[i].change) {
       //Add change line
       var trUp = $("<tr class=\"mangaentry body modif" + (mgs[i].read == 1 ? " read" : (isNew(mgs[i]) ? " new": "")) + "\"><td class=\"empty\"></td><td colspan=\"4\"></td></tr>");
@@ -787,9 +787,9 @@ function addMultipleMangas(mgs, where) {
   if (hasChanges) {
     createProgression(nb, tot, trHead, true);
   }
-  
+
   return {nbmg: mgs.length, nbchap: nb, chaptot: tot};
-  
+
 }
 
 function addSingleManga(mg, where) {
@@ -815,7 +815,7 @@ function addSingleManga(mg, where) {
 
 function createProgression(nb, nbTot, where, hideText) {
   var value = 0;
-  if (nb != nbTot) {
+  if (nb !== nbTot) {
     if (nbTot < 2) {
       value = 100;
     } else {
@@ -827,7 +827,7 @@ function createProgression(nb, nbTot, where, hideText) {
   var prog = $("<div class=\"progress\"></div>");
   prog.appendTo(where);
   $(prog).progressbar({ "value": value });
-  
+
   if (!hideText) {
     var text = $("<div class=\"progressnum\">&nbsp;" + value + "% (" + nb + " / " + nbTot + ")</div>");
     text.appendTo(where);
@@ -889,7 +889,7 @@ function validateUpdateServer(callback) {
       toSend[toSend.length] = $(this).data("mangainfo");
     }
   });
-  
+
   $.ajax({
     url: "/updateList.php",
     type: 'POST',
@@ -897,7 +897,7 @@ function validateUpdateServer(callback) {
       listupdates: toSend,
       curTs: Math.round((new Date()).getTime() / 1000)
     },
-    
+
     success: function(res) {
       var obj = JSON.parse(res);
       if (obj.errors && !obj.ts) {
@@ -908,7 +908,7 @@ function validateUpdateServer(callback) {
         });
       }
     },
-    
+
     error: function() {
       //TODO
     }
@@ -925,7 +925,7 @@ function validateUpdateExt(callback) {
       toSend[toSend.length] = tsT;
     }
   });
-  
+
   //console.log(toSend);
   chrome.runtime.sendMessage({action: "updateFromSite", ts: tsacc, lst: toSend}, function() {
     window.location.href = "/accountlist.php?ext=1";
@@ -945,7 +945,7 @@ function replaceServerList(callback) {
         newentry.url = exten[i].url;
         newentry.name = exten[i].name;
         newentry.lastChapterReadURL = exten[i].lastChapterReadURL;
-        if (exten[i].lastChapterReadName != undefined) {
+        if (exten[i].lastChapterReadName !== undefined) {
           newentry.lastChapterReadName = exten[i].lastChapterReadName;
         } else {
           newentry.lastChapterReadName = findRealName(exten[i]);
@@ -956,11 +956,11 @@ function replaceServerList(callback) {
         newentry.display = exten[i].display;
         newentry.cats = exten[i].cats;
         newentry.lastupdate = exten[i].ts;
-        
+
         newentry.change = "new";
         toSend[toSend.length] = newentry;
       }
-      
+
       $.ajax({
         url: "/updateList.php",
         type: 'POST',
@@ -969,7 +969,7 @@ function replaceServerList(callback) {
           listupdates: toSend,
           curTs: Math.round((new Date()).getTime() / 1000)
         },
-        
+
         success: function(res) {
           var obj = JSON.parse(res);
           if (obj.errors && !obj.ts) {
@@ -981,7 +981,7 @@ function replaceServerList(callback) {
             });
           }
         },
-        
+
         error: function() {
           //TODO
         }
@@ -996,7 +996,7 @@ function replaceServerList(callback) {
 function replaceLocalList(callback) {
   if (confirm("Are you sure to replace your local manga list with the online one ?")) {
     var toSend = [];
-    
+
     for (var i = 0; i < mglstacc.length; i++) {
       var complete = mglstacc[i];
       var nen = {};
@@ -1009,11 +1009,11 @@ function replaceLocalList(callback) {
       nen.display = complete.display;
       nen.cats = complete.cats;
       nen.ts = complete.lastupdate;
-      
+
       nen.change = "new";
       toSend[toSend.length] = nen;
     }
-    
+
     chrome.runtime.sendMessage({action: "replaceFromSite", ts: tsacc, lst: toSend}, function() {
       window.location.href = "/accountlist.php?act=down";
     });
@@ -1026,7 +1026,7 @@ function onButtonClickAsync(button, call) {
   //Prevent a second request
   if (button.data("currentlyClicked")) return;
   button.data("currentlyClicked", true);
-  
+
   //Display a loading image
   var _ancSrc;
   if (button.is(".button")) {
@@ -1034,7 +1034,7 @@ function onButtonClickAsync(button, call) {
     _ancSrc = $("<img src='" + chrome.extension.getURL("img/ltload.gif") + "'></img>")
     _ancSrc.appendTo(button);
   }
-  
+
   //Call the action with callback
   call(function() {
     if (button.is(".button")) {

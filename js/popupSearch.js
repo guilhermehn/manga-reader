@@ -1,4 +1,5 @@
-﻿var tempMirrorListAll;
+﻿/*globals getMangaMirror, getElementsByClass, MgUtil, mirrors, wssql*/
+var tempMirrorListAll;
 var nbToLoad;
 var ancNbToLoad;
 var curSearch;
@@ -47,11 +48,18 @@ function switchOnglet (ong, tab) {
 }
 
 function isMirrorEnable (mirrorName) {
-  if (localStorage.getItem('searchMirrorsState')) {
-    var obj = JSON.parse(localStorage.getItem('searchMirrorsState'));
-    for (var i = 0; i < obj.length; i++) {
-      if (obj[i].mirror === mirrorName) {
-        return obj[i].state;
+  var searchMirrorsStateJson = localStorage.getItem('searchMirrorsState');
+  var mirrors;
+  var i = -1;
+  var length;
+
+  if (searchMirrorsStateJson) {
+    mirrors = JSON.parse(searchMirrorsStateJson);
+    length = mirrors.length;
+
+    while (++i < length) {
+      if (mirrors[i].mirror === mirrorName) {
+        return mirrors[i].state;
       }
     }
   }
@@ -60,21 +68,27 @@ function isMirrorEnable (mirrorName) {
 }
 
 function setMirrorState (mirrorName, state) {
-  if (localStorage.getItem('searchMirrorsState')) {
-    var obj = JSON.parse(localStorage.getItem('searchMirrorsState'));
-    var isFound = false;
+  var searchMirrorsStateJson = localStorage.getItem('searchMirrorsState');
 
-    for (var i = 0; i < obj.length; i++) {
+  if (searchMirrorsStateJson) {
+    var obj = JSON.parse(searchMirrorsStateJson);
+    var isFound = false;
+    var i = -1;
+    var length = obj.length;
+
+    while (++i < length) {
       if (obj[i].mirror === mirrorName) {
         obj[i] = {
           mirror : mirrorName,
           state : state
         };
+
         localStorage.setItem('searchMirrorsState', JSON.stringify(obj));
         isFound = true;
         break;
       }
     }
+
     if (!isFound) {
       obj[obj.length] = {
         mirror : mirrorName,
@@ -85,7 +99,8 @@ function setMirrorState (mirrorName, state) {
     }
   }
   else {
-    var searchMirrorJson = JSON.stringify([{
+    var searchMirrorJson = JSON.stringify([
+      {
         mirror : mirrorName,
         state : state
       }
@@ -107,6 +122,141 @@ function toggleMirrorsSelection (selected) {
 
 function saveSelectedLanguage () {
   localStorage.setItem('searchLanguage', $('#selectors select option:selected').val());
+}
+
+function formatMgName (name) {
+  if (!name) {
+    return '';
+  }
+
+  return name.trim().replace(/[^0-9A-Za-z]/g, '').toUpperCase();
+}
+
+function bindSearchGlobActs () {
+  $('.mirrorsearchimg').click(function () {
+    chrome.runtime.sendMessage({
+      action : 'opentab',
+      url : $(this).data('urlmirror')
+    }, function (response) {});
+  });
+
+  $('.externsearch').click(function () {
+    $('.mirrorsearchimg', $(this).closest('td').next()).each(function () {
+      chrome.runtime.sendMessage({
+        action : 'opentab',
+        url : $(this).data('urlmirror')
+      }, function (response) {});
+    });
+  });
+
+  $('.addsinglemg').click(function () {
+    var img = $('img.mirrorsearchimg', $(this).closest('.eltmirrorsearch'));
+    var obj = {
+      action : 'readManga',
+      mirror : img.data('mirrorname'),
+      url : img.data('urlmirror'),
+      name : img.data('manganame')
+    };
+
+    sendExtRequestS(obj, $(this), function () {}, true);
+  });
+
+  $('.addsearch').click(function () {
+    var obj = {
+      action : 'readMangas',
+      list : []
+    };
+
+    $('.mirrorsearchimg', $(this).closest('td').next()).each(function () {
+      obj.list[obj.list.length] = {
+        mirror : $(this).data('mirrorname'),
+        url : $(this).data('urlmirror'),
+        name : $(this).data('manganame')
+      };
+    });
+
+    sendExtRequestS(obj, $(this), function () {}, true);
+  });
+}
+
+function fillCurrentLstSingleMg (lstCur, nbForPij) {
+  var nameCur = lstCur[lstCur.length - 1].name;
+  var trCur = $('<tr></tr>');
+
+  if (nbForPij === 0) {
+    trCur.addClass('firstLine');
+  }
+
+  var tdHead = $('<td class=\'mangaName\'></td>');
+
+  $('<span>' + nameCur + '</span><div class=\'optmgsearch\'><img class=\'externsearch\' src=\'img/external.png\' title=\'Open all occurences of this manga on their respective websites\'/><img class=\'addsearch\' src=\'img/add.png\' title=\'Add all occurences of this manga in your manga list\'/></div>').appendTo(tdHead);
+
+  tdHead.appendTo(trCur);
+  trCur.appendTo($('#allres'));
+
+  var tdMgs = $('<td class=\'listMirror\'></td>');
+
+  tdMgs.appendTo(trCur);
+
+  for (var i = 0; i < lstCur.length; i++) {
+    if (getMangaMirror(lstCur[i].mirror) !== null) {
+      var urlCur = lstCur[i].url;
+      var img = $('<img class=\'mirrorsearchimg\' src=\'' + getMangaMirror(lstCur[i].mirror).mirrorIcon + '\' title=\'' + nameCur + ' on ' + lstCur[i].mirror + '\' />');
+      img.data('urlmirror', urlCur);
+      img.data('mirrorname', lstCur[i].mirror);
+      img.data('manganame', nameCur);
+      var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'img/addlt.png\' title=\'Add this manga in your list on ' + lstCur[i].mirror + '\'/></div>');
+      divelt.prepend(img);
+      divelt.appendTo(tdMgs);
+    }
+  }
+}
+
+function fillListOfSearchAll (lst) {
+  $('#resTr').css('display', 'table-row');
+  $('#results').empty();
+
+  if (lst.length > 0) {
+    $('#nores').css('display', 'none');
+    $('#results').css('display', 'block');
+    $('<table id=\'allres\'></table>').appendTo($('#results'));
+
+    var ancName = '';
+    var lstCur = [];
+    var nbForPij = 0;
+
+    for (var j = 0; j < lst.length; j++) {
+      if (ancName !== '' && lstCur.length > 0 && formatMgName(lst[j].name) !== ancName) {
+        fillCurrentLstSingleMg(lstCur, nbForPij);
+        nbForPij++;
+        lstCur = [];
+      }
+
+      lstCur[lstCur.length] = lst[j];
+      ancName = formatMgName(lst[j].name);
+    }
+
+    if (lstCur.length > 0) {
+      fillCurrentLstSingleMg(lstCur, nbForPij);
+    }
+
+    bindSearchGlobActs();
+    if (nbForPij !== 0) {
+      $('#nbRes').css('display', 'block');
+
+      if (lst.length >= 900 || isOver) {
+        $('#nbRes').html('<span>' + nbForPij + ' manga found (' + lst.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
+      }
+      else {
+        $('#nbRes').text(nbForPij + ' manga found (' + lst.length + ' places to read them)');
+      }
+    }
+  }
+  else {
+    $('#nores').show();
+    $('#results').hide();
+    $('#nbRes').hide();
+  }
 }
 
 function loadSelectors () {
@@ -139,7 +289,7 @@ function loadSelectors () {
   selectAlreadyUsedMirrorsButton.click(function () {
     var unused = MgUtil.getUsedMirrors(mirrors, JSON.parse(localStorage.getItem('mangas')));
 
-    $('.mirrorIcon img').each(function (index) {
+    $('.mirrorIcon img').each(function () {
       var $this = $(this);
       var title = $this.attr('title');
       var isFound = unused.some(function (mirror) {
@@ -165,7 +315,7 @@ function loadSelectors () {
     var lang = $('option:selected', $(this)).val();
 
     if (lang === 'all') {
-      $('.mirrorIcon img').each(function (index) {
+      $('.mirrorIcon img').each(function () {
         $(this).removeClass('disabled');
         $('img', $(this).closest('tr').next()).show();
         setMirrorState($(this).attr('title'), true);
@@ -173,7 +323,7 @@ function loadSelectors () {
     }
     else {
       var langMirrors = MgUtil.getMirrorsFromLocale(mirrors, lang);
-      $('.mirrorIcon img').each(function (index) {
+      $('.mirrorIcon img').each(function () {
         var isFound = false;
         for (var i = 0; i < langMirrors.length; i++) {
           if (langMirrors[i] === $(this).attr('title')) {
@@ -194,11 +344,13 @@ function loadSelectors () {
       });
     }
 
-    localStorage['searchLanguage'] = $('#selectors select option:selected').val();
+    localStorage.setItem('searchLanguage', $('#selectors select option:selected').val());
   });
 
-  if (localStorage['searchLanguage']) {
-    sel.val(localStorage['searchLanguage']);
+  var searchLanguage = localStorage.getItem('searchLanguage');
+
+  if (searchLanguage) {
+    sel.val(searchLanguage);
   }
 
   var spansel = $('<span class=\'custom-select\'></span>');
@@ -233,7 +385,7 @@ function loadSearch () {
     document.getElementById('searchBoxInput').value = localStorage.getItem('searchAllRequest');
   }
 
-  var listTmpSearch = localStorage['searchAll'];
+  var listTmpSearch = localStorage.getItem('searchAll');
   var listTmpSearchLst = [];
 
   if (!(typeof listTmpSearch === 'undefined' || listTmpSearch === null || listTmpSearch === 'null')) {
@@ -248,237 +400,68 @@ function loadSearch () {
   }
 }
 
-function search () {
-  var toFind = document.getElementById("searchBoxInput").value;
-  if (toFind.length === 0) {
-    alert("You must key something to search !");
-  }
-  else {
-    refreshSearchAll(toFind);
-  }
-}
-function refreshSearchAll(toSearch) {
-  isOver = false;
-  tempMirrorListAll = [];
-  nbToLoad = mirrors.length;
-  ancNbToLoad = nbToLoad;
-  localStorage["searchAllRequest"] = toSearch;
-  for (var i = 0; i < mirrors.length; i++) {
-    var isEnabled = true;
-    $(".mirrorIcon img").each(function (index) {
-      if ($(this).attr("title") === mirrors[i].mirrorName) {
-        if ($(this).hasClass("disabled")) {
-          isEnabled = false;
-          nbToLoad--;
-          ancNbToLoad--;
-        }
-        else {
-          $("img", $(this).closest("tr").next()).attr("src", chrome.extension.getURL("img/ltload.gif"));
-        }
-      }
-    });
-    if (isEnabled) {
-      if (mirrors[i].canListFullMangas) {
-        wssql.webdb.getMangaList(mirrors[i].mirrorName, function (list, mirror) {
-          if (list && list !== null && list.length > 0) {
-            for (var j = 0; j < list.length; j++) {
-              if (formatMgName(list[j][0]).indexOf(formatMgName(toSearch)) != -1) {
-                var obj = {};
-                obj.url = list[j][1];
-                obj.name = list[j][0];
-                obj.mirror = mirror;
-                tempMirrorListAll[tempMirrorListAll.length] = obj;
-              }
-              if (tempMirrorListAll.length > 1000) {
-                isOver = true;
-                nbToLoad = 0;
-                break;
-              }
-            }
-          }
-          $(".mirrorIcon img").each(function (index) {
-            if ($(this).attr("title") === mirror) {
-              $("img", $(this).closest("tr").next()).attr("src", chrome.extension.getURL("img/blue.png"));
-            }
-          });
-          nbToLoad--;
-        });
-      } else if (mirrors[i].getMangaList) {
-        curSearch = toSearch;
-        mirrors[i].getMangaList(toSearch, mangaListAllLoaded);
-      }
-    }
-  }
-  waitForEndLoad();
-}
-function formatMgName(name) {
-  if (name === undefined || name === null || name === "null")
-    return "";
-  return name.trim().replace(/[^0-9A-Za-z]/g, '').toUpperCase();
-}
-function fillListOfSearchAll(lst) {
-  $("#resTr").css("display", "table-row");
-  $("#results").empty();
-  if (lst.length > 0) {
-    $("#nores").css("display", "none");
-    $("#results").css("display", "block");
-    $("<table id='allres'></table>").appendTo($("#results"));
-    var ancName = "";
-    var lstCur = [];
-    var nbForPij = 0;
-    for (var j = 0; j < lst.length; j++) {
-      if (ancName !== "" && lstCur.length > 0 && formatMgName(lst[j].name) != ancName) {
-        fillCurrentLstSingleMg(lstCur, nbForPij);
-        nbForPij++;
-        lstCur = [];
-      }
-      lstCur[lstCur.length] = lst[j];
-      ancName = formatMgName(lst[j].name);
-    }
-    if (lstCur.length > 0) {
-      fillCurrentLstSingleMg(lstCur, nbForPij);
-    }
-    bindSearchGlobActs();
-    if (nbForPij !== 0) {
-      $("#nbRes").css("display", "block");
-      if (lst.length >= 900 || isOver) {
-        $("#nbRes").html("<span>" + nbForPij + " manga found ! (" + lst.length + " places to read them !)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>");
-      }
-      else {
-        $("#nbRes").text(nbForPij + " manga found ! (" + lst.length + " places to read them !)");
-      }
-    }
-  }
-  else {
-    $("#nores").css("display", "block");
-    $("#results").css("display", "none");
-    $("#nbRes").css("display", "none");
-  }
-}
-function fillCurrentLstSingleMg(lstCur, nbForPij) {
-  var nameCur = lstCur[lstCur.length - 1].name;
-  var trCur;
-  if (nbForPij % 2 === 0) {
-    trCur = $("<tr class='odd'></tr>");
-  }
-  else {
-    trCur = $("<tr class='even'></tr>");
-  }
-  if (nbForPij === 0) {
-    trCur.addClass("firstLine");
-  }
-  var tdHead = $("<td class='mangaName'></td>");
-  $("<span>" + nameCur + "</span><div class='optmgsearch'><img class='externsearch' src='img/external.png' title='Open all occurences of this manga on their respective websites'/><img class='addsearch' src='img/add.png' title='Add all occurences of this manga in your manga list'/></div>").appendTo(tdHead);
-  tdHead.appendTo(trCur);
-  trCur.appendTo($("#allres"));
-  var tdMgs = $("<td class='listMirror'></td>");
-  tdMgs.appendTo(trCur);
-  for (var i = 0; i < lstCur.length; i++) {
-    if (getMangaMirror(lstCur[i].mirror) !== null) {
-      var urlCur = lstCur[i].url;
-      var mirrorCur = lstCur[i].mirror;
-      var img = $("<img class='mirrorsearchimg' src='" + getMangaMirror(lstCur[i].mirror).mirrorIcon + "' title=\"" + nameCur + " on " + lstCur[i].mirror + "\" />");
-      img.data("urlmirror", urlCur);
-      img.data("mirrorname", lstCur[i].mirror);
-      img.data("manganame", nameCur);
-      var divelt = $("<div class='eltmirrorsearch'><img class='addsinglemg' src='img/addlt.png' title='Add this manga in your list on " + lstCur[i].mirror + "'/></div>");
-      divelt.prepend(img);
-      divelt.appendTo(tdMgs);
-    }
-  }
-}
-function bindSearchGlobActs() {
-  $(".mirrorsearchimg").click(function () {
-    chrome.runtime.sendMessage({
-      action : 'opentab',
-      url : $(this).data("urlmirror")
-    }, function (response) {});
-  });
-  $(".externsearch").click(function () {
-    $(".mirrorsearchimg", $(this).closest("td").next()).each(function (index) {
-      chrome.runtime.sendMessage({
-        action : 'opentab',
-        url : $(this).data("urlmirror")
-      }, function (response) {});
-    });
-  });
-  $(".addsinglemg").click(function () {
-    var img = $("img.mirrorsearchimg", $(this).closest(".eltmirrorsearch"));
-    var obj = {
-      action : "readManga",
-      mirror : img.data("mirrorname"),
-      url : img.data("urlmirror"),
-      name : img.data("manganame")
-    };
-    sendExtRequestS(obj, $(this), function () {}, true);
-  });
-  $(".addsearch").click(function () {
-    var obj = {
-      action : "readMangas",
-      list : []
-    };
-    $(".mirrorsearchimg", $(this).closest("td").next()).each(function (index) {
-      obj.list[obj.list.length] = {
-        mirror : $(this).data("mirrorname"),
-        url : $(this).data("urlmirror"),
-        name : $(this).data("manganame")
-      };
-    });
-    sendExtRequestS(obj, $(this), function () {}, true);
-  });
-}
-function waitForEndLoad() {
-  if (nbToLoad != ancNbToLoad) {
+function waitForEndLoad () {
+  if (nbToLoad !== ancNbToLoad) {
     ancNbToLoad = nbToLoad;
+
     tempMirrorListAll.sort(function (a, b) {
       var aname = formatMgName(a.name);
       var bname = formatMgName(b.name);
+
       if (aname === bname) {
-        if (a.mirror === b.mirror)
+        if (a.mirror === b.mirror) {
           return 0;
-        else if (a.mirror > b.mirror)
+        }
+        else if (a.mirror > b.mirror) {
           return 1;
-        else
+        }
+        else {
           return -1;
+        }
       }
       else {
-        if (aname > bname)
+        if (aname > bname) {
           return 1;
-        else
+        }
+        else {
           return -1;
+        }
       }
     });
+
     var toDel = [];
     var prevName;
     var prevMirror;
+
     for (var k = 0; k < tempMirrorListAll.length; k++) {
-      if (prevName !== undefined) {
-        if (tempMirrorListAll[k].name === prevName && tempMirrorListAll[k].mirror === prevMirror) {
-          toDel[toDel.length] = k;
-        }
+      if (typeof prevName !== 'undefined' && tempMirrorListAll[k].name === prevName && tempMirrorListAll[k].mirror === prevMirror) {
+        toDel[toDel.length] = k;
       }
+
       prevName = tempMirrorListAll[k].name;
       prevMirror = tempMirrorListAll[k].mirror;
     }
+
     if (toDel.length > 0) {
       for (var i = toDel.length - 1; i >= 0; i--) {
         tempMirrorListAll.remove(toDel[i], toDel[i]);
       }
     }
+
     fillListOfSearchAll(tempMirrorListAll);
   }
+
   if (nbToLoad === 0) {
-    localStorage["searchAll"] = JSON.stringify(tempMirrorListAll);
+    localStorage.setItem('searchAll', JSON.stringify(tempMirrorListAll));
   }
   else {
-    setTimeout(function () {
-      waitForEndLoad();
-    }, 500);
+    setTimeout(waitForEndLoad, 500);
   }
 }
-function mangaListAllLoaded(mirror, lst) {
+
+function mangaListAllLoaded (mirror, lst) {
   for (var j = 0; j < lst.length; j++) {
-    if (formatMgName(lst[j][0]).indexOf(formatMgName(curSearch)) != -1) {
+    if (formatMgName(lst[j][0]).indexOf(formatMgName(curSearch)) !== -1) {
       var obj = {};
       obj.url = lst[j][1];
       obj.name = lst[j][0];
@@ -486,10 +469,89 @@ function mangaListAllLoaded(mirror, lst) {
       tempMirrorListAll[tempMirrorListAll.length] = obj;
     }
   }
-  $(".mirrorIcon img").each(function (index) {
-    if ($(this).attr("title") === mirror) {
-      $("img", $(this).closest("tr").next()).attr("src", chrome.extension.getURL("img/blue.png"));
+
+  $('.mirrorIcon img').each(function () {
+    if ($(this).attr('title') === mirror) {
+      $('img', $(this).closest('tr').next()).attr('src', IMAGE_PATH + 'blue.png');
     }
   });
+
   nbToLoad--;
+}
+
+function refreshSearchAll (toSearch) {
+  isOver = false;
+  tempMirrorListAll = [];
+  nbToLoad = mirrors.length;
+  ancNbToLoad = nbToLoad;
+  localStorage.setItem('searchAllRequest', toSearch);
+
+  mirrors.forEach(function (mirror) {
+    var isEnabled = true;
+    $('.mirrorIcon img').each(function () {
+      var $this = $(this);
+      if ($this.attr('title') === mirror.mirrorName) {
+        if ($this.hasClass('disabled')) {
+          isEnabled = false;
+          nbToLoad--;
+          ancNbToLoad--;
+        }
+        else {
+          $('img', $this.closest('tr').next()).attr('src', chrome.extension.getURL('img/ltload.gif'));
+        }
+      }
+    });
+
+    if (isEnabled) {
+      if (mirror.canListFullMangas) {
+        wssql.webdb.getMangaList(mirror.mirrorName, function (list, mirror) {
+          if (list && list.length > 0) {
+            for (var j = 0; j < list.length; j++) {
+              if (formatMgName(list[j][0]).indexOf(formatMgName(toSearch)) !== -1) {
+                var obj = {
+                  url: list[j][1],
+                  name: list[j][0],
+                  mirror: mirror
+                };
+
+                tempMirrorListAll[tempMirrorListAll.length] = obj;
+              }
+
+              if (tempMirrorListAll.length > 1000) {
+                isOver = true;
+                nbToLoad = 0;
+                break;
+              }
+            }
+          }
+
+          $('.mirrorIcon img').each(function () {
+            var $this = $(this);
+
+            if ($this.attr('title') === mirror) {
+              $('img', $this.closest('tr').next()).attr('src', IMAGE_PATH + 'blue.png');
+            }
+          });
+
+          nbToLoad--;
+        });
+      }
+      else if (mirror.getMangaList) {
+        curSearch = toSearch;
+        mirror.getMangaList(toSearch, mangaListAllLoaded);
+      }
+    }
+  });
+
+  waitForEndLoad();
+}
+
+function search () {
+  var toFind = document.getElementById('searchBoxInput').value;
+  if (toFind.length === 0) {
+    alert('You must key something to search !');
+  }
+  else {
+    refreshSearchAll(toFind);
+  }
 }

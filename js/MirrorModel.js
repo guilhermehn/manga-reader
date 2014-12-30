@@ -29,7 +29,7 @@ var MirrorClassName = {
   // Return true if the url corresponds to the mirror
   isMe : function (url) {
     // CHANGE IMPLEMENTATION
-    // Example : return (url.indexOf('yourmirror.com') != -1);
+    // Example : return (url.indexOf('yourmirror.com') !== -1);
   },
 
   // Return the list of all or part of all mangas from the mirror
