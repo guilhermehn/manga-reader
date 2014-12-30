@@ -1,23 +1,4 @@
-﻿/**
-
-  This file is part of All Mangas Reader.
-
-  All Mangas Reader is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  All Mangas Reader is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
-var menusAMR = [
+﻿var menusAMR = [
   {
     name: 'options',
     link: 'options.html',
@@ -87,37 +68,21 @@ function loadMenu (cur) {
   chrome.runtime.sendMessage({
     action: 'parameters'
   }, function (response) {
-    $('#menuitems ul').empty();
+    var $menu = $('#menuitems ul');
+    $menu.empty();
 
-    $.each(menusAMR, function (ind, val) {
-      var display = true;
-      if (val.cond && val.cond === 'lab') {
-        if (response.dev !== 1) {
-          display = false;
-        }
-      }
-      if (display) {
-        var li;
-        if (val.name === cur) {
-          if (!dispIcons) {
-            li = $('<li class=\'selected\'>' + val.title + '</li>');
-          }
-          else {
-            li = $('<li class=\'selected\'><img src=\'img/' + val.icon + '\' title=\'' + val.title + '\' /></li>');
-          }
+    menusAMR.forEach(function (menu) {
+      if (!menu.cond || menu.cond === 'lab' || response.dev !== 1) {
+        var li = $(menu.name === cur ? '<li class=\'selected\'></li>' : '<li><a href=\'' + menu.link + '\'></a></li>');
+
+        if (dispIcons) {
+          li.find('a').append('<img src=\'img/' + menu.icon + '\' title=\'' + menu.title + '\' />');
         }
         else {
-          if (!dispIcons) {
-            li = $('<li><a href=\'' + val.link + '\'>' + val.title + '</a></li>');
-          }
-          else {
-            li = $('<li><a href=\'' + val.link + '\'><img src=\'img/' + val.icon + '\' title=\'' + val.title + '\' /></a></li>');
-          }
+          li.append(menu.title);
         }
-        if (ind === menusAMR.length - 1) {
-          li.addClass('last');
-        }
-        li.appendTo($('#menuitems ul'));
+
+        $menu.append(li);
       }
     });
   });
