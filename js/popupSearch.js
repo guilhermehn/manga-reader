@@ -267,7 +267,6 @@ function loadSelectors () {
   var $selectors = $('#selectors');
   var $options = $selectors.find('select option');
   var $first = $options.filter(':first');
-  var $selected = $options.filter(':selected');
 
   // Select all mirrors
   selectAllMirrorsButton.click(function () {
