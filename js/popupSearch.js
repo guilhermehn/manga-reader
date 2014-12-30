@@ -111,10 +111,10 @@ function setMirrorState (mirrorName, state) {
 }
 
 function toggleMirrorsSelection (selected) {
-  $('.mirrorIcon img').each(function () {
+  $('.mirror-icon').each(function () {
     var $this = $(this);
 
-    $this[selected ? 'removeClass' : 'addClass']('disabled');
+    $this[selected ? 'removeClass' : 'addClass']('mirror-icon-disabled');
     $('img', $this.closest('tr').next())[selected ? 'show' : 'hide']();
     setMirrorState($this.attr('title'), selected);
   });
@@ -179,14 +179,9 @@ function bindSearchGlobActs () {
   });
 }
 
-function fillCurrentLstSingleMg (lstCur, nbForPij) {
+function fillCurrentLstSingleMg (lstCur) {
   var nameCur = lstCur[lstCur.length - 1].name;
   var trCur = $('<tr></tr>');
-
-  if (nbForPij === 0) {
-    trCur.addClass('firstLine');
-  }
-
   var tdHead = $('<td class=\'mangaName\'></td>');
 
   $('<span>' + nameCur + '</span><div class=\'optmgsearch\'><img class=\'externsearch\' src=\'img/external.png\' title=\'Open all occurences of this manga on their respective websites\'/><img class=\'addsearch\' src=\'img/add.png\' title=\'Add all occurences of this manga in your manga list\'/></div>').appendTo(tdHead);
@@ -219,16 +214,16 @@ function fillListOfSearchAll (lst) {
   if (lst.length > 0) {
     $('#nores').css('display', 'none');
     $('#results').css('display', 'block');
-    $('<table id=\'allres\'></table>').appendTo($('#results'));
+    $('<table cellpadding=\'0\' cellspacing=\'0\' id=\'allres\'></table>').appendTo($('#results'));
 
     var ancName = '';
     var lstCur = [];
-    var nbForPij = 0;
+    var resultLength = 0;
 
     for (var j = 0; j < lst.length; j++) {
       if (ancName !== '' && lstCur.length > 0 && formatMgName(lst[j].name) !== ancName) {
-        fillCurrentLstSingleMg(lstCur, nbForPij);
-        nbForPij++;
+        fillCurrentLstSingleMg(lstCur);
+        resultLength++;
         lstCur = [];
       }
 
@@ -237,18 +232,18 @@ function fillListOfSearchAll (lst) {
     }
 
     if (lstCur.length > 0) {
-      fillCurrentLstSingleMg(lstCur, nbForPij);
+      fillCurrentLstSingleMg(lstCur);
     }
 
     bindSearchGlobActs();
-    if (nbForPij !== 0) {
+    if (resultLength !== 0) {
       $('#nbRes').css('display', 'block');
 
       if (lst.length >= 900 || isOver) {
-        $('#nbRes').html('<span>' + nbForPij + ' manga found (' + lst.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
+        $('#nbRes').html('<span>' + resultLength + ' manga found (' + lst.length + ' places to read them)</span><br /><span>There is too much results, only the first results are displayed. (All web sites have not been searched)</span>');
       }
       else {
-        $('#nbRes').text(nbForPij + ' manga found (' + lst.length + ' places to read them)');
+        $('#nbRes').text(resultLength + ' manga found (' + lst.length + ' places to read them)');
       }
     }
   }
@@ -288,7 +283,7 @@ function loadSelectors () {
   selectAlreadyUsedMirrorsButton.click(function () {
     var unused = MgUtil.getUsedMirrors(mirrors, JSON.parse(localStorage.getItem('mangas')));
 
-    $('.mirrorIcon img').each(function () {
+    $('.mirror-icon img').each(function () {
       var $this = $(this);
       var title = $this.attr('title');
       var isFound = unused.some(function (mirror) {
@@ -314,7 +309,7 @@ function loadSelectors () {
     var lang = $('option:selected', $(this)).val();
 
     if (lang === 'all') {
-      $('.mirrorIcon img').each(function () {
+      $('.mirror-icon img').each(function () {
         $(this).removeClass('disabled');
         $('img', $(this).closest('tr').next()).show();
         setMirrorState($(this).attr('title'), true);
@@ -322,7 +317,7 @@ function loadSelectors () {
     }
     else {
       var langMirrors = MgUtil.getMirrorsFromLocale(mirrors, lang);
-      $('.mirrorIcon img').each(function () {
+      $('.mirror-icon img').each(function () {
         var isFound = false;
         for (var i = 0; i < langMirrors.length; i++) {
           if (langMirrors[i] === $(this).attr('title')) {
@@ -360,23 +355,22 @@ function loadSelectors () {
 function loadSearch () {
   loadSelectors();
 
-  for (var i = 0; i < mirrors.length; i++) {
-    var newItem = $('<div class=\'mirrorF\'><table><tr><td class=\'mirrorIcon\'><img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\'/></td></tr><tr><td class=\'mirrorStatus\'><img src=\'' + chrome.extension.getURL('img/gray.png') + '\'/></td></tr></table></div>');
-    newItem.appendTo($('#filMirrors'));
-    if (!isMirrorEnable(mirrors[i].mirrorName)) {
-      $('.mirrorIcon img', newItem).addClass('disabled');
-      $('.mirrorStatus img', newItem).hide();
+  mirrors.forEach(function (mirror) {
+    var newItem = $('<div class=\'mirror-icon\'><img src=\'' + mirror.mirrorIcon + '\' title=\'' + mirror.mirrorName + '\'/><div class=\'mirror-status\'><img src=\'' + IMAGE_PATH + 'gray.png' + '\'/></div></div>');
+
+    $('#filMirrors').append(newItem);
+
+    if (!isMirrorEnable(mirror.mirrorName)) {
+      $('.mirror-icon img', newItem).addClass('mirror-icon-disabled');
     }
-  }
+  });
 
-  $('.mirrorIcon img').click(function () {
+  $('.mirror-icon').click(function () {
     var $this = $(this);
-    $this.toggleClass('disabled');
+    $this.toggleClass('mirror-icon-disabled');
 
-    var $tr = $('img', $this.closest('tr').next());
-    var disabled = $this.hasClass('disabled');
+    var disabled = $this.hasClass('mirror-icon-disabled');
 
-    $tr[disabled ? 'hide' : 'show']();
     setMirrorState($this.attr('title'), !disabled);
   });
 
@@ -387,8 +381,9 @@ function loadSearch () {
   var listTmpSearch = localStorage.getItem('searchAll');
   var listTmpSearchLst = [];
 
-  if (!(typeof listTmpSearch === 'undefined' || listTmpSearch === null || listTmpSearch === 'null')) {
+  if (listTmpSearch && listTmpSearch !== null && listTmpSearch !== 'null') {
     var lstTmp = JSON.parse(listTmpSearch);
+
     for (i = 0; i < lstTmp.length; i++) {
       listTmpSearchLst[i] = lstTmp[i];
     }
@@ -469,7 +464,7 @@ function mangaListAllLoaded (mirror, lst) {
     }
   }
 
-  $('.mirrorIcon img').each(function () {
+  $('.mirror-icon img').each(function () {
     if ($(this).attr('title') === mirror) {
       $('img', $(this).closest('tr').next()).attr('src', IMAGE_PATH + 'blue.png');
     }
@@ -487,7 +482,7 @@ function refreshSearchAll (toSearch) {
 
   mirrors.forEach(function (mirror) {
     var isEnabled = true;
-    $('.mirrorIcon img').each(function () {
+    $('.mirror-icon img').each(function () {
       var $this = $(this);
       if ($this.attr('title') === mirror.mirrorName) {
         if ($this.hasClass('disabled')) {
@@ -524,7 +519,7 @@ function refreshSearchAll (toSearch) {
             }
           }
 
-          $('.mirrorIcon img').each(function () {
+          $('.mirror-icon img').each(function () {
             var $this = $(this);
 
             if ($this.attr('title') === mirror) {
