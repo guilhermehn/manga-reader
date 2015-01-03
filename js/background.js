@@ -1254,7 +1254,7 @@ function desactivateMirror (mirrorName) {
 function addBookmark (obj) {
   var isFound = false;
   var posFound;
-  if (bookmarks.length > 0) {
+  if (bookmarks && bookmarks.length > 0) {
     for (var j = 0; j < bookmarks.length; j++) {
       if (obj.mirror === bookmarks[j].mirror && obj.url === bookmarks[j].url && obj.chapUrl === bookmarks[j].chapUrl && obj.type === bookmarks[j].type) {
         if (obj.type === 'chapter') {
@@ -1295,7 +1295,7 @@ function addBookmark (obj) {
 function deleteBookmark (obj) {
   var isFound = false;
   var posFound;
-  if (bookmarks.length > 0) {
+  if (bookmarks && bookmarks.length > 0) {
     for (var j = 0; j < bookmarks.length; j++) {
       if (obj.mirror === bookmarks[j].mirror && obj.url === bookmarks[j].url && obj.chapUrl === bookmarks[j].chapUrl && obj.type === bookmarks[j].type) {
         if (obj.type === 'chapter') {
@@ -1320,7 +1320,7 @@ function deleteBookmark (obj) {
 }
 
 function getBookmark (obj) {
-  if (bookmarks.length > 0) {
+  if (bookmarks && bookmarks.length > 0) {
     for (var j = 0; j < bookmarks.length; j++) {
       if (obj.mirror === bookmarks[j].mirror && obj.url === bookmarks[j].url && obj.chapUrl === bookmarks[j].chapUrl && obj.type === bookmarks[j].type) {
         if (obj.type === 'chapter') {
@@ -2321,7 +2321,7 @@ function importBookmarks (bms, merge) {
     var posFound;
     var obj = lstTmp[i];
 
-    if (bookmarks.length > 0) {
+    if (bookmarks && bookmarks.length > 0) {
       for (var j = 0; j < bookmarks.length; j++) {
         if (obj.mirror === bookmarks[j].mirror && obj.url === bookmarks[j].url && obj.chapUrl === bookmarks[j].chapUrl && obj.type === bookmarks[j].type) {
           if (obj.type === 'chapter') {

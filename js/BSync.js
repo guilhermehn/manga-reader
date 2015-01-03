@@ -50,6 +50,7 @@ BSync.prototype.attach = function () {
     this.options.newLine = ' ';
     this.options.testNetwork = false;
     this.attach();
+
     return this;
   }
 
@@ -125,13 +126,13 @@ BSync.prototype.testNetwork = function () {
 };
 
 BSync.prototype.getFolder = function () {
-  var self = this;
   if (this.folder) {
     return this.folder;
   }
 
+  var self = this;
   var folder;
-  var _2a = [];
+  var bookmarks = [];
   var _2b = [];
 
   chrome.bookmarks.getChildren(this.options.parent.toString(), function (results) {
@@ -139,7 +140,7 @@ BSync.prototype.getFolder = function () {
 
     results.forEach(function (bookmark) {
       if (bookmark.title.match(new RegExp('^.+?\\.' + '([0-9]{10,}?)$'))) {
-        _2a.push(bookmark);
+        bookmarks.push(bookmark);
       }
 
       if (bookmark.title === self.options.folder && bookmark.url === undefined) {
@@ -169,8 +170,8 @@ BSync.prototype.getFolder = function () {
       });
     }
 
-    if (folder && _2a) {
-      _2a.forEach(function (bookmark) {
+    if (folder && bookmarks) {
+      bookmarks.forEach(function (bookmark) {
         chrome.bookmarks.move(bookmark.id, {
           parentId: folder.id.toString()
         });
@@ -184,29 +185,29 @@ BSync.prototype.getFolder = function () {
   return false;
 };
 
-BSync.prototype.traverse = function (_34) {
+BSync.prototype.traverse = function (tree) {
   var self = this;
   var bookmarks = [];
   var _37;
   var _38;
   var folder = this.folder;
+  var now = new Date().getTime();
 
-  if (!_34 && this.options.testNetwork && !this.folder) {
+  if (!tree && this.options.testNetwork && !this.folder) {
     return this.testNetwork();
   }
 
-  if (this.lastTraversed) {
-    this.options.debug && console.log('TRAVERSED DIFF : ' + ((new Date().getTime() - this.lastTraversed) / 1000));
+  if (this.options.debug && this.lastTraversed) {
+    console.log('TRAVERSED DIFF : ' + ((now - this.lastTraversed) / 1000));
   }
 
-  this.lastTraversed = new Date().getTime();
+  this.lastTraversed = now;
 
-  if (this.options.getUpdate && this.options.getUpdate() && this.syncedAt) {
-    if ((new Date().getTime() - this.options.getUpdate()) < this.options.idleInterval) {
+  if (this.options.getUpdate && this.syncedAt && this.options.getUpdate()) {
+    if ((now - this.options.getUpdate()) < this.options.idleInterval) {
       // console.log('WAITING FOR ' + this.idleInterval + ' TO GET UN-IDLE');
-      setTimeout(function () {
-        self.traverse();
-      }, this.options.idleInterval * 2);
+      setTimeout(self.traverse.bind(self), this.options.idleInterval * 2);
+
       return this;
     }
   }
@@ -290,7 +291,6 @@ BSync.prototype.process = function (bookmarkData, _43) {
   this.content = content;
 
   var syncedAt = this.syncedAt;
-
   this.syncedAt = bookmarkData.syncedAt;
 
   if (0) {
@@ -335,6 +335,7 @@ BSync.prototype.process = function (bookmarkData, _43) {
       }
     }
   }
+
   return this;
 };
 
@@ -372,9 +373,9 @@ BSync.prototype.write = function (bookmark) {
 
   if (this.bookmark && this.bookmark.id) {
     try {
-      chrome.bookmarks.remove(String(this.bookmark.id));
+      chrome.bookmarks.remove('' + this.bookmark.id);
     }
-    catch (ex) {}
+    catch (e) {}
   }
 
   this.syncedAtPrevious = this.syncedAt;
@@ -392,6 +393,7 @@ BSync.prototype.write = function (bookmark) {
   };
 
   // console.log('To write : ' + $H(bookmark).toJSON());
+  console.debug($H);
   bookmark = _49(bookmark);
 
   // console.log('To write after each : ' + $H(bookmark).toJSON());
