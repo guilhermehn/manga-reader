@@ -1272,7 +1272,7 @@ function addBookmark (obj) {
       }
     }
   }
-  if (!isFound) {
+  if (!isFound && bookmarks && bookmarks.length) {
     bookmarks[bookmarks.length] = {
       mirror : obj.mirror,
       url : obj.url,
