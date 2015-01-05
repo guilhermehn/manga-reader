@@ -110,7 +110,7 @@ BSync.prototype.testNetwork = function () {
     return this;
   }, this.options.networkTimeout);
 
-  xhr.open('GET', 'http:// www.google.com/favicon.ico', true);
+  xhr.open('GET', 'http://www.google.com/favicon.ico', true);
   xhr.send();
 
   xhr.onreadystatechange = function () {

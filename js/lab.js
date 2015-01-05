@@ -9,7 +9,7 @@ function testNotif () {
   var mangaData = {
     name: 'Test Manga',
     mirror: 'TestMirror',
-    url: 'http:// test.allmangasreader.com/'
+    url: 'http://test.allmangasreader.com/'
   };
 
   var title = '... has new chapter(s) on ' + mangaData.mirror + '! Click anywhere to open the next unread chapter.';
@@ -57,7 +57,7 @@ function displayNotification (wsData) {
     wsData.ws,
     text);
 
-  notif.url = 'http:// community.allmangasreader.com/comments.php?type=1&id=' + wsData.idext;
+  notif.url = 'http://community.allmangasreader.com/comments.php?type=1&id=' + wsData.idext;
 
   notif.onclick = function () {
     var url = this.url;

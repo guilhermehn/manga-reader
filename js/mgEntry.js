@@ -1,8 +1,8 @@
 ﻿/*globals wssql, amrcsql, getParameters*/
 
-var AMRC_REPOSITORY = 'https:// ssl10.ovh.net/~allmanga/community/latest_v2/';
-var AMRC_ROOT = 'https:// ssl10.ovh.net/~allmanga/community/';
-var AMRC_REPOSITORY_BACKUP = 'https:// raw.github.com/AllMangasReader-dev/mirrors/master/';
+var AMRC_REPOSITORY = 'https://ssl10.ovh.net/~allmanga/community/latest_v2/';
+var AMRC_ROOT = 'https://ssl10.ovh.net/~allmanga/community/';
+var AMRC_REPOSITORY_BACKUP = 'https://raw.github.com/AllMangasReader-dev/mirrors/master/';
 
 function displayNotification (/*wsData, params*/) {
   console.log('noop');
@@ -20,7 +20,7 @@ function displayNotification (/*wsData, params*/) {
   }
   text += '\nYou can discuss this implementation by clicking on the notification (login required)';
   var notif = window.webkitNotifications.createNotification(chrome.extension.getURL('img/icon-32.png'), wsData.ws, text);
-  notif.url = 'http:// community.allmangasreader.com/comments.php?type=1&id=' + wsData.idext;
+  notif.url = 'http://community.allmangasreader.com/comments.php?type=1&id=' + wsData.idext;
   notif.onclick = function () {
     var myurl = this.url;
     // notif.cancel() should hide the notif once clicked

@@ -262,18 +262,15 @@ function addOptionValue (curMg, valMg) {
 }
 
 function loadBookmarks () {
-  if (typeof localStorage.bookmarkMangasSearch !== 'undefined') {
-    $('#searchBoxInput').val(localStorage.bookmarkMangasSearch);
+  var bookmarkMangasSearch = localStorage.getItem('bookmarkMangasSearch');
+
+  if (typeof bookmarkMangasSearch !== 'undefined') {
+    $('#searchBoxInput').val(bookmarkMangasSearch);
   }
 
-  var bookmarks = localStorage.bookmarks;
-  try {
-    var lstTmp = JSON.parse(bookmarks);
-  }
-  catch (e) {
-    console.debug(bookmarks);
-    console.error(e);
-  }
+  var bookmarks = localStorage.getItem('bookmarks');
+
+  var lstTmp = JSON.parse(bookmarks);
 
   var valMg = null;
   var currentManga;
