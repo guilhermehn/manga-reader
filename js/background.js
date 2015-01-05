@@ -1,3 +1,4 @@
+/*globals translate, wssql, MangaElt, BSync, getMangaMirror*/
 var mangaList;
 var mirrors;
 var ctxIds = [];
@@ -497,7 +498,7 @@ function sendSearch (selectedText) {
 chrome.contextMenus.create({
   title : 'Search %s on AllMangasReader',
   contexts : ['selection'],
-  onclick : function (info, tab) {
+  onclick : function (info) {
     sendSearch(info.selectionText);
   }
 });
@@ -560,24 +561,30 @@ function initMirrorState () {
   }
   else {
     var lstTmp = JSON.parse(states);
+
     if (lstTmp.length > 0) {
       var toUpdate = false;
+
       for (var i = 0; i < mirrors.length; i++) {
         var isFound = false;
+
         for (var j = 0; j < lstTmp.length; j++) {
           if (lstTmp[j].mirror === mirrors[i].mirrorName) {
             isFound = true;
             break;
           }
         }
+
         if (!isFound) {
           lstTmp[lstTmp.length] = {
             mirror : mirrors[i].mirrorName,
             activated : true
           };
+
           toUpdate = true;
         }
       }
+
       if (toUpdate) {
         localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
       }
@@ -605,60 +612,52 @@ function refreshManga (mg, waiter, pos) {
 
   if (getParameters().savebandwidth === 1 || (typeof mirror.savebandwidth !== 'undefined' && mirror.savebandwidth)) {
     if (waiter.nbMade === pos) {
-      mg.refreshLast(false, function (obj) {
-        waiter.incMade();
-      });
+      mg.refreshLast(false, waiter.incMade.bind(waiter));
     }
     else {
-      setTimeout(function () {
-        refreshManga(mg, waiter, pos);
-      }, 100);
+      setTimeout(refreshManga.bind(null, mg, waiter, pos), 100);
     }
   }
   else {
-    mg.refreshLast(false, function (obj) {
-      waiter.incMade();
-    });
+    mg.refreshLast(false, waiter.incMade.bind(waiter));
   }
 }
 
 function refreshAllLasts (refreshTimer, perform) {
+  var params = getParameters();
   try {
     var i;
+
     if (typeof perform === 'undefined' || perform === true) {
       console.log('Refreshing chapters at ' + new Date());
 
       localStorage.getItem('lastChaptersUpdate', new Date().getTime());
 
-      var nbToRef = 0;
+      var mangasToRefreshCount = 0;
       var pos = 0;
       var mirror;
 
       for (i = 0; i < mangaList.length; i++) {
         if (getMangaMirror(mangaList[i].mirror) !== null) {
-          nbToRef++;
+          mangasToRefreshCount++;
         }
       }
 
-      var waiter = new WaitForAllLists(nbToRef, saveList, getParameters().refreshspin);
+      var waiter = new WaitForAllLists(mangasToRefreshCount, saveList, params.refreshspin);
 
       for (i = 0; i < mangaList.length; i++) {
         mirror = getMangaMirror(mangaList[i].mirror);
-        if (mirror !== null) {
-          if (mirror.savebandwidth === undefined || !mirror.savebandwidth) {
-            refreshManga(mangaList[i], waiter, pos);
-            pos++;
-          }
+        if (mirror !== null && mirror.savebandwidth === undefined || !mirror.savebandwidth) {
+          refreshManga(mangaList[i], waiter, pos);
+          pos++;
         }
       }
 
       for (i = 0; i < mangaList.length; i++) {
         mirror = getMangaMirror(mangaList[i].mirror);
-        if (mirror !== null) {
-          if (mirror.savebandwidth !== undefined && mirror.savebandwidth) {
-            refreshManga(mangaList[i], waiter, pos);
-            pos++;
-          }
+        if (mirror !== null && mirror.savebandwidth !== undefined && mirror.savebandwidth) {
+          refreshManga(mangaList[i], waiter, pos);
+          pos++;
         }
       }
 
@@ -669,16 +668,14 @@ function refreshAllLasts (refreshTimer, perform) {
     console.log(e);
   }
 
-  var nextTime = getParameters().updatechap;
+  var nextTime = params.updatechap;
   if (refreshTimer) {
     clearTimeout(timeoutChap);
     nextTime =  -(new Date().getTime() - localStorage.getItem('lastChaptersUpdate') - nextTime);
   }
 
   console.log('Next time to refresh chapters list : ' + nextTime);
-  timeoutChap = setTimeout(function () {
-    refreshAllLasts();
-  }, nextTime);
+  timeoutChap = setTimeout(refreshAllLasts, nextTime);
 }
 
 function refreshMangaLists (refreshTimer, perform) {
