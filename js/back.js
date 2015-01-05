@@ -582,13 +582,13 @@ function onLoadImage () {
 
     $(ancCan).css('margin-bottom', '50px');
     $(ancCan).css('border', '5px solid white');
-    $('#' + $(this).data('divLoad')).css('display', 'none');
+    $('#' + $(this).data('divLoad')).hide();
     $(this).data('finish', '1');
-    $(this).css('display', 'none');
+    $(this).hide();
     //  Bookmark DIV MOD ??? TODO
   }
   else {
-    $('#' + $(this).data('divLoad')).css('display', 'none');
+    $('#' + $(this).data('divLoad')).hide();
     $(this).data('finish', '1');
     $(this).css('margin-right', '10px');
     if ($(this).attr('src') !== chrome.extension.getURL('img/imgerror.png')) {
@@ -1446,7 +1446,7 @@ function onErrorImage () {
 
       $this.data('finish', '1');
 
-      $('#' + $this.data('divLoad')).css('display', 'none');
+      $('#' + $this.data('divLoad')).hide();
 
       //  Create the reload button
       var butReco = $('<a class="buttonAMR">Try to reload</a>');
@@ -1522,7 +1522,7 @@ function onErrorImage () {
     }
   }
   else {
-    $('#' + $this.data('divLoad')).css('display', 'none');
+    $('#' + $this.data('divLoad')).hide();
     $this.data('finish', '1');
     $this.data('error', '1');
   }
@@ -1644,7 +1644,7 @@ function waitForImages (where, mode, res, title) {
       nbOk++;
     }
     if (this.offsetWidth !== $(this).data('owidth')) {
-      $('#' + $(this).data('divLoad')).css('display', 'none');
+      $('#' + $(this).data('divLoad')).hide();
     }
     nbTot++;
   });

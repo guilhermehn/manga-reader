@@ -92,7 +92,7 @@ function show (doc) {
 
 function createTree () {
   var main = $('<div id=\'maincorpse\'></div>');
-  main.css('display', 'none');
+  main.hide();
 
   $('#nav a.menu').each(function () {
     var pathstr = $(this).attr('rel');
