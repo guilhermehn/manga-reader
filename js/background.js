@@ -146,7 +146,7 @@ function getParameters () {
     initParam(res, 'markwhendownload', 0);
     initParam(res, 'sendstats', 1);
     initParam(res, 'shownotifws', 1);
-    localStorage.getItem('parameters', JSON.stringify(res));
+    localStorage.setItem('parameters', JSON.stringify(res));
   }
   return res;
 }
@@ -199,7 +199,7 @@ function activateMirror (mirrorName) {
           mirror : mirrorName,
           activated : true
         };
-        localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
+        localStorage.setItem('mirrorStates', JSON.stringify(lstTmp));
         try {
           for (var i = 0; i < mirrors.length; i++) {
             if (mirrors[i].mirrorName === mirrorName) {
@@ -347,7 +347,7 @@ function refreshTag () {
 
 function saveList () {
   try {
-    localStorage.getItem('mangas', getJSONList());
+    localStorage.setItem('mangas', getJSONList());
     try {
       refreshTag();
     }
@@ -364,7 +364,7 @@ function refreshUpdateWith (update) {
   try {
     var params = getParameters();
     params.updated = update;
-    localStorage.getItem('parameters', JSON.stringify(params));
+    localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -375,7 +375,7 @@ function refreshSync () {
   try {
     var params = getParameters();
     params.lastsync = new Date().getTime();
-    localStorage.getItem('parameters', JSON.stringify(params));
+    localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -551,7 +551,7 @@ function instantiateMirrors () {
       activated : true
     };
   }
-  localStorage.getItem('mirrorStates', JSON.stringify(lst));
+  localStorage.setItem('mirrorStates', JSON.stringify(lst));
 }
 
 function initMirrorState () {
@@ -586,7 +586,7 @@ function initMirrorState () {
       }
 
       if (toUpdate) {
-        localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
+        localStorage.setItem('mirrorStates', JSON.stringify(lstTmp));
       }
     }
     else {
@@ -631,7 +631,7 @@ function refreshAllLasts (refreshTimer, perform) {
     if (typeof perform === 'undefined' || perform === true) {
       console.log('Refreshing chapters at ' + new Date());
 
-      localStorage.getItem('lastChaptersUpdate', new Date().getTime());
+      localStorage.setItem('lastChaptersUpdate', new Date().getTime());
 
       var mangasToRefreshCount = 0;
       var pos = 0;
@@ -682,7 +682,7 @@ function refreshMangaLists (refreshTimer, perform) {
   try {
     if (perform === undefined || perform === true) {
       console.log('Refreshing mangas lists at ' + new Date());
-      localStorage.getItem('lastMangasUpdate', new Date().getTime());
+      localStorage.setItem('lastMangasUpdate', new Date().getTime());
       for (var i = 0; i < mirrors.length; i++) {
         if (mirrors[i].canListFullMangas && isMirrorActivated(mirrors[i].mirrorName)) {
           mirrors[i].getMangaList('', mangaListLoaded);
@@ -740,7 +740,7 @@ function refreshWebsites (refreshTimer, perform) {
   try {
     if (perform === undefined || perform === true) {
       console.log('Refreshing websites implementations at ' + new Date());
-      localStorage.getItem('lastWsUpdate', new Date().getTime());
+      localStorage.setItem('lastWsUpdate', new Date().getTime());
       updateWebsitesFromRepository(function () {
         updateMirrors(function () {});
       });
@@ -808,7 +808,7 @@ function refreshUpdate () {
     var params = getParameters();
     params.updated = new Date().getTime();
     params.changesSinceSync = 1;
-    localStorage.getItem('parameters', JSON.stringify(params));
+    localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -873,7 +873,7 @@ function init () {
 
     var curVersion = chrome.extension.getVersion();
     if (ancVersion === null || curVersion !== ancVersion) {
-      localStorage.getItem('version', curVersion);
+      localStorage.setItem('version', curVersion);
       if (pars.openupdate === 1) {
         if (chrome.extension.isBeta()) {
           chrome.tabs.getAllInWindow(undefined, function (tabs) {
@@ -898,7 +898,7 @@ function init () {
           });
         }
       }
-      localStorage.getItem('versionViewRelease', localStorage.getItem('version'));
+      localStorage.setItem('versionViewRelease', localStorage.getItem('version'));
     }
 
     if (chrome.extension.isBeta()) {
@@ -1209,7 +1209,7 @@ function desactivateMirror (mirrorName) {
             mirror : mirrorName,
             activated : false
           };
-          localStorage.getItem('mirrorStates', JSON.stringify(lstTmp));
+          localStorage.setItem('mirrorStates', JSON.stringify(lstTmp));
           wssql.webdb.empty(mirrorName, function () {});
           break;
         }
@@ -1714,7 +1714,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       case 'deletepub': {
         var params = getParameters();
         params.pub = 0;
-        localStorage.getItem('parameters', JSON.stringify(params));
+        localStorage.setItem('parameters', JSON.stringify(params));
         sendResponse({});
         break;
       }
@@ -1874,7 +1874,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           console.log('hiding bar');
         }
         else {
-          localStorage.getItem('isBarVisible', 1);
+          localStorage.setItem('isBarVisible', 1);
         }
         sendResponse({
           res: localStorage.getItem('isBarVisible')
@@ -1883,7 +1883,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       }
 
       case 'showBar': {
-        localStorage.getItem('isBarVisible', 1);
+        localStorage.setItem('isBarVisible', 1);
         sendResponse({});
         break;
       }
@@ -2111,7 +2111,7 @@ function refreshUpdateSyncSite (update) {
     var params = getParameters();
     params.syncAMR = update;
     params.changesSinceSync = 0;
-    localStorage.getItem('parameters', JSON.stringify(params));
+    localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
@@ -2122,7 +2122,7 @@ function resetUpdate () {
   try {
     var params = getParameters();
     params.updated = undefined;
-    localStorage.getItem('parameters', JSON.stringify(params));
+    localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
     console.log(e);
