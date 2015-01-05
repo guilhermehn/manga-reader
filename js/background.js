@@ -172,6 +172,7 @@ function isInMangaListId (url) {
 function isMirrorActivated (mirrorName) {
   var states = localStorage.getItem('mirrorStates');
   var lstTmp = JSON.parse(states);
+
   if (lstTmp.length > 0) {
     for (var j = 0; j < lstTmp.length; j++) {
       if (lstTmp[j].mirror === mirrorName) {
@@ -179,6 +180,7 @@ function isMirrorActivated (mirrorName) {
       }
     }
   }
+
   return false;
 }
 
@@ -192,6 +194,7 @@ function mangaListLoaded (mirror, lst) {
 function activateMirror (mirrorName) {
   var states = localStorage.getItem('mirrorStates');
   var lstTmp = JSON.parse(states);
+
   if (lstTmp.length > 0) {
     for (var j = 0; j < lstTmp.length; j++) {
       if (lstTmp[j].mirror === mirrorName) {
@@ -199,7 +202,9 @@ function activateMirror (mirrorName) {
           mirror : mirrorName,
           activated : true
         };
+
         localStorage.setItem('mirrorStates', JSON.stringify(lstTmp));
+
         try {
           for (var i = 0; i < mirrors.length; i++) {
             if (mirrors[i].mirrorName === mirrorName) {
