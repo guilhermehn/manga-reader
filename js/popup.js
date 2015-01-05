@@ -60,10 +60,10 @@ function closestEltData (el) {
   var $el = $(el);
   var $manga = $el.closest('.manga');
 
-  if (isList() && ($('.mgline', $manga).size() >= 1)) {
+  if (isList() && ($('.mgline', $manga).length >= 1)) {
     return $el.closest('.mgline');
   }
-  else if ($('.mgelt', $manga).size() >= 1) {
+  else if ($('.mgelt', $manga).length >= 1) {
     return $el.closest('.mgelt');
   }
 
@@ -76,12 +76,12 @@ function actionPlay () {
 
 function actionBack () {
   var opt = $('.mglist select option:selected', closestEltData($(this)));
-  openTab((opt.next().size() > 0) ? opt.next().val() : opt.val());
+  openTab((opt.next().length > 0) ? opt.next().val() : opt.val());
 }
 
 function actionForward () {
   var opt = $('.mglist select option:selected', closestEltData($(this)));
-  openTab((opt.prev().size() > 0) ? opt.prev().val() : opt.val());
+  openTab((opt.prev().length > 0) ? opt.prev().val() : opt.val());
 }
 
 function actionEnd () {
@@ -93,20 +93,20 @@ function isInGroup (el) {
   var $manga = $(el).closest('.manga');
 
   if (isList()) {
-    return ($('.mgline', $manga).size() >= 1);
+    return ($('.mgline', $manga).length >= 1);
   }
 
-  return ($('.mgelt', $manga).size() >= 1);
+  return ($('.mgelt', $manga).length >= 1);
 }
 
 function groupHasNew (el) {
   var $manga = $(el).closest('.manga');
 
   if (isList()) {
-    return ($('.mgline.new', $manga).size() >= 1);
+    return ($('.mgline.new', $manga).length >= 1);
   }
 
-  return ($('.mgelt.new', $manga).size() >= 1);
+  return ($('.mgelt.new', $manga).length >= 1);
 }
 
 function findPlaceAfter (el) {
@@ -135,7 +135,7 @@ function firstLastMg () {
 
   $mangas.filter(':first').addClass('first');
   $mangas.filter(':last').addClass('last');
-  if ($('.manga:not(.hiddenMg)').size() === 0) {
+  if ($('.manga:not(.hiddenMg)').length === 0) {
     $('#nomangas').show();
     return;
   }
@@ -248,13 +248,13 @@ function moveMangaElement (elt) {
   var toMove;
   var isplaceOk = true;
   if (isList()) {
-    if ($('.mgline:not(.new)', elt.closest('.manga')).size() > 1) {
+    if ($('.mgline:not(.new)', elt.closest('.manga')).length > 1) {
       eltAfter = $($('.mgline:not(.new)', elt.closest('.manga'))[1]);
     }
     toMove = elt.closest('.mgline');
   }
   else {
-    if ($('.mgelt:not(.new)', elt.closest('.manga')).size() > 1) {
+    if ($('.mgelt:not(.new)', elt.closest('.manga')).length > 1) {
       eltAfter = $($('.mgelt:not(.new)', elt.closest('.manga'))[1]);
     }
     toMove = elt.closest('.mgelt');
@@ -339,11 +339,11 @@ function updateProgression (elt) {
     selects = $('.mglist select', par);
   }
   var value = 0;
-  if (selects.size() > 0) {
+  if (selects.length > 0) {
     var min = 100;
     selects.each(function (index) {
       var tmpval = 0;
-      var nbTot = $('option', $(this)).size();
+      var nbTot = $('option', $(this)).length;
       $('option', $(this)).each(function (index) {
         if ($(this).is(':selected')) {
           if (nbTot < 2) {
@@ -458,7 +458,7 @@ function displayMangasByCat () {
       }
     }
   });
-  if ($('.manga:not(.hiddenMg)').size() === 0) {
+  if ($('.manga:not(.hiddenMg)').length === 0) {
     $('#nomangas').show();
     return;
   }
@@ -466,7 +466,7 @@ function displayMangasByCat () {
     $('#nomangas').hide();
   }
   /*setTimeout(function () {
-    if ($('.manga:not(.hiddenMg)').size() === 0) {
+    if ($('.manga:not(.hiddenMg)').length === 0) {
       $('#nomangas').show();
       return;
     }
@@ -587,7 +587,7 @@ function bindCatsButtons () {
         if ($(this).text().trim() === catTxt.trim()) {
           var _mg = $(this).closest('.manga');
           $(this).remove();
-          if ($('.mgcategory', _mg).size() === 0) {
+          if ($('.mgcategory', _mg).length === 0) {
             $('.mginfos .cats', _mg).text('No category for this manga');
           }
         }
@@ -630,7 +630,7 @@ function bindCatsButtons () {
       sendExtRequest(obj, par, function () {
         var cats = $('.mginfos .cats', $(par).closest('.manga'));
         $(par).remove();
-        if ($('.mgcategory', cats).size() === 0) {
+        if ($('.mgcategory', cats).length === 0) {
           cats.text('No category for this manga');
         }
         displayMangasByCat();
@@ -649,7 +649,7 @@ function bindCatsButtons () {
         var cats = $('.mginfos .cats', $(par).closest('.manga'));
         $(par).remove();
 
-        if ($('.mgcategory', cats).size() === 0) {
+        if ($('.mgcategory', cats).length === 0) {
           cats.text('No category for this manga');
         }
 
@@ -724,7 +724,7 @@ function addBookmarkInSel (bm, sel) {
   var isGroup = isInGroup(sel);
   var optgrp;
   if (bm.type === 'chapter') {
-    if ($('optgroup[label=\'Chapters\']', sel).size() > 0) {
+    if ($('optgroup[label=\'Chapters\']', sel).length > 0) {
       optgrp = $('optgroup[label=\'Chapters\']', sel);
     }
     else {
@@ -733,7 +733,7 @@ function addBookmarkInSel (bm, sel) {
     }
   }
   else {
-    if ($('optgroup[label=\'Scans\']', sel).size() > 0) {
+    if ($('optgroup[label=\'Scans\']', sel).length > 0) {
       optgrp = $('optgroup[label=\'Scans\']', sel);
     }
     else {
@@ -908,10 +908,10 @@ function fillOthers (mg, where) {
 function nbOfGroup (elt) {
   if (isInGroup(elt)) {
     if (isList()) {
-      return $('.mgline', $(elt).closest('.manga')).size();
+      return $('.mgline', $(elt).closest('.manga')).length;
     }
     else {
-      return $('.mgelt', $(elt).closest('.manga')).size();
+      return $('.mgelt', $(elt).closest('.manga')).length;
     }
   }
   else {
@@ -1019,7 +1019,7 @@ function findPlaceAfterNew (elt) {
     }
   });
   if (eltNext === null) {
-    if ($('.manga:not(.new)').size() > 0) {
+    if ($('.manga:not(.new)').length > 0) {
       eltNext = $('.manga:not(.new):first');
     }
   }
@@ -1650,7 +1650,7 @@ function dragCatManga (mg, _cat) {
         }
       });
       if (!isFound) {
-        if ($('.mginfos .cats .mgcategory', $(mg).closest('.manga')).size() === 0) {
+        if ($('.mginfos .cats .mgcategory', $(mg).closest('.manga')).length === 0) {
           $('.mginfos .cats', $(mg).closest('.manga')).empty();
         }
         $('<div class=\'mgcategory\'>' + $(_cat).text().trim() + '<img class=\'actcatmgdel\' src=\'img/delete10.png\' title=\'Delete this category from this manga\' /></div>').appendTo($('.mginfos .cats', $(mg).closest('.manga')));
@@ -1684,7 +1684,7 @@ function dragCatManga (mg, _cat) {
         }
       });
       if (!isFound) {
-        if ($('.mginfos .cats .mgcategory', $(mg).closest('.manga')).size() === 0) {
+        if ($('.mginfos .cats .mgcategory', $(mg).closest('.manga')).length === 0) {
           $('.mginfos .cats', $(mg).closest('.manga')).empty();
         }
         $('<div class=\'mgcategory\'>' + $(_cat).text().trim() + '<img class=\'actcatmgdel\' src=\'img/delete10.png\' title=\'Delete this category from this manga\' /></div>').appendTo($('.mginfos .cats', $(mg).closest('.manga')));
@@ -1966,7 +1966,7 @@ function bindActions () {
               $(this).remove();
             }
           });
-          if ($('.books select optgroup', $(myself).closest('.manga')).size() === 0) {
+          if ($('.books select optgroup', $(myself).closest('.manga')).length === 0) {
             $('.books', $(myself).closest('.manga')).html('No bookmarks for this manga');
           }
         }
@@ -2047,7 +2047,7 @@ function bindActions () {
         $('.mglist select', $(myself).closest('.manga')).each(function (index) {
           closestEltData($(this)).data('mgplay', $('option:last', $(this)).val());
           $(this).val($('option:last', $(this)).val());
-          if ($('option', $(this)).size() > 1) {
+          if ($('option', $(this)).length > 1) {
             isNew = true;
             if (!closestEltData($(this)).hasClass('read')) {
               closestEltData($(this)).addClass('new');
@@ -2094,7 +2094,7 @@ function bindActions () {
         $('.mglist select', $(myself).closest('.manga')).each(function (index) {
           closestEltData($(this)).data('mgplay', $('option:last', $(this)).val());
           $(this).val($('option:last', $(this)).val());
-          if ($('option', $(this)).size() > 1) {
+          if ($('option', $(this)).length > 1) {
             isNew = true;
             if (!closestEltData($(this)).hasClass('read')) {
               closestEltData($(this)).addClass('new');
@@ -2165,7 +2165,7 @@ function bindActions () {
                 $(this).addClass('new');
                 $('.actblank', $(this)).removeClass('actblank').addClass('actread');
                 $('.actread', $(this)).attr('src', chrome.extension.getURL('img/eye.png'));
-                if ($(this).prev().size() !== 0) {
+                if ($(this).prev().length !== 0) {
                   var wasVisible = $(this).is(':visible');
                   var _first = $('.mgline:first', $(myself).closest('.manga'));
                   switchHeader(_first, $(this));
@@ -2186,7 +2186,7 @@ function bindActions () {
                 $(this).addClass('new');
                 $('.actblank', $(this)).removeClass('actblank').addClass('actread');
                 $('.actread', $(this)).attr('src', chrome.extension.getURL('img/eye.png'));
-                if ($(this).prev().size() !== 0) {
+                if ($(this).prev().length !== 0) {
                   var wasVisible = $(this).is(':visible');
                   var _first = $('.mgelt:first', $(myself).closest('.manga'));
                   switchHeader(_first, $(this));
@@ -2531,7 +2531,7 @@ function bindFoot () {
       }
     });
     $('.bottomdiv.actreadallmg').toggle('blind', {}, 500);
-    $('.bottomdiv.actreadallmg span').text('Are you sure to mark all currently viewable mangas as read (' + $('.manga.new:visible').size() + ' mangas) ?');
+    $('.bottomdiv.actreadallmg span').text('Are you sure to mark all currently viewable mangas as read (' + $('.manga.new:visible').length + ' mangas) ?');
   });
   $('#deleteallmg').click(function () {
     $('.bottomdiv').each(function (index) {
@@ -2540,7 +2540,7 @@ function bindFoot () {
       }
     });
     $('.bottomdiv.actdeleteallmg').toggle('blind', {}, 500);
-    $('.bottomdiv.actdeleteallmg span').text('Are you sure to delete all currently viewable mangas from the list (' + $('.manga:visible').size() + ' mangas) ?');
+    $('.bottomdiv.actdeleteallmg span').text('Are you sure to delete all currently viewable mangas from the list (' + $('.manga:visible').length + ' mangas) ?');
   });
   $('.bottomdiv.actreadallmg .no').click(function () {
     $(this).closest('.actreadallmg').toggle('blind', {}, 500);
@@ -2555,7 +2555,7 @@ function bindFoot () {
     };
     $('.manga.new:visible').each(function (index) {
       if (isList()) {
-        if ($('.mgline', $(this)).size() > 0) {
+        if ($('.mgline', $(this)).length > 0) {
           $('.mgline', $(this)).each(function (index) {
             obj.list[obj.list.length] = {
               url : $(this).data('mgurl'),
@@ -2571,7 +2571,7 @@ function bindFoot () {
         }
       }
       else {
-        if ($('.mgelt', $(this)).size() > 0) {
+        if ($('.mgelt', $(this)).length > 0) {
           $('.mgelt', $(this)).each(function (index) {
             obj.list[obj.list.length] = {
               url : $(this).data('mgurl'),
@@ -2617,7 +2617,7 @@ function bindFoot () {
     };
     $('.manga:visible').each(function (index) {
       if (isList()) {
-        if ($('.mgline', $(this)).size() > 0) {
+        if ($('.mgline', $(this)).length > 0) {
           $('.mgline', $(this)).each(function (index) {
             obj.list[obj.list.length] = {
               url : $(this).data('mgurl'),
@@ -2633,7 +2633,7 @@ function bindFoot () {
         }
       }
       else {
-        if ($('.mgelt', $(this)).size() > 0) {
+        if ($('.mgelt', $(this)).length > 0) {
           $('.mgelt', $('.manga:visible')).each(function (index) {
             obj.list[obj.list.length] = {
               url : $(this).data('mgurl'),

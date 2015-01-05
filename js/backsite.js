@@ -222,7 +222,7 @@ function waitForEndLoad (td) {
 }
 
 function update () {
-  var tmpcn = $('.manganameforamr').size();
+  var tmpcn = $('.manganameforamr').length;
 
   if (tmpcn !== nbclasses) {
     $('.amrfind').remove();

@@ -494,7 +494,7 @@ function showDialog () {
 }
 
 function addTrailingLastChap (where) {
-  if ($('#nChapBtn0').size() === 0) {
+  if ($('#nChapBtn0').length === 0) {
     $('<div style="width:100%; background-color:white; border-radius:5px;margin-top:15px;margin-bottom:15px;\"><img src="' + chrome.extension.getURL('img/warn.png') + '" style="vertical-align:middle;margin-right:10px;"/><span style="font-weight:bold;font-size:12pt;color:black;vertical-align:middle;\">This is the latest published chapter !</span></div>').appendTo(where);
   }
 }
@@ -616,7 +616,7 @@ function onLoadImage () {
     chrome.runtime.sendMessage(objBM, function (result) {
       if (result.isBooked) {
         var imgScan = $('.spanForImg img[src="' + result.scanSrc + '"]');
-        if (imgScan.size() === 0) {
+        if (imgScan.length === 0) {
           imgScan = $('.spanForImg img[src="' + decodeURI(result.scanSrc) + '"]');
         }
         imgScan.data('note', result.note);
@@ -703,7 +703,7 @@ function transformImagesInBook (where, mode, res) {
   var posImg = [];
   var isFirstDouble = true;
   var isEven = true;
-  // console.log('Transformation book : Nombre d'images' + $('.imageAMR', where).size());
+  // console.log('Transformation book : Nombre d'images' + $('.imageAMR', where).length);
   $('.imageAMR', where)
     .sort(function (a, b) {
       var nba = $(a).closest('.spanForImg').data('order');
@@ -714,6 +714,7 @@ function transformImagesInBook (where, mode, res) {
       // console.log('setting image position...');
       if (isLandscape(this) || getMirrorScript().isImageInOneCol(this, document, window.location.href)) {
         posImg[index] = 2;
+
         if (isLandscape(this) && isFirstDouble) {
           if (index !== 0 && posImg[index-1] !== 1) {
             for (var i = 0; i < posImg.length; i++) {
@@ -722,12 +723,14 @@ function transformImagesInBook (where, mode, res) {
               }
             }
           }
+
           isFirstDouble = false;
         }
+
         isEven = true;
       }
       else {
-        if (index === $('.imageAMR', where).size() - 1 && isEven) {
+        if (index === $('.imageAMR', where).length - 1 && isEven) {
           posImg[index] = 2;
         }
         else {
@@ -1169,11 +1172,11 @@ function bindHotkeys () {
           zoomOut();
         }
 
-        if (e.which === 66 && $('#pChapBtn0').size() > 0) { // b
+        if (e.which === 66 && $('#pChapBtn0').length > 0) { // b
           window.location.href = $('#pChapBtn0').attr('href');
         }
 
-        if (e.which === 78 && $('#nChapBtn0').size() > 0) { // n
+        if (e.which === 78 && $('#nChapBtn0').length > 0) { // n
           window.location.href = $('#nChapBtn0').attr('href');
         }
 
@@ -1196,7 +1199,7 @@ function bindHotkeys () {
 
             // Get first visible image
             curimg = whichImageIsFirst(true);
-            if (curimg !== null && curimg.size() > 0) {
+            if (curimg !== null && curimg.length > 0) {
               // Check if top and bottom of this image are visible
               viss = topbotVis(curimg);
 
@@ -1267,13 +1270,13 @@ function bindHotkeys () {
             else {
               var hiddenDocumentSize = document.documentElement.scrollHeight - window.innerHeight;
 
-              if (window.pageYOffset >= hiddenDocumentSize && nextRight && $('#nChapBtn0').size() > 0) {
+              if (window.pageYOffset >= hiddenDocumentSize && nextRight && $('#nChapBtn0').length > 0) {
                 window.location.href = $('#nChapBtn0').attr('href');
               }
 
               // Get first visible image
               curimg = whichImageIsFirst(false);
-              if (curimg !== null && curimg.size() > 0) {
+              if (curimg !== null && curimg.length > 0) {
                 // Check if top and bottom of this image are visible
                 viss = topbotVis(curimg[0]);
 
@@ -1290,7 +1293,7 @@ function bindHotkeys () {
                 else {
                   // Calculate next scan id
                   nb = curimg.data('order') + 1;
-                  if (nb >= $('.spanForImg').size()) {
+                  if (nb >= $('.spanForImg').length) {
                     // Current scan was last scan -> move to bottom of page
                     $.scrollTo($(document.body), 800, {
                       queue: true,
@@ -1573,7 +1576,7 @@ function onLoadNextImage () {
   var lstbtn = [];
   var id = 'nChapBtn';
   var i = 0;
-  while ($('#' + id + i).size() > 0) {
+  while ($('#' + id + i).length > 0) {
     lstbtn[lstbtn.length] = $('#' + id + i);
     i++;
   }
@@ -1587,7 +1590,7 @@ function onLoadNextImage () {
       $this.data('nbloaded', 1);
     }
     var prog;
-    if ($('.AMRprogress', $this).size() === 0) {
+    if ($('.AMRprogress', $this).length === 0) {
       prog = $('<span class="buttonAMR AMRprogress></span>');
       prog.css('position', 'relative');
       prog.css('top', '0');
@@ -1868,7 +1871,7 @@ function clickOnBM (src) {
   var imgScan = $('.spanForImg img[src="' + src + '"]');
   var $bookmarkData = $('#bookmarkData');
 
-  if (imgScan.size() === 0) {
+  if (imgScan.length === 0) {
     imgScan = $('.spanForImg img[src="' + decodeURI(src) + '"]');
   }
 

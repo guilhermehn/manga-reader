@@ -1910,7 +1910,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             div.style.display = 'none';
             var id = 'mangaNextChap';
             var i = 0;
-            while ($('#' + id + i).size() > 0) {
+            while ($('#' + id + i).length > 0) {
               i++;
             }
             id = id + i;

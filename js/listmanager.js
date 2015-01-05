@@ -790,8 +790,8 @@ function bindActions () {
   $('.mgLst tbody tr .checker input').click(function (e) {
     if ($(this).closest('tr').is('.head')) {
       var n = $(this).closest('tr').next();
-      while (n.size() !== 0 && !n.is('.head') && !n.is('.single')) {
-        if ($('.checker input', n).size() > 0) {
+      while (n.length !== 0 && !n.is('.head') && !n.is('.single')) {
+        if ($('.checker input', n).length > 0) {
           $('.checker input', n)[0].checked = this.checked;
         }
 
@@ -809,8 +809,8 @@ function bindActions () {
       var nbunchecked = 0;
       // console.log(n);
 
-      while (n.size() !== 0 && !n.is('.head') && !n.is('.single')) {
-        if ($('.checker input', n).size() > 0) {
+      while (n.length !== 0 && !n.is('.head') && !n.is('.single')) {
+        if ($('.checker input', n).length > 0) {
           if ($('.checker input', n).is(':checked')) {
             nbchecked++;
           }

@@ -424,7 +424,7 @@ function testImages (div) {
   if (isOk) {
     modifyStatut('testimgs', 'O');
     if ($('#auto').is(':checked')) {
-      var index = Math.floor(Math.random()*$('option', $('#lstImgs')).size());
+      var index = Math.floor(Math.random()*$('option', $('#lstImgs')).length);
       $('option:nth-child(' + index + ')', $('#lstImgs')).attr('selected', 'selected');
       testImage();
     }
@@ -613,14 +613,14 @@ function testNav (div) {
   addResult('testnavplace', 'L', 'Test if the mirror returns a place to write navigation.', $('<span>Loading...</span>'), '');
 
   var where = $(getMangaMirror($('#mirrorList').val()).whereDoIWriteNavigation($(div), $('#lstChaps').val()));
-  if (where === null || where === undefined || where.size() === 0) {
+  if (where === null || where === undefined || where.length === 0) {
     modifyResult('testnavplace', $('<span>Your mirror does not return a place to write navigation</span>'));
     modifyComment('testnavplace', 'KO');
     modifyStatut('testnavplace', 'K');
   }
   else {
-    if (where.size() !== 2) {
-      modifyResult('testnavplace', $('<span>Your mirror returns ' + where.size() + ' places to write navigation</span>'));
+    if (where.length !== 2) {
+      modifyResult('testnavplace', $('<span>Your mirror returns ' + where.length + ' places to write navigation</span>'));
       modifyComment('testnavplace', 'AMR recommends to return two places to write navigation. One on the top of the page, one at the bottom.');
       modifyStatut('testnavplace', 'W');
     }
@@ -634,14 +634,14 @@ function testNav (div) {
   addResult('testscansplace', 'L', 'Test if the mirror returns a place to write scans.', $('<span>Loading...</span>'), '');
 
   where = $(getMangaMirror($('#mirrorList').val()).whereDoIWriteScans($(div), $('#lstChaps').val()));
-  if (where === null || where === undefined || where.size() === 0) {
+  if (where === null || where === undefined || where.length === 0) {
     modifyResult('testscansplace', $('<span>Your mirror does not return a place to write scans</span>'));
     modifyComment('testscansplace', 'KO');
     modifyStatut('testscansplace', 'K');
   }
   else {
-    if (where.size() !== 1) {
-      modifyResult('testscansplace', $('<span>Your mirror returns ' + where.size() + ' places to write scans</span>'));
+    if (where.length !== 1) {
+      modifyResult('testscansplace', $('<span>Your mirror returns ' + where.length + ' places to write scans</span>'));
       modifyComment('testscansplace', 'Your need to return only one place to write scans.');
       modifyStatut('testscansplace', 'K');
     }
@@ -734,7 +734,7 @@ function resetAfter (idTest) {
   var elTest = $('#' + idTest);
   var nxt = elTest.next();
 
-  while (nxt.size() !== 0) {
+  while (nxt.length !== 0) {
     nxt.remove();
     nxt = elTest.next();
   }
@@ -838,7 +838,7 @@ function testChapters () {
       modifyStatut('listchaps', 'O');
 
       if ($('#auto').is(':checked')) {
-        var index = Math.floor(Math.random() * $('option', $('#lstChaps')).size());
+        var index = Math.floor(Math.random() * $('option', $('#lstChaps')).length);
 
         $('option:nth-child(' + index + ')', $('#lstChaps')).attr('selected', 'selected');
         testMirrorForChap();
@@ -935,7 +935,7 @@ function testListMgs () {
     if (isOk) {
       modifyStatut('listmgs', 'O');
       if ($('#auto').is(':checked')) {
-        var index = Math.floor(Math.random() * $('option', $('#lstMangas')).size());
+        var index = Math.floor(Math.random() * $('option', $('#lstMangas')).length);
         $('option:nth-child(' + index + ')', $('#lstMangas')).attr('selected', 'selected');
         testChapters();
       }
