@@ -1431,8 +1431,11 @@ function bindCalculateTime () {
 function onErrorImage () {
   var $this = $(this);
 
-  $this.css('margin-bottom', '50px');
-  $this.css('margin-right', '10px');
+  $this.css({
+    'margin-bottom': '50px',
+    'margin-right': '10px'
+  });
+
   if (this.naturalWidth === 0) {
     //  Here, number of tries before considering image can not be loaded
     if ($this.data('number') === 2) {
@@ -1523,19 +1526,22 @@ function onErrorImage () {
   }
   else {
     $('#' + $this.data('divLoad')).hide();
-    $this.data('finish', '1');
-    $this.data('error', '1');
+
+    $this.data({
+      finish: 1,
+      error: 1
+    });
   }
 }
 
 function nbLoaded (where) {
-  var nbOk = 0;
-  $('.imageAMR', where).each(function () {
-    if ($(this).data('finish') === '1') {
-      nbOk++;
-    }
-  });
-  return nbOk;
+  var loaded = $(where)
+    .find('.imageAMR')
+    .filter(function () {
+      return $(this).data('finish') === 1;
+    });
+
+  return loaded.length;
 }
 
 function loadImageAMR (where, url, img, pos, res, mode, second) {
@@ -1616,16 +1622,22 @@ function loadNextChapter (urlNext) {
     mirrorName: getMirrorScript().mirrorName
   }, function (resp) {
     var lst = resp.images;
+
     if (lst !== null) {
       for (var i = 0; i < lst.length; i++) {
         var img = new Image();
-        $(img).data('attempts', 0);
-        $(img).data('id', i);
-        $(img).data('urltoload', lst[i]);
-        $(img).data('urlnext', urlNext);
-        $(img).data('total', lst.length);
-        $(img).load(onLoadNextImage);
-        $(img).error(onErrorNextImage);
+
+        $(img)
+          .load(onLoadNextImage)
+          .error(onErrorNextImage)
+          .data({
+            attempts: 0,
+            id: i,
+            urltoload: lst[i],
+            urlnext: urlNext,
+            total: lst.length
+          });
+
         getMirrorScript().getImageFromPageAndWrite(lst[i], img, document, urlNext);
       }
     }
@@ -1636,8 +1648,9 @@ function waitForImages (where, mode, res, title) {
   var isOk = true;
   var nbOk = 0;
   var nbTot = 0;
-  $('.imageAMR', where).each(function () {
-    if ($(this).data('finish') !== '1') {
+
+  $(where).find('.imageAMR').each(function () {
+    if ($(this).data('finish') !== 1) {
       isOk = false;
     }
     else {
@@ -1648,16 +1661,17 @@ function waitForImages (where, mode, res, title) {
     }
     nbTot++;
   });
-  if (res.load === 1) {
-    if (nbTot !== 0) {
-      $('title').text(Math.floor(nbOk / nbTot * 100) + ' % - ' + title);
-    }
+
+  if (res.load === 1 && nbTot !== 0) {
+    $('title').text(Math.floor(nbOk / nbTot * 100) + ' % - ' + title);
   }
+
   if (isOk) {
-    //  console.log('finish loading images');
     transformImagesInBook(where, mode, res);
     getMirrorScript().doAfterMangaLoaded(document, window.location.href);
+
     $('title').text(title);
+
     if ($.data(document.body, 'nexturltoload') && prefetchChapter) {
       loadNextChapter($.data(document.body, 'nexturltoload'));
     }
@@ -1667,35 +1681,46 @@ function waitForImages (where, mode, res, title) {
     }
   }
   else {
-    setTimeout(function () {
-      waitForImages(where, mode, res, title);
-    }, 500);
+    setTimeout(waitForImages.bind(null, where, mode, res, title), 500);
   }
 }
 
 function writeImages (where, list, mode, res) {
   var table = $('<table class="AMRtable"></table>');
+  var tr;
+  var td;
+  var spanner;
+  var div;
+  var img;
+
   table.css('text-align', 'center');
   table.css('position', 'static');
   table.css('width', '100%');
   table.appendTo(where);
 
   for (var i = 0; i < list.length; i++) {
-    var tr = $('<tr></tr>');
+    tr = $('<tr></tr>');
     tr.appendTo(table);
-    var td = $('<td></td>');
+
+    td = $('<td></td>');
     td.css('text-align', 'center');
     td.appendTo(tr);
 
-    var spanner = $('<div class="spanForImg"></div>');
-    $(spanner).css('vertical-align', 'middle');
-    $(spanner).css('text-align', 'center');
-    $(spanner).data('order', i);
-    spanner.appendTo(td);
+    spanner = $('<div class="spanForImg"></div>');
 
-    var div = $('<div id="loader' + i + '" class="divLoading"></div>');
+    spanner
+      .css({
+        'vertical-align': 'middle',
+        'text-align': 'center'
+      })
+      .data('order', i);
+
+    td.append(spanner);
+
+    div = $('<div id="loader' + i + '" class="divLoading"></div>');
     div.css('background', 'url(' + chrome.extension.getURL('img/loading.gif') + ') no-repeat center center');
-    div.appendTo(spanner);
+
+    spanner.append(div);
 
     //  Using $ to create this image instead of DOM native method fix a
     // weird bug on canary and only some websites.
@@ -1703,14 +1728,19 @@ function writeImages (where, list, mode, res) {
     // on the website and when the extension creates image from DOM and container
     // from website's $. We can't have both of them interract (DOM restriction)
     // It might be a Canary issue more than an AMR issue... Here it is fixed...
-    var img = new Image();
+    img = new Image();
 
-    $(img).addClass('imageAMR');
-    $(img).data('owidth', img.offsetWidth);
-    $(img).data('divLoad', 'loader' + i);
-    $(img).data('idScan', i);
+    $(img)
+      .addClass('imageAMR')
+      .data({
+        owidth: img.offsetWidth,
+        divLoad: 'loader' + i,
+        idScan: i
+      });
+
     loadImageAMR(where, list[i], img, i, res, mode);
-    $(img).appendTo(spanner);
+
+    spanner.append(img);
   }
 
   var title = $('title').text();
@@ -1836,28 +1866,23 @@ function initPage () {
 
 function clickOnBM (src) {
   var imgScan = $('.spanForImg img[src="' + src + '"]');
+  var $bookmarkData = $('#bookmarkData');
 
   if (imgScan.size() === 0) {
     imgScan = $('.spanForImg img[src="' + decodeURI(src) + '"]');
   }
 
-  $('#bookmarkData').data('type', 'scan');
-  $('#bookmarkData').data('scanUrl', src);
-  $('#bookmarkData').data('scanName', imgScan.data('idScan'));
+  var imgScanData = imgScan.data();
 
-  if (imgScan.data('note') !== undefined) {
-    $('#noteAMR').val(imgScan.data('note'));
-  }
-  else {
-    $('#noteAMR').val('');
-  }
+  $bookmarkData.data({
+    type: 'scan',
+    scanUrl: src,
+    scanName: imgScan.data('idScan')
+  });
 
-  if (imgScan.data('booked')) {
-    $('#delBtnAMR').show();
-  }
-  else {
-    $('#delBtnAMR').hide();
-  }
+  $('#noteAMR').val(imgScanData.hasOwnProperty('note') ? imgScanData.note : '');
+
+  $('#delBtnAMR')[imgScanData.booked ? 'show' : 'hide']();
 
   $('#bookmarkPop').modal({
     focus: false,
@@ -1866,13 +1891,10 @@ function clickOnBM (src) {
   });
 }
 
-function zoomrest () {
+function resetZoom () {
   $('.imageAMR').each(function () {
     if (this.style.zoom !== 0) {
       this.style.zoom *= 0;
-    }
-    else {
-      this.style.zoom = 0;
     }
   });
 }
