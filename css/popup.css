@@ -1,24 +1,5 @@
-﻿/**
-
-  This file is part of All Mangas Reader.
-  
-  All Mangas Reader is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  
-  All Mangas Reader is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License
-  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>. 
-
-*/
-
-html{
-  width: auto; 
+﻿html{
+  width: auto;
   height: auto;
 }
 
@@ -175,9 +156,9 @@ body.big {
 select {
   display: inline-block;
   font: inherit;
-  outline:none; 
+  outline:none;
   padding: 0px 12px 0px 0px;
-  -webkit-appearance:none; 
+  -webkit-appearance:none;
   border-radius: 4px;
 }
 
@@ -432,7 +413,7 @@ body.big .list .manga .mgtitle {
 }
 .block .manga.new .mgtitle {
   background-color: #FFCCCC;
-} 
+}
 .block .manga.read .mgtitle {
   background-color: #CCCCCC;
 }
@@ -597,7 +578,7 @@ body.big .list .manga .mgtitle {
 }
 .manga.read .button:active {
   background: #DDDDDD;
-} 
+}
 .mainbutton {
   vertical-align:middle;
   padding-left:6px;
@@ -613,7 +594,7 @@ body.big .list .manga .mgtitle {
   padding: 3px;
   padding-left:6px;
   padding-right:6px;
-  border-width:2px; 
+  border-width:2px;
 }
 .mainbutton.checked {
   background: #F5F5FF;
@@ -765,7 +746,7 @@ body.big .manga select {
 
 .stopupdate {
   /*opacity:0.5;*/
-  -webkit-filter: contrast(85%);  
+  -webkit-filter: contrast(85%);
 }
 /* Scrollbars
 -----------------------------------*/
@@ -845,11 +826,11 @@ body.big .manga select {
 }
 #search tr.lastLine {
   border-bottom-left-radius: 4px 4px;
-  border-bottom-right-radius: 4px 4px; 
+  border-bottom-right-radius: 4px 4px;
 }
 #search tr.firstLine {
   border-top-left-radius: 4px 4px;
-  border-top-right-radius: 4px 4px; 
+  border-top-right-radius: 4px 4px;
 }
 #search td.mangaName {
   width:60%;
@@ -872,7 +853,7 @@ body.big .manga select {
 	height: 16px;
 	cursor: pointer;
 	margin-left:10px;
-	margin-top:8px; 
+	margin-top:8px;
 	padding-left:20px;
 	background-image: url(../img/find.png);
 }
@@ -885,7 +866,7 @@ body.big .manga select {
   font-weight:bold;
   width:100%;
   text-align:center;
-  margin-bottom:10px; 
+  margin-bottom:10px;
 }
 #search #filMirrors {
   text-align:center;
@@ -909,9 +890,9 @@ body.big .manga select {
   text-align:right;
   float:right;
   border-bottom-left-radius: 4px 4px;
-  border-bottom-right-radius: 4px 4px; 
+  border-bottom-right-radius: 4px 4px;
   border-top-left-radius: 4px 4px;
-  border-top-right-radius: 4px 4px; 
+  border-top-right-radius: 4px 4px;
   background-color:#CCCCFF;
   padding-left:5px;
   padding-right:5px;
@@ -940,9 +921,9 @@ body.big .manga select {
 #search input {
   border:none;
   border-bottom-left-radius: 4px 4px;
-  border-bottom-right-radius: 4px 4px; 
+  border-bottom-right-radius: 4px 4px;
   border-top-left-radius: 4px 4px;
-  border-top-right-radius: 4px 4px; 
+  border-top-right-radius: 4px 4px;
   background-color:#DDDDFF;
   font-size:9pt;
   padding:2px;

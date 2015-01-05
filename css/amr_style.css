@@ -1,23 +1,4 @@
-﻿/**
-
-  This file is part of All Mangas Reader.
-  
-  All Mangas Reader is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  
-  All Mangas Reader is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License
-  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>. 
-
-*/
-
-body {
+﻿body {
   background-color:#000000;
   color:#FFFFFF;
   padding:0;
@@ -53,7 +34,7 @@ body {
   margin-bottom: -44px;
   margin-left:2px;
   margin-top:2px;
-  /*float:left;*/ 
+  /*float:left;*/
   display:inline-block;
   vertical-align:middle;
   z-index:100;
@@ -70,7 +51,7 @@ body {
   margin:0;
   font-size:16pt;
   margin-left:105px;
-  margin-top:-23px; 
+  margin-top:-23px;
 }
 #menunav {
   background:-webkit-gradient(linear, 0% 0%, 100% 0%, from(#9999CC), to(#DDDDFF));
@@ -83,7 +64,7 @@ body {
   -webkit-transition: all .4s ease-in-out;
 }
 #menuitems {
-  
+
 }
 #menuitems ul {
   margin:0;
@@ -133,7 +114,7 @@ body {
   top:79px;
   bottom:16px;
   padding-bottom:10px;
-  position:fixed; 
+  position:fixed;
   z-index:100;
   width:100%;
   overflow:auto;
@@ -151,7 +132,7 @@ body {
   top:79px;
   bottom:16px;
   padding-bottom:10px;
-  position:fixed; 
+  position:fixed;
   z-index:100;
   width:100%;
   overflow:auto;
@@ -172,7 +153,7 @@ body {
   font-size:8pt;
   overflow:auto;
   z-index:2000;
-  background-color:#FAFAFF; 
+  background-color:#FAFAFF;
   color:black;
   border:1px solid #DDDDFF;
   border-top-right-radius:6px;
@@ -199,7 +180,7 @@ body {
   position:fixed;
   bottom:0;
   font-size:8pt;
-  text-align:center;  
+  text-align:center;
   z-index:4000;
   -webkit-transition: all .4s ease-in-out;
 }
@@ -279,7 +260,7 @@ body {
 }
 #subcorpseone .article.account h2 {
   text-align:center;
-} 
+}
 #subcorpseone .article h3 {
   font-size:10pt;
   font-weight:bold;
@@ -435,7 +416,7 @@ ul.icons img {
 }
 #gallery .picture, #galleryMain .picture {
   width:150px;
-  height:150px; 
+  height:150px;
   padding:1px;
   display:inline-block;
   vertical-align:middle;
@@ -454,7 +435,7 @@ ul.icons img {
 
 #galleryMain .picture {
   width:100px;
-  height:100px; 
+  height:100px;
   /*background-color:#EEEEFF;*/
 }
 
@@ -502,11 +483,11 @@ ul.icons img {
 }
 .amrinstall:hover {
   box-shadow: 0 0 40px #AAAACC;
-} 
+}
 .amrinstall:active {
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#AAAADD), to(#BBBBEE));
   box-shadow: 0 0 40px #AAAACC;
-} 
+}
 #subcorpseone .article.main {
   padding:10px;
   border-top-left-radius:0px;
@@ -676,7 +657,7 @@ h3 img, h2 img {
   margin-bottom:10px;
   border-top-right-radius:0px;
   -webkit-transition: all .4s ease-in-out;
-} 
+}
 .donateCont form {
   margin-bottom:4px;
   text-align:center;
@@ -791,7 +772,7 @@ input[type='radio'] {
 }
 .tab.checked {
   border-bottom:2px solid #FAFAFF;
-  background: #FAFAFF;  
+  background: #FAFAFF;
   font-weight:bold;
 }
 
@@ -824,7 +805,7 @@ input[type='radio'] {
   display:none;
   list-style-type:none;
   padding:0;
-  margin:0;  
+  margin:0;
   z-index:2000;
   /*margin-top:30px;
   margin-left:-100px;*/
@@ -919,7 +900,7 @@ input[type='radio'] {
   height:auto;
   max-height:200px;
   overflow:auto;
-  margin-top:5px; 
+  margin-top:5px;
   box-shadow: 0 0 15px #AAAACC;
   -moz-box-shadow: 0 0 15px #AAAACC;
 }
@@ -985,7 +966,7 @@ input[type='radio'] {
 }
 .tip:hover span {
   display: block;
-  position: absolute; 
+  position: absolute;
   padding: .5em;
   /*min-width: 120px;*/
   text-align: center;
@@ -995,7 +976,7 @@ input[type='radio'] {
   background: #9999CC;
   /*-moz-border-radius:10px;
   border-radius:10px;*/
-  /*border-radius:10px;*/    
+  /*border-radius:10px;*/
   font-size: .86em;
   right:0;
   color:#EEEEFF;
@@ -1006,11 +987,11 @@ input[type='radio'] {
 .tip:hover span:after {
   position: absolute;
   display: block;
-  content: "";  
+  content: "";
   border-color: #9999CC transparent transparent transparent;
   border-style: solid;
   border-width: 7px 7px 7px 7px;
-  height:0; 
+  height:0;
   width:0;
   position:absolute;
   bottom: -14px;
@@ -1019,7 +1000,7 @@ input[type='radio'] {
 .tip:hover span:before {
   position: absolute;
   display: block;
-  content: "";  
+  content: "";
   border-color: #DDDDFF transparent transparent transparent;
   border-style: solid;
   border-width: 9px 9px 9px 9px;
@@ -1130,7 +1111,7 @@ input[type='radio'] {
   border-style: solid;
   border-top-width: 1px;
 }
-.mgLst tfoot { 
+.mgLst tfoot {
   text-align:left;
 }
 .mgLst tfoot span.title {
@@ -1218,7 +1199,7 @@ input[type='radio'] {
   font-size:10pt;
   font-weight:bold;
   text-align:center;
-  
+
 }
 .mgLst .title {
   font-weight:bold;
@@ -1300,7 +1281,7 @@ input[type='radio'] {
 }
 .listavatar .avatar {
   max-width:100px;
-  max-height:100px; 
+  max-height:100px;
   display:inline-block;
   vertical-align:middle;
   border-radius:4px;
@@ -1390,8 +1371,8 @@ input[type='radio'] {
 }
 .linkcol .friendBox .friend {
   display:inline-block;
-  width:30px; 
-  height:30px; 
+  width:30px;
+  height:30px;
 }
 .linkcol .friendBox .friend .friendCont, .avatarcont {
   position:relative;
@@ -1445,8 +1426,8 @@ input[type='radio'] {
   height:80px;
 }
 .rotate {
-  -webkit-transform: rotate(-90deg); 
-  -moz-transform: rotate(-90deg);	
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
   font-weight:bold;
 }
 
@@ -1518,7 +1499,7 @@ input[type='radio'] {
   color:#555599;
   padding:5px;
 }
-#menuitems ul li.notifSquare .box .viewallnots { 
+#menuitems ul li.notifSquare .box .viewallnots {
   text-align:center;
   background-color: #DDDDFF;
   color:#555599;
@@ -1549,7 +1530,7 @@ input[type='radio'] {
 .fList {
   margin-left:auto;
   margin-right:auto;
-  font-size:8pt;  
+  font-size:8pt;
   border-spacing:0;
   margin-top:10px;
 }
@@ -1575,8 +1556,8 @@ input[type='radio'] {
 }
 .userBigBox .friend {
   display:inline-block;
-  width:50px; 
-  height:50px; 
+  width:50px;
+  height:50px;
 }
 .userBigBox .friend .friendCont {
   position:relative;

@@ -1,23 +1,4 @@
-﻿/**
-
-  This file is part of All Mangas Reader.
-  
-  All Mangas Reader is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  
-  All Mangas Reader is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  
-  You should have received a copy of the GNU General Public License
-  along with All Mangas Reader.  If not, see <http://www.gnu.org/licenses/>. 
-
-*/
-
-a.buttonAMR {
+﻿a.buttonAMR {
 	font-size:10pt!important;
 	color:#000!important;
 	text-decoration:none!important;
@@ -35,7 +16,7 @@ a.buttonAMR {
 
 a.buttonAMR:hover {
 	color:#003C82!important;
-	border-color:#3278BE; 
+	border-color:#3278BE;
 	text-decoration:none!important;
 	background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(#FFFFFF));
 }
@@ -72,14 +53,14 @@ a.buttonAMR:active {
 }
 
 #simplemodal-overlay {
-  background-color:#000; 
+  background-color:#000;
   cursor:wait;
   z-index:10000001;
 }
 
 #simplemodal-container {
-  color:#bbb!important; 
-  background-color:#333!important; 
+  color:#bbb!important;
+  background-color:#333!important;
   border:4px solid #444!important;
   padding:10px!important;
   height:auto!important;
@@ -100,13 +81,13 @@ a.buttonAMR:active {
 #simplemodal-container a.modalCloseImg {
   background-repeat: no-repeat;
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAdCAYAAABfeMd1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA8xJREFUeNqclktIVFEYx+fO+GjUGqw0S/IRGtTKENtkqJTkooUwC0EQNNpEEiJYoISbKAhcCYogagvBlbRQW/kAIdAkbRGIi3RiNIfJR+qk4zxO/2/4zu3cOw+tA7+5c8/j+5/vfN8592hCCMspSy4o4acXLIHVU40kkQTkglfgm4hd3KAb3PxfESf4KU5XAuBRPA0tznINgCa1Yn193bK0tBR5ZmVlWUpKSiyFhYXmcfPgiaZpn0/yZEKd4vLysqioqKCZRAEhMTc3Z/bqy0nL9Uzt3dXVJex2e0wBic1mEx0dHcLv96tDX8cTyVN7tbW1JTRupr6+3uzR7Vgib2Tr5ORklJHa2lrDe0FBgVhcXDTUDw8PqyIfY4m4ZGt5ebnB4OrqaqS+srJSj8XOzk6kbnBwUO9XVFQkgsGgKmTTRQ4PD/NlrcvlivKis7Mz0kZiJBRLQDI7O/s3rwOBu7oI1B/KhrGxsaiBtDTSsCyxBIj+/n69D+w+Jg0r/YTD4Wy5fF6vNyoD19bWLENDQ4b3pqammBtPHQ+diF0rNo4GxT3Z4HA4ogbSxmtsbNTf4ZnhXS1Ief1/KBQ6og0f2fXIkuJ4MVGDLBOACtVRW6KYuN3ue7oISIc3btmoDp6enjYYbWlp0Y3Qf1UAx40hu0pLSx0yJPRz1uPxvJONo6OjhswiAZm+BBlX3yU9PT26gM/no/PrHLDpIr29vQ/U7GloaDBk10k7vrq62uDF+Pg4ZYbDIAKuzc/PD8hOdBbRUXGaI6Wmpkbs7+/rAltbW19RX2wWSQd54A6WzaV6REcFjvSYxikGtESqBwcHB7vt7e30bSngyVtl4M+AHHCrubn5+cbGxqb5tFtYWBB9fX2iu7s78pyZmYn6ciF2e62trS9hpwxcAWlqdqWA8+A6uA+ejoyMfBL/UFZWVjbr6ureYmwNuAEugtSIff4y0rpl8CWhFDjBC6fT+R4BdB8dHYXiGZ+amvJgY35A/3ZQB+iIv8pLlaR/frHpad2S2b1McJk75vPzUlVVVV5ZWdmF5ORkGw6+EL6YvyYmJlyIxyba3eA7swG2gQ8E6NSSIhoHKIWTgISyWSyH/2fyJMjrMPgNdvl6REI/gAfsgANwTCcLJYh+kWAhGwulcfplcqwyeWPZuQ8NpnNpn41uM3vsAQkEOQuNtxWTUCp7lcHPNK6zsifH7I2PZ+5j4QBPIhz3SqQsXRLHKZVFU/hd4xkGWcjPT7k8IelBwnsXC0kxK3tn4/9SJKwYDTPCLJDocmcWlPtJUy86isGERv4IMACaz3RmXeGcqwAAAABJRU5ErkJggg==);
-  width:25px; 
-  height:29px; 
-  display:inline; 
-  z-index:3200; 
-  position:absolute; 
-  top:-15px; 
-  right:-16px; 
+  width:25px;
+  height:29px;
+  display:inline;
+  z-index:3200;
+  position:absolute;
+  top:-15px;
+  right:-16px;
   cursor:pointer;
 }
 #simplemodal-container span, #simplemodal-container #descEltAMR, #simplemodal-container td b {
@@ -249,7 +230,7 @@ a.buttonAMR:active {
   font-family:Verdana!important;
   font-weight:bold!important;
   position:relative!important;
-  margin:0!important; 
+  margin:0!important;
   margin-left:auto!important;
   margin-right:auto!important;
   bottom:62px!important;
