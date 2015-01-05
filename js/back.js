@@ -21,9 +21,11 @@ function getMirrorScript () {
 }
 
 function removeBanner () {
-  var obj = {};
-  obj.action = 'parameters';
-  chrome.runtime.sendMessage(obj, function (response) {
+  var payload = {
+    action: 'parameters'
+  };
+
+  chrome.runtime.sendMessage(payload, function (response) {
     if (response.displayAds === 0) {
       getMirrorScript().removeBanners(document, window.location.href);
     }
@@ -120,32 +122,38 @@ function setHWZoom (img) {
   });
 }
 
-function getTopPlus () {
-  var ret;
-  if (document.body.style.borderTopWidth !== undefined && document.body.style.borderTopWidth !== '') {
-    ret = parseInt(document.body.style.borderTopWidth, 10);
-  }
-  else {
-    ret = 0;
-  }
-  return ret;
-}
+var getBodyHeight = (function () {
+  var $body = $('body');
 
-function zoomin () {
-  var ancheight = document.body.offsetHeight - getTopPlus();
+  return function () {
+    return $body.outerHeight(true);
+  };
+})();
+
+function setZoom (factor) {
+  var prevHeight = getBodyHeight();
+
   $('.imageAMR').each(function () {
-    if ($(this).data('zoom')) {
-      $(this).data('zoom', $(this).data('zoom') * 1.2);
+    var $this = $(this);
+    var zoomAccessor = $this.data.bind($this, 'zoom');
+    var zoom = zoomAccessor();
+
+    if (zoom) {
+      zoomAccessor(zoom * factor);
     }
     else {
-      $(this).data('zoom', 1.2);
-      $(this).data('baseheight', $(this).height());
-      $(this).data('basewidth', $(this).width());
+      $this.data({
+        zoom: factor,
+        baseheight: $this.height(),
+        basewidth: $this.width()
+      });
     }
+
     setHWZoom(this);
   });
-  var newheight = document.body.offsetHeight - getTopPlus();
-  var ratioY = (newheight / ancheight);
+
+  var actualHeight = getBodyHeight();
+  var ratioY = (actualHeight / prevHeight);
 
   $.scrollTo('50%', {
     axis: 'x'
@@ -154,28 +162,8 @@ function zoomin () {
   window.scrollBy(0, window.scrollY * (ratioY - 1));
 }
 
-function zoomout () {
-  var ancheight = document.body.offsetHeight - getTopPlus();
-  $('.imageAMR').each(function () {
-    if ($(this).data('zoom')) {
-      $(this).data('zoom', $(this).data('zoom') * 0.833);
-    }
-    else {
-      $(this).data('zoom', 0.833);
-      $(this).data('baseheight', $(this).height());
-      $(this).data('basewidth', $(this).width());
-    }
-    setHWZoom(this);
-  });
-  var newheight = document.body.offsetHeight - getTopPlus();
-  var ratioY = (newheight / ancheight);
-
-  $.scrollTo('50%', {
-    axis: 'x'
-  });
-
-  window.scrollBy(0, window.scrollY * (ratioY - 1));
-}
+var zoomIn = setZoom.bind(null, 1.2);
+var zoomOut = setZoom.bind(null, 0.833);
 
 function bottomVisible (el) {
   var top = el.offsetTop;
@@ -187,13 +175,12 @@ function bottomVisible (el) {
   }
 
   top += el.offsetTop;
-  //  console.log('t+h ' + (top + height) + ' ; wt+wh ' + window.pageYOffset + window.innerHeight );
+
   return (top + height) <= window.pageYOffset + window.innerHeight;
 }
 
 function topVisible (el) {
   var top = el.offsetTop;
-  //  var height = el.offsetHeight;
 
   while (el.offsetParent) {
     el = el.offsetParent;
@@ -212,7 +199,6 @@ function topbotVis (spanFimg) {
   var fTop = $('img:visible', $(spanFimg)).sort(function (a, b) {
     var aTop = a.offsetTop + a.offsetParent.offsetTop;
     var bTop = b.offsetTop + b.offsetParent.offsetTop;
-    //  console.log('Top : a : ' + aTop + ' ; b : ' + bTop + ' --> ' + ((aTop < bTop) ? -1 : ((aTop == bTop) ? 0 : 1)));
     return ((aTop < bTop) ? -1 : ((aTop === bTop) ? 0 : 1));
   }).first();
 
@@ -245,8 +231,8 @@ function scrollbotoffset (el) {
   return height - window.innerHeight - 45;
 }
 
-function removeContextOn (elt) {
-  var elements = document.getElementsByTagName(elt);
+function removeContextOn (el) {
+  var elements = document.getElementsByTagName(el);
   var e;
   for (var i = 0; i < elements.length; i++) {
     e = elements[i];
@@ -1171,11 +1157,11 @@ function bindHotkeys () {
       }
 
       if (e.which === 107) { // +
-        zoomin();
+        zoomIn();
       }
 
       if (e.which === 109) { // -
-        zoomout();
+        zoomOut();
       }
 
       if (e.which === 66 && $('#pChapBtn0').size() > 0) { // b
