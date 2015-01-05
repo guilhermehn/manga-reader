@@ -500,13 +500,18 @@ function addTrailingLastChap (where) {
 }
 
 function onLoadImage () {
-  if ($(this).data('canvasId')) {
+  var $this = $(this);
+  var $data = $this.data();
+  var src;
+  var $bookmarkData;
+
+  if ($data.canvasId) {
     var width;
     var height;
-    var ancCan = $('#' + $(this).data('canvasId'));
+    var ancCan = $('#' + $data.canvasId);
 
-    var resize = $(this).data('resize');
-    var mode = $(this).data('modedisplay');
+    var resize = $data.resize;
+    var mode = $data.modedisplay;
 
     if (resize === 1) {
       if (ancCan.width() < ancCan.height()) {
@@ -543,39 +548,43 @@ function onLoadImage () {
     height = (width / ancCan.width()) * ancCan.height();
 
     //  DIV VERSION
-    $('div', ancCan).add($('div > img', ancCan)).each(function () {
-      //  FIX CONFLICT WITH AdBlock -->
-      var wori = $(this).width();
-      if (wori === 0) {
-        //  console.log('zero width img to ' + $(this).data('width'));
-        wori = $(this).data('width');
-      }
-      var hori = $(this).height();
-      if (hori === 0) {
-        //  console.log('zero height img to ' + $(this).data('height'));
-        hori = $(this).data('height');
-      }
-      //  ---
-      var w = Math.floor((width / ancCan.width()) * wori) + 1;
-      var h = Math.floor((width / ancCan.width()) * hori) + 1;
+    ancCan
+      .find('div, div > img')
+      .each(function () {
+        //  FIX CONFLICT WITH AdBlock -->
+        var $this = $(this);
+        var originalWidth = $this.width();
 
-      $(this).css('width', w + 'px');
-      $(this).css('height', h + 'px');
-      if ($(this).css('position') === 'absolute') {
-        var l = Math.floor((width / ancCan.width()) * $(this).position().left);
-        if (l !== 0) {
-          l++;
+        if (originalWidth === 0) {
+          originalWidth = $this.data('width');
         }
 
-        var t = Math.floor((width / ancCan.width()) * $(this).position().top);
-        if (t !== 0) {
-          t++;
+        var originalHeight = $this.height();
+        if (originalHeight === 0) {
+          originalHeight = $this.data('height');
         }
 
-        $(this).css('left', l + 'px');
-        $(this).css('top', t + 'px');
-      }
-    });
+        //  ---
+        var w = Math.floor((width / ancCan.width()) * originalWidth) + 1;
+        var h = Math.floor((width / ancCan.width()) * originalHeight) + 1;
+
+        $this.css('width', w + 'px');
+        $this.css('height', h + 'px');
+        if ($this.css('position') === 'absolute') {
+          var l = Math.floor((width / ancCan.width()) * $this.position().left);
+          if (l !== 0) {
+            l++;
+          }
+
+          var t = Math.floor((width / ancCan.width()) * $this.position().top);
+          if (t !== 0) {
+            t++;
+          }
+
+          $this.css('left', l + 'px');
+          $this.css('top', t + 'px');
+        }
+      });
 
     $(ancCan).css('width', width + 'px');
     $(ancCan).css('height', height + 'px');
@@ -588,86 +597,105 @@ function onLoadImage () {
     //  Bookmark DIV MOD ??? TODO
   }
   else {
-    $('#' + $(this).data('divLoad')).hide();
-    $(this).data('finish', '1');
-    $(this).css('margin-right', '10px');
-    if ($(this).attr('src') !== chrome.extension.getURL('img/imgerror.png')) {
-      $(this).css('border', '5px solid white');
-      $(this).css('margin-bottom', '50px');
+    src = $this.attr('src');
+
+    $('#' + $data.divLoad).hide();
+
+    $this
+      .data('finish', '1')
+      .css('margin-right', '10px');
+
+    if (src !== chrome.extension.getURL('img/imgerror.png')) {
+      $this.css({
+        border: '5px solid white',
+        'margin-bottom': '50px'
+      });
     }
 
     //  Create contextual menu to bookmark image
     chrome.runtime.sendMessage({
       action: 'createContextMenu',
-      lstUrls: [$(this).attr('src')]
+      lstUrls: [src]
     }, $.noop);
 
+    $bookmarkData = $('#bookmarkData');
+
     //  Check bookmarks
-    var objBM = {
+    var getBookmarkNotePayload = {
       action: 'getBookmarkNote',
-      mirror: $('#bookmarkData').data('mirror'),
-      url: $('#bookmarkData').data('url'),
-      chapUrl: $('#bookmarkData').data('chapUrl'),
+      mirror: $bookmarkData.data('mirror'),
+      url: $bookmarkData.data('url'),
+      chapUrl: $bookmarkData.data('chapUrl'),
       type: 'scan',
-      scanUrl: $(this).attr('src'),
-      scanName: $(this).data('idScan')
+      scanUrl: src,
+      scanName: $data.idScan
     };
 
-    chrome.runtime.sendMessage(objBM, function (result) {
+    chrome.runtime.sendMessage(getBookmarkNotePayload, function (result) {
       if (result.isBooked) {
         var imgScan = $('.spanForImg img[src="' + result.scanSrc + '"]');
+
         if (imgScan.length === 0) {
           imgScan = $('.spanForImg img[src="' + decodeURI(result.scanSrc) + '"]');
         }
-        imgScan.data('note', result.note);
-        imgScan.data('booked', 1);
+
+        imgScan.data({
+          booked: 1,
+          note: result.note
+        });
+
         if (result.note !== '') {
           imgScan.attr('title', 'Note : ' + result.note);
         }
-        imgScan.css('border-color', '#999999');
+
+        imgScan.css('border-color', '#999');
       }
     });
 
     if (autoBookmarkScans) {
-      $(this).dblclick(function () {
+      // Bookmark the image on doubleclick
+      $this.on('dblclick', function () {
+        var $this = $(this);
         var obj;
-        if ($(this).data('booked')) {
+
+        if ($this.data('booked')) {
           obj = {
             action: 'deleteBookmark',
-            mirror: $('#bookmarkData').data('mirror'),
-            url: $('#bookmarkData').data('url'),
-            chapUrl: $('#bookmarkData').data('chapUrl'),
-            type: 'scan'
+            mirror: $bookmarkData.data('mirror'),
+            url: $bookmarkData.data('url'),
+            chapUrl: $bookmarkData.data('chapUrl'),
+            type: 'scan',
+            scanUrl: src
           };
-          obj.scanUrl = $(this).attr('src');
 
-          $(this).css('border-top-color', 'white');
-          $(this).css('border-right-color', 'white');
-          $(this).css('border-bottom-color', 'white');
-          $(this).css('border-left-color', 'white');
-          $(this).removeAttr('title');
-          $(this).removeData('booked');
-          $(this).removeData('note');
+          $this
+            .css('border-color', '#fff')
+            .removeAttr('title')
+            .removeData('booked')
+            .removeData('note');
 
           chrome.runtime.sendMessage(obj, $.noop);
         }
         else {
           obj = {
             action: 'addUpdateBookmark',
-            mirror: $('#bookmarkData').data('mirror'),
-            url: $('#bookmarkData').data('url'),
-            chapUrl: $('#bookmarkData').data('chapUrl'),
+            mirror: $bookmarkData.data('mirror'),
+            url: $bookmarkData.data('url'),
+            chapUrl: $bookmarkData.data('chapUrl'),
             type: 'scan',
-            name: $('#bookmarkData').data('name'),
-            chapName: $('#bookmarkData').data('chapName')
+            name: $bookmarkData.data('name'),
+            chapName: $bookmarkData.data('chapName'),
+            scanUrl: $this.attr('src'),
+            scanName: $this.data('scanName'),
+            note: ''
           };
-          obj.scanUrl = $(this).attr('src');
-          obj.scanName = $(this).data('scanName');
-          obj.note = '';
 
-          $(this).css('border-color', '#999999');
-          $(this).data('note', '');
-          $(this).data('booked', 1);
+          $this
+            .css('border-color', '#999999')
+            .data({
+              note: '',
+              booked: 1
+            });
 
           chrome.runtime.sendMessage(obj, $.noop);
         }
@@ -675,8 +703,8 @@ function onLoadImage () {
     }
   }
 
-  var divNum = $('<div class="pagenumberAMR"><div class="number">' + ($(this).data('idScan') + 1) + '</div></div>');
-  divNum.appendTo($(this).closest('.spanForImg'));
+  var divNum = $('<div class="pagenumberAMR"><div class="number">' + ($this.data('idScan') + 1) + '</div></div>');
+  $this.closest('.spanForImg').append(divNum);
 }
 
 function isLandscape (img) {

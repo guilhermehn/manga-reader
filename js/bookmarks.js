@@ -1,104 +1,127 @@
-﻿var mirrors;
+﻿/*globals getMangaMirror, loadMenu, wssql*/
+var mirrors;
 var bmsAll;
 
 function openTab (urlToOpen) {
   chrome.runtime.sendMessage({
-  action : "opentab",
-  url : urlToOpen
-  }, function (response) {});
+    action : 'opentab',
+    url : urlToOpen
+  }, $.noop);
 }
 
 function compareTo (a, b) {
   if (a < b) {
     return -1;
   }
+
   if (a === b) {
     return 0;
   }
+
   return 1;
 }
 
-function isSame (a, b) {
-  var at = a.trim().replace(/^\s*|\s*$/g, '').toUpperCase();
-  var bt = b.trim().replace(/^\s*|\s*$/g, '').toUpperCase();
+function trim (x) {
+  return x.trim().replace(/^\s*|\s*$/g, '');
+}
 
-  return (at === bt);
+function isSame (a, b) {
+  var at = trim(a).toUpperCase();
+  var bt = trim(b).toUpperCase();
+
+  return at === bt;
 }
 
 function switchOnglet (ong, tab) {
-  $(".tab").removeClass("checked");
-  $(ong).addClass("checked");
-  $(".ongletCont").each(function (index) {
-    if ($(this).attr("id") === tab) {
-      $(this).show();
-    }
-    else {
-      $(this).hide();
-    }
+  $('.tab').removeClass('checked');
+  $(ong).addClass('checked');
+
+  $('.ongletCont').each(function () {
+    var $this = $(this);
+
+    $this[$this.attr('id') === tab ? 'show' : 'hide']();
   });
+
   localStorage.bookmarkTab = tab;
 }
 
 function isMirrorEnable (mirrorName) {
-  if (typeof localStorage.bookmarkMirrorsState !== 'undefined') {
-    var obj = JSON.parse(localStorage.bookmarkMirrorsState),
-      i;
-    for (i = 0; i < obj.length; i += 1) {
-      if (obj[i].mirror === mirrorName) {
-        return obj[i].state;
+  try {
+    if (typeof localStorage.bookmarkMirrorsState !== 'undefined') {
+      var obj = JSON.parse(localStorage.bookmarkMirrorsState);
+      var i;
+
+      for (i = 0; i < obj.length; i += 1) {
+        if (obj[i].mirror === mirrorName) {
+          return obj[i].state;
+        }
       }
     }
-  }
-  return true;
-}
-function setMirrorState (mirrorName, state) {
-  if (typeof localStorage.bookmarkMirrorsState !== 'undefined') {
-    var obj = JSON.parse(localStorage.bookmarkMirrorsState);
-    var isFound = false;
-    var i;
 
-    for (i = 0; i < obj.length; i += 1) {
-      if (obj[i].mirror === mirrorName) {
-        obj[i] = {
+    return true;
+  }
+  catch (e) {
+    console.error(e);
+  }
+}
+
+function setMirrorState (mirrorName, state) {
+  try {
+    if (typeof localStorage.bookmarkMirrorsState !== 'undefined') {
+      var obj = JSON.parse(localStorage.bookmarkMirrorsState);
+      var isFound = false;
+      var i;
+
+      for (i = 0; i < obj.length; i += 1) {
+        if (obj[i].mirror === mirrorName) {
+          obj[i] = {
+            mirror : mirrorName,
+            state : state
+          };
+
+          localStorage.bookmarkMirrorsState = JSON.stringify(obj);
+          isFound = true;
+
+          break;
+        }
+      }
+
+      if (!isFound) {
+        obj[obj.length] = {
           mirror : mirrorName,
           state : state
         };
+
         localStorage.bookmarkMirrorsState = JSON.stringify(obj);
-        isFound = true;
-        break;
       }
     }
-    if (!isFound) {
-      obj[obj.length] = {
-        mirror : mirrorName,
-        state : state
-      };
-      localStorage.bookmarkMirrorsState = JSON.stringify(obj);
+    else {
+      localStorage.bookmarkMirrorsState = JSON.stringify([
+        {
+          mirror : mirrorName,
+          state : state
+        }
+      ]);
     }
   }
-  else {
-    localStorage.bookmarkMirrorsState = JSON.stringify([
-      {
-        mirror : mirrorName,
-        state : state
-      }
-    ]);
+  catch (e) {
+    console.error(e);
   }
 }
 
 function slideChange () {
-  var value = $("#slider").slider("option", "value");
-  var metric = value + "px";
+  var value = $('#slider').slider('option', 'value');
+  var metric = value + 'px';
   localStorage.bookmarkSlideValue = value;
 
-  $(".scanDiv, .scanImg img, .scanChap").css("max-width", metric);
+  $('.scanDiv, .scanImg img, .scanChap').css('max-width', metric);
 
-  $(".scanImg").css({
-    "width": metric,
-    "height": metric
+  $('.scanImg').css({
+    width: metric,
+    height: metric
   });
 
-  $(".scanImg img").css("max-height", metric);
+  $('.scanImg img').css('max-height', metric);
 }
 
 function removeUnknown (lst) {
@@ -116,28 +139,31 @@ function removeUnknown (lst) {
 }
 
 function modifyBM (dataElt) {
-  $("#bookmarkData").data("mirror", dataElt.data("mirror"));
-  $("#bookmarkData").data("url", dataElt.data("url"));
-  $("#bookmarkData").data("chapUrl", dataElt.data("chapUrl"));
-  $("#bookmarkData").data("type", dataElt.data("type"));
-  $("#bookmarkData").data("name", dataElt.data("name"));
-  $("#bookmarkData").data("chapName", dataElt.data("chapName"));
-  $("#bookmarkData").data("scanUrl", dataElt.data("scanUrl"));
-  $("#bookmarkData").data("scanName", dataElt.data("scanName"));
-  $("#bookmarkData").data("note", dataElt.data("note"));
-  $("#noteAMR").val($("#bookmarkData").data("note"));
+  var $bookmarkData = $('#bookmarkData');
+  var dataAccessor = $bookmarkData.data.bind($bookmarkData);
+
+  dataAccessor('mirror', dataElt.data('mirror'));
+  dataAccessor('url', dataElt.data('url'));
+  dataAccessor('chapUrl', dataElt.data('chapUrl'));
+  dataAccessor('type', dataElt.data('type'));
+  dataAccessor('name', dataElt.data('name'));
+  dataAccessor('chapName', dataElt.data('chapName'));
+  dataAccessor('scanUrl', dataElt.data('scanUrl'));
+  dataAccessor('scanName', dataElt.data('scanName'));
+  dataAccessor('note', dataElt.data('note'));
+  $('#noteAMR').val(dataAccessor('note'));
 
   var textDesc;
-  if ($("#bookmarkData").data("type") === "chapter") {
-    textDesc = "Bookmark chapter '" + $("#bookmarkData").data("chapName") + "' of '" + $("#bookmarkData").data("name") + "' on '" + $("#bookmarkData").data("mirror");
-    textDesc += "'. You can add notes below which will be associated with this bookmark.";
+  if (dataAccessor('type') === 'chapter') {
+    textDesc = 'Bookmark chapter \'' + dataAccessor('chapName') + '\' of \'' + dataAccessor('name') + '\' on \'' + dataAccessor('mirror');
+    textDesc += '\'. You can add notes below which will be associated with this bookmark.';
   }
   else {
-    textDesc = "Bookmark scan '" + $("#bookmarkData").data("scanName") + "' of chapter '" + $("#bookmarkData").data("chapName") + "' of '" + $("#bookmarkData").data("name") + "' on '" + $("#bookmarkData").data("mirror");
-    textDesc += "'. You can add notes below which will be associated with this bookmark.";
+    textDesc = 'Bookmark scan \'' + dataAccessor('scanName') + '\' of chapter \'' + dataAccessor('chapName') + '\' of \'' + dataAccessor('name') + '\' on \'' + dataAccessor('mirror');
+    textDesc += '\'. You can add notes below which will be associated with this bookmark.';
   }
-  $("#bookmarkPop #descEltAMR").text(textDesc);
-  $("#bookmarkPop").modal({
+  $('#bookmarkPop #descEltAMR').text(textDesc);
+  $('#bookmarkPop').modal({
     focus : false
   });
 }
@@ -147,14 +173,14 @@ function sortBms (bms) {
     if (isSame(a.name, b.name)) {
       if (a.chapterUrl === b.chapterUrl) {
         if (a.type === b.type) {
-          if (a.type === "chapter") {
+          if (a.type === 'chapter') {
             return 0;
           }
 
           return compareTo(a.scanName, b.scanName);
         }
 
-        if (a.type === "chapter") {
+        if (a.type === 'chapter') {
           return -1;
         }
 
@@ -175,18 +201,18 @@ function filter () {
   var valS;
   var i;
 
-  var $selected = $("#mangas option:selected");
+  var $selected = $('#mangas option:selected');
   var selectedValue = $selected.val();
 
   for (i = 0; i < bmsAll.length; i += 1) {
-    if (selectedValue.val() !== "") {
+    if (selectedValue.val() !== '') {
       if (!isSame(selectedValue, bmsAll[i].name)) {
         isOk = false;
       }
     }
 
-    if ($("#searchBoxInput").val() !== "") {
-      valS = $("#searchBoxInput").val().trim();
+    if ($('#searchBoxInput').val() !== '') {
+      valS = $('#searchBoxInput').val().trim();
       if (bmsAll[i].name.indexOf(valS) !== -1) {
         found = true;
       }
@@ -204,7 +230,7 @@ function filter () {
       }
     }
 
-    if (!$("#mirrorsCheck img[title='" + bmsAll[i].mirror + "']").parent().parent().hasClass("checked")) {
+    if (!$('#mirrorsCheck img[title=\'' + bmsAll[i].mirror + '\']').parent().parent().hasClass('checked')) {
       isOk = false;
     }
 
@@ -214,37 +240,43 @@ function filter () {
   }
 
   if (tmpLst.length > 0) {
-    $("#results").css("display", "block");
-    $("#nores").css("display", "none");
+    $('#results').css('display', 'block');
+    $('#nores').css('display', 'none');
     renderManga(tmpLst);
     slideChange();
   }
   else {
-    $("#results").css("display", "none");
-    $("#nores").css("display", "block");
+    $('#results').css('display', 'none');
+    $('#nores').css('display', 'block');
   }
 }
 
 function addOptionValue (curMg, valMg) {
-  opt = $("<option value='" + curMg + "'>" + curMg + "</option>");
+  var opt = $('<option value=\'' + curMg + '\'>' + curMg + '</option>');
 
-  if (valMg !== null && valMg !== "" && isSame(valMg, curMg)) {
-    opt.attr("selected", true);
+  if (valMg !== null && valMg !== '' && isSame(valMg, curMg)) {
+    opt.attr('selected', true);
   }
 
-  opt.appendTo($("#mangas"));
+  opt.appendTo($('#mangas'));
 }
 
 function loadBookmarks () {
   if (typeof localStorage.bookmarkMangasSearch !== 'undefined') {
-    $("#searchBoxInput").val(localStorage.bookmarkMangasSearch);
+    $('#searchBoxInput').val(localStorage.bookmarkMangasSearch);
   }
 
   var bookmarks = localStorage.bookmarks;
-  var lstTmp = JSON.parse(bookmarks);
+  try {
+    var lstTmp = JSON.parse(bookmarks);
+  }
+  catch (e) {
+    console.debug(bookmarks);
+    console.error(e);
+  }
+
   var valMg = null;
-  var curMg;
-  var opt;
+  var currentManga;
   var i;
 
   bmsAll = removeUnknown(lstTmp);
@@ -255,328 +287,374 @@ function loadBookmarks () {
       valMg = localStorage.bookmarkMangasSelect;
     }
 
-    $("#mangas").empty();
-    $("<option value='' " + ((valMg === "") ? "selected='selected'" : "") + ">All mangas</option>").appendTo($("#mangas"));
+    $('#mangas')
+      .empty()
+      .append('<option value=\'\' ' + ((valMg === '') ? 'selected=\'selected\'' : '') + '>All mangas</option>');
+
     for (i = 0; i < bmsAll.length; i += 1) {
-      if (typeof curMg !== 'undefined' && !isSame(curMg, bmsAll[i].name)) {
-        addOptionValue(curMg, valMg);
-        /* opt = $("<option value='" + curMg + "'>" + curMg + "</option>");
-        if (valMg !== null && valMg !== "" && isSame(valMg, curMg)) {
-          opt.attr("selected", true);
-        }
-        opt.appendTo($("#mangas")); */
+      if (typeof currentManga !== 'undefined' && !isSame(currentManga, bmsAll[i].name)) {
+        addOptionValue(currentManga, valMg);
       }
 
-      curMg = bmsAll[i].name;
+      currentManga = bmsAll[i].name;
     }
 
-    if (typeof curMg !== 'undefined') {
-      addOptionValue(curMg, valMg);
-      /* opt = $("<option value='" + curMg + "'>" + curMg + "</option>");
-      if (valMg !== null && valMg !== "" && isSame(valMg, curMg)) {
-        opt.attr("selected", true);
-      }
-      opt.appendTo($("#mangas"));*/
+    if (typeof currentManga !== 'undefined') {
+      addOptionValue(currentManga, valMg);
     }
 
     filter();
   }
   else {
-    $("#mangas").empty();
-    $("<option value=''>No bookmarks found</option>").appendTo($("#mangas"));
-    $("#mangas").attr("disabled", "true");
-    $("#results").css("display", "none");
-    $("#nores").css("display", "block");
+    $('#mangas')
+      .empty()
+      .attr('disabled', 'true')
+      .append('<option value=\'\'>No bookmarks found</option>');
+
+    $('#results').hide();
+    $('#nores').show();
   }
 }
 
 function deleteBM (dataElt) {
-  var textDesc,
-    res;
-  if (dataElt.data("type") === "chapter") {
-    textDesc = "Are you sure to delete the bookmarked chapter '" + $("#bookmarkData").data("chapName") + "' of '" + $("#bookmarkData").data("name") + "' on '" + $("#bookmarkData").data("mirror");
-    textDesc += "' ?";
+  var textDesc;
+  var res;
+
+  if (dataElt.data('type') === 'chapter') {
+    textDesc = 'Are you sure to delete the bookmarked chapter \'' + $('#bookmarkData').data('chapName') + '\' of \'' + $('#bookmarkData').data('name') + '\' on \'' + $('#bookmarkData').data('mirror') + '\'?';
   }
   else {
-    textDesc = "Are you sure to delete the bookmarked scan '" + $("#bookmarkData").data("scanName") + "' of chapter '" + $("#bookmarkData").data("chapName") + "' of '" + $("#bookmarkData").data("name") + "' on '" + $("#bookmarkData").data("mirror");
-    textDesc += "' ?";
+    textDesc = 'Are you sure to delete the bookmarked scan \'' + $('#bookmarkData').data('scanName') + '\' of chapter \'' + $('#bookmarkData').data('chapName') + '\' of \'' + $('#bookmarkData').data('name') + '\' on \'' + $('#bookmarkData').data('mirror') + '\' ?';
   }
+
   res = confirm(textDesc);
+
   if (res) {
     var obj = {
-      action : "deleteBookmark",
-      mirror : dataElt.data("mirror"),
-      url : dataElt.data("url"),
-      chapUrl : dataElt.data("chapUrl"),
-      type : dataElt.data("type")
+      action : 'deleteBookmark',
+      mirror : dataElt.data('mirror'),
+      url : dataElt.data('url'),
+      chapUrl : dataElt.data('chapUrl'),
+      type : dataElt.data('type')
     };
-    if (dataElt.data("type") !== "chapter") {
-      obj.scanUrl = dataElt.data("scanUrl");
-      obj.scanName = dataElt.data("scanName");
+
+    if (dataElt.data('type') !== 'chapter') {
+      obj.scanUrl = dataElt.data('scanUrl');
+      obj.scanName = dataElt.data('scanName');
     }
-    chrome.runtime.sendMessage(obj, function (resp) {
-      loadBookmarks();
-    });
+
+    chrome.runtime.sendMessage(obj, loadBookmarks);
   }
 }
+
 function createScan (obj, where) {
-  var divImg = $("<div class='scanDiv'></div>");
-  divImg.data("mirror", obj.mirror);
-  divImg.data("url", obj.url);
-  divImg.data("chapUrl", obj.chapUrl);
-  divImg.data("type", obj.type);
-  divImg.data("name", obj.name);
-  divImg.data("chapName", obj.chapName);
-  divImg.data("scanUrl", obj.scanUrl);
-  divImg.data("scanName", obj.scanName);
-  divImg.data("note", obj.note);
-  var divIconsCont = $("<div class='scanIconsCont'></div>");
-  var divIcons = $("<div class='scanIcons'></div>");
-  divIcons.appendTo(divIconsCont);
-  divIconsCont.appendTo(divImg);
-  var imgMirror = $("<div class='scanMirror'><img src='" + getMangaMirror(obj.mirror).mirrorIcon + "' title='" + getMangaMirror(obj.mirror).mirrorName + "'/></div>");
-  imgMirror.appendTo(divIcons);
-  var imgModify = $("<div class='scanMirror'></div>");
-  var aMod = $("<a href='#'><img src='img/edit.png' title='Modify'/></a>");
+  var divImg = $('<div class=\'scanDiv\'></div>');
+  var mirror = getMangaMirror(obj.mirror);
+
+  divImg.data({
+    mirror: obj.mirror,
+    url: obj.url,
+    chapUrl: obj.chapUrl,
+    type: obj.type,
+    name: obj.name,
+    chapName: obj.chapName,
+    scanUrl: obj.scanUrl,
+    scanName: obj.scanName,
+    note: obj.note
+  });
+
+  var divIconsCont = $('<div class=\'scanIconsCont\'></div>');
+  var divIcons = $('<div class=\'scanIcons\'></div>');
+
+  divIconsCont.append(divIcons);
+  divImg.append(divIconsCont);
+
+  var imgMirror = $('<div class=\'scanMirror\'><img src=\'' + mirror.mirrorIcon + '\' title=\'' + mirror.mirrorName + '\'/></div>');
+  divIcons.append(imgMirror);
+
+  var imgModify = $('<div class=\'scanMirror\'></div>');
+  var aMod = $('<a href=\'#\'><img src=\'img/edit.png\' title=\'Modify\'/></a>');
+
   aMod.click(function () {
     modifyBM($(this).parent().parent().parent().parent());
     return false;
   });
-  aMod.appendTo(imgModify);
-  imgModify.appendTo(divIcons);
-  var imgDelete = $("<div class='scanMirror'></div>");
-  var aDel = $("<a href='#'><img src='img/cancel.png' title='Delete Bookmark'/></a>");
+
+  imgModify.append(aMod);
+  divIcons.append(imgModify);
+
+  var imgDelete = $('<div class=\'scanMirror\'></div>');
+  var aDel = $('<a href=\'#\'><img src=\'img/cancel.png\' title=\'Delete Bookmark\'/></a>');
+
   aDel.click(function () {
     deleteBM($(this).parent().parent().parent().parent());
     return false;
   });
-  aDel.appendTo(imgDelete);
-  imgDelete.appendTo(divIcons);
-  var divImgImg = $("<div class='scanImg'></div>");
-  var img = $("<a href='" + obj.scanUrl + "' rel='prettyPhoto[gal]' title='" + obj.note + "'></a>");
-  var imgimg = $("<img src='" + obj.scanUrl + "' alt='" + obj.chapName + "' />");
+
+  imgDelete.append(aDel);
+  divIcons.append(imgDelete);
+
+  var divImgImg = $('<div class=\'scanImg\'></div>');
+  var img = $('<a href=\'' + obj.scanUrl + '\' rel=\'prettyPhoto[gal]\' title=\'' + obj.note + '\'></a>');
+  var imgimg = $('<img src=\'' + obj.scanUrl + '\' alt=\'' + obj.chapName + '\' />');
+
   imgimg.appendTo(img);
   imgimg.load(function () {
     if (this.width < this.height) {
-      $(".scanMirror", $(this).parent().parent().parent()).addClass("horiz");
+      $('.scanMirror', $(this).parent().parent().parent()).addClass('horiz');
     }
   });
+
   img.appendTo(divImgImg);
   divImgImg.appendTo(divImg);
-  var chap = $("<div class='scanChap'>" + obj.chapName + "</span><" + (($("#mangas option:selected").val() === "") ? "&nbsp;(" + obj.name + ")" : "") + "</div>");
+
+  var chap = $('<div class=\'scanChap\'>' + obj.chapName + '</span><' + (($('#mangas option:selected').val() === '') ? '&nbsp;(' + obj.name + ')' : '') + '</div>');
+
   // Create the a tag and append the function
-  var a_obj = $("<a href='#' >" + obj.chapName + "</a>");
+  var linkObj = $('<a href=\'#\' >' + obj.chapName + '</a>');
   var aUrl = obj.chapUrl;
-  a_obj.click( function () {
-    openTab(aUrl);
-  });
-  a_obj.appendTo(chap);
-  var note = $("<div class='scanNote'><span>" + obj.note + "</span></div>");
-  note.appendTo(divImg);
-  divImg.appendTo(where);
-  divImg.hover(function () {
-    $(".scanIconsCont", $(this)).fadeIn(200);
-  }, function () {
-    $(".scanIconsCont", $(this)).fadeOut(200);
-  });
+
+  linkObj.click(openTab.bind(null, aUrl));
+  chap.append(linkObj);
+
+  var note = $('<div class=\'scanNote\'><span>' + obj.note + '</span></div>');
+
+  divImg.append(note);
+  where.append(divImg);
+
+  var scanIconsCont = divImg.find('.scanIconsCont');
+
+  divImg.hover(
+    scanIconsCont.fadeIn.bind(scanIconsCont, 200),
+    scanIconsCont.fadeOut.bind(scanIconsCont, 200)
+  );
 }
+
 function renderManga (lstBms) {
-  var divChaps,
-    divScans,
-    parity = 0,
-    i;
+  var divChaps;
+  var divScans;
+  var parity = 0;
+  var i;
+
   for (i = 0; i < lstBms.length; i += 1) {
-    if (lstBms[i].type === "chapter") {
+    if (lstBms[i].type === 'chapter') {
       if (divChaps === undefined) {
-        $("#noreschap").css("display", "none");
-        divChaps = $("<div class='mangaChapsDiv'></div>");
-        $("#resultschap").empty();
-        divChaps.appendTo($("#resultschap"));
-        $("<table></table>").appendTo(divChaps);
+        $('#noreschap').css('display', 'none');
+        divChaps = $('<div class=\'mangaChapsDiv\'></div>');
+        $('#resultschap').empty();
+        divChaps.appendTo($('#resultschap'));
+        $('<table></table>').appendTo(divChaps);
       }
-      var tr = $("<tr class='chapLine'></tr>");
-      tr.data("mirror", lstBms[i].mirror);
-      tr.data("url", lstBms[i].url);
-      tr.data("chapUrl", lstBms[i].chapUrl);
-      tr.data("type", lstBms[i].type);
-      tr.data("name", lstBms[i].name);
-      tr.data("chapName", lstBms[i].chapName);
-      tr.data("note", lstBms[i].note);
+
+      var tr = $('<tr class=\'chapLine\'></tr>');
+      tr.data('mirror', lstBms[i].mirror);
+      tr.data('url', lstBms[i].url);
+      tr.data('chapUrl', lstBms[i].chapUrl);
+      tr.data('type', lstBms[i].type);
+      tr.data('name', lstBms[i].name);
+      tr.data('chapName', lstBms[i].chapName);
+      tr.data('note', lstBms[i].note);
+
       if (parity % 2 === 0) {
-        tr.addClass("even");
+        tr.addClass('even');
       }
       else {
-        tr.addClass("odd");
+        tr.addClass('odd');
       }
-      tr.appendTo($("table", divChaps));
+
+      tr.appendTo($('table', divChaps));
+
       // Create the a tag and append the function
-      var alink = $("<a href='#' >" + lstBms[i].chapName + "</a>");
+      var alink = $('<a href=\'#\' >' + lstBms[i].chapName + '</a>');
       var achapUrl = lstBms[i].chapUrl;
-      alink.click( function () {
-        openTab(achapUrl);
-      });
-      var tdChap = $("<td class='chapName'><img src='" + getMangaMirror(lstBms[i].mirror).mirrorIcon + "' title='" + getMangaMirror(lstBms[i].mirror).mirrorName + "'/>" + (($("#mangas option:selected").val() === "") ? "&nbsp;(" + lstBms[i].name + ")" : "") + "</td>");
+
+      alink.click(openTab.bind(null, achapUrl));
+
+      var tdChap = $('<td class=\'chapName\'><img src=\'' + getMangaMirror(lstBms[i].mirror).mirrorIcon + '\' title=\'' + getMangaMirror(lstBms[i].mirror).mirrorName + '\'/>' + (($('#mangas option:selected').val() === '') ? '&nbsp;(' + lstBms[i].name + ')' : '') + '</td>');
       tdChap.appendTo(tr);
       alink.appendTo(tdChap);
-      var tdNote = $("<td class='chapNote'>" + lstBms[i].note + "</td>");
+
+      var tdNote = $('<td class=\'chapNote\'>' + lstBms[i].note + '</td>');
       tdNote.appendTo(tr);
-      var divIconsCont = $("<div class='scanIconsContTd'></div>");
-      var divIcons = $("<div class='scanIcons'></div>");
+
+      var divIconsCont = $('<div class=\'scanIconsContTd\'></div>');
+      var divIcons = $('<div class=\'scanIcons\'></div>');
       divIcons.appendTo(divIconsCont);
       divIconsCont.appendTo(tdNote);
-      var imgModify = $("<div class='scanMirror'></div>");
-      var aMod = $("<a href='#'><img src='img/edit.png' title='Modify'/></a>");
+
+      var imgModify = $('<div class=\'scanMirror\'></div>');
+      var aMod = $('<a href=\'#\'><img src=\'img/edit.png\' title=\'Modify\'/></a>');
+
       aMod.click(function () {
         modifyBM($(this).parent().parent().parent().parent().parent());
         return false;
       });
+
       aMod.appendTo(imgModify);
       imgModify.appendTo(divIcons);
-      var imgDelete = $("<div class='scanMirror'></div>");
-      var aDel = $("<a href='#'><img src='img/cancel.png' title='Delete Bookmark'/></a>");
+      var imgDelete = $('<div class=\'scanMirror\'></div>');
+      var aDel = $('<a href=\'#\'><img src=\'img/cancel.png\' title=\'Delete Bookmark\'/></a>');
+
       aDel.click(function () {
         deleteBM($(this).parent().parent().parent().parent().parent());
         return false;
       });
+
       aDel.appendTo(imgDelete);
       imgDelete.appendTo(divIcons);
       parity += 1;
     }
     else {
       if (divScans === undefined) {
-        $("#noresscans").css("display", "none");
-        divScans = $("<div class='mangaScansDiv'></div>");
-        $("#resultsscans").empty();
-        divScans.appendTo($("#resultsscans"));
+        $('#noresscans').css('display', 'none');
+        divScans = $('<div class=\'mangaScansDiv\'></div>');
+
+        $('#resultsscans').empty();
+
+        divScans.appendTo($('#resultsscans'));
       }
+
       createScan(lstBms[i], divScans);
     }
   }
-  $("#resultschap .mangaChapsDiv .chapLine:first").addClass("firstLine");
-  $("#resultschap .mangaChapsDiv .chapLine:last").addClass("lastLine");
+
+  $('#resultschap .mangaChapsDiv .chapLine:first').addClass('firstLine');
+  $('#resultschap .mangaChapsDiv .chapLine:last').addClass('lastLine');
+
   if (divChaps === undefined) {
-    $("#resultschap").empty();
-    $("#noreschap").css("display", "block");
+    $('#resultschap').empty();
+    $('#noreschap').css('display', 'block');
   }
+
   if (divScans === undefined) {
-    $("#resultsscans").empty();
-    $("#noresscans").css("display", "block");
+    $('#resultsscans').empty();
+    $('#noresscans').css('display', 'block');
   }
-  $("a[rel^='prettyPhoto']").prettyPhoto({
+
+  $('a[rel^=\'prettyPhoto\']').prettyPhoto({
     animation_speed : 'fast',
     theme : 'light_rounded',
     overlay_gallery : false,
     keyboard_shortcuts : true
   });
 }
+
 function createPopupBM () {
-  var divData = $("<div id='bookmarkData' style='display:none'></div>");
-  $("<span>This div is used to store data for AMR</span>").appendTo(divData);
-  divData.appendTo($(document.body));
-  var div = $("<div id='bookmarkPop' style='display:none'></div>");
-  $("<h3>Bookmark</h3>").appendTo(div);
-  $("<div id='descEltAMR'></div>").appendTo(div);
-  $("<table><tr><td style='vertical-align:top'><b>Note:</b></td><td><textarea id='noteAMR' cols='50' rows='5' /></td></tr></table>").appendTo(div);
-  var btn = $("<a id='saveBtnAMR' class='buttonAMR'>Save</a>");
+  var divData = $('<div id=\'bookmarkData\' style=\'display:none\'></div>');
+
+  divData.append('<span>This div is used to store data for AMR</span>');
+  $(document.body).append(divData);
+
+  var div = $('<div id=\'bookmarkPop\' style=\'display:none\'></div>');
+
+  $('<h3>Bookmark</h3>').appendTo(div);
+  $('<div id=\'descEltAMR\'></div>').appendTo(div);
+  $('<table><tr><td style=\'vertical-align:top\'><b>Note:</b></td><td><textarea id=\'noteAMR\' cols=\'50\' rows=\'5\' /></td></tr></table>').appendTo(div);
+
+  var btn = $('<a id=\'saveBtnAMR\' class=\'buttonAMR\'>Save</a>');
   btn.click(function () {
     var obj = {
-      action : "addUpdateBookmark",
-      mirror : $("#bookmarkData").data("mirror"),
-      url : $("#bookmarkData").data("url"),
-      chapUrl : $("#bookmarkData").data("chapUrl"),
-      type : $("#bookmarkData").data("type"),
-      name : $("#bookmarkData").data("name"),
-      chapName : $("#bookmarkData").data("chapName")
+      action : 'addUpdateBookmark',
+      mirror : $('#bookmarkData').data('mirror'),
+      url : $('#bookmarkData').data('url'),
+      chapUrl : $('#bookmarkData').data('chapUrl'),
+      type : $('#bookmarkData').data('type'),
+      name : $('#bookmarkData').data('name'),
+      chapName : $('#bookmarkData').data('chapName')
     };
-    if ($("#bookmarkData").data("type") !== "chapter") {
-      obj.scanUrl = $("#bookmarkData").data("scanUrl");
-      obj.scanName = $("#bookmarkData").data("scanName");
+    if ($('#bookmarkData').data('type') !== 'chapter') {
+      obj.scanUrl = $('#bookmarkData').data('scanUrl');
+      obj.scanName = $('#bookmarkData').data('scanName');
     }
-    obj.note = $("#noteAMR").val();
-    chrome.runtime.sendMessage(obj, function (resp) {
-      loadBookmarks();
-    });
+    obj.note = $('#noteAMR').val();
+    chrome.runtime.sendMessage(obj, loadBookmarks);
     $.modal.close();
     return false;
   });
   btn.appendTo(div);
   div.appendTo($(document.body));
 }
+
 function load () {
   var i;
-  loadMenu("bookmarks");
-  $(".showInit").show();
+  loadMenu('bookmarks');
+
+  $('.showInit').show();
+
   if (typeof localStorage.bookmarkTab !== 'undefined') {
-    if (localStorage.bookmarkTab === "ongC") {
-      switchOnglet($("#chapOng")[0], 'ongC');
-    }
-    else {
-      switchOnglet($("#scanOng")[0], 'ongS');
-    }
+    switchOnglet($('#chapOng')[0], localStorage.bookmarkTab === 'ongC' ? 'ongC' : 'ongS');
   }
+
   wssql.init();
+
   mirrors = chrome.extension.getBackgroundPage().actMirrors;
+
   for (i = 0; i < mirrors.length; i += 1) {
-    var imga = $("<a href='#'><img src='" + mirrors[i].mirrorIcon + "' title='" + mirrors[i].mirrorName + "'/></a>");
+    var imga = $('<a href=\'#\'><img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\'/></a>');
+
     imga.click(function () {
-      $(this).parent().toggleClass("checked");
-      if ($(this).parent().hasClass("checked")) {
-        setMirrorState($("img", $(this)).attr("title"), true);
-      }
-      else {
-        setMirrorState($("img", $(this)).attr("title"), false);
-      }
+      $(this).parent().toggleClass('checked');
+
+      setMirrorState($('img', $(this)).attr('title'), $(this).parent().hasClass('checked'));
+
       filter();
       return false;
     });
-    var div;
-    if (!isMirrorEnable(mirrors[i].mirrorName)) {
-      div = $("<div class='mirrorIcon'></div>");
-    }
-    else {
-      div = $("<div class='mirrorIcon checked'></div>");
-    }
+
+    var div = $(isMirrorEnable(mirrors[i].mirrorName) ? '<div class=\'mirrorIcon checked\'></div>' : '<div class=\'mirrorIcon\'></div>');
+
     imga.appendTo(div);
-    div.appendTo($("#mirrorsCheck"));
+    div.appendTo($('#mirrorsCheck'));
   }
+
   var valSlide = localStorage.bookmarkSlideValue;
-  if (valSlide === undefined || valSlide === 0 || valSlide === "0") {
+
+  if (valSlide === undefined || valSlide === 0 || valSlide === '0') {
     valSlide = 298;
   }
-  $("#slider").slider({
+
+  /*$('#slider').slider({
     min : 80,
     max : 750,
     value : valSlide,
     change : function (event, ui) {
       slideChange();
     }
+  });*/
+
+  $('#mangas').change(function () {
+    localStorage.bookmarkMangasSelect = $('#mangas option:selected').val();
   });
-  $("#mangas").change(function () {
-    localStorage.bookmarkMangasSelect = $("#mangas option:selected").val();
-  });
+
   createPopupBM();
   loadBookmarks();
 }
+
 $(function () {
-  $("#mangas").change(function () {
+  $('#mangas').change(function () {
     filter();
   });
-  $("#searchBoxInput").keypress(function (e) {
+
+  $('#searchBoxInput').keypress(function (e) {
     var key = e.keyCode || e.which;
     if (key === 13) {
-      localStorage.bookmarkMangasSearch = $("#searchBoxInput").val();
+      localStorage.bookmarkMangasSearch = $('#searchBoxInput').val();
       filter();
     }
   });
-  $("#butFind").click(function (e) {
-    localStorage.bookmarkMangasSearch = $("#searchBoxInput").val();
+
+  $('#butFind').click(function () {
+    localStorage.bookmarkMangasSearch = $('#searchBoxInput').val();
     filter();
   });
-  $("#chapOng").click(function () {
+
+  $('#chapOng').click(function () {
     switchOnglet(this, 'ongC');
   });
-  $("#scanOng").click(function () {
+
+  $('#scanOng').click(function () {
     switchOnglet(this, 'ongS');
   });
+
   load();
 });

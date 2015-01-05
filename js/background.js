@@ -1265,7 +1265,7 @@ function addBookmark (obj) {
     bookmarks[posFound].note = obj.note;
   }
 
-  localStorage.getItem('bookmarks', JSON.stringify(bookmarks));
+  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
 }
 
 function deleteBookmark (obj) {
@@ -1291,7 +1291,7 @@ function deleteBookmark (obj) {
   }
   if (isFound) {
     bookmarks.remove(posFound, posFound);
-    localStorage.getItem('bookmarks', JSON.stringify(bookmarks));
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
   }
 }
 
@@ -2336,7 +2336,7 @@ function importBookmarks (bms, merge) {
     }
   }
 
-  localStorage.getItem('bookmarks', JSON.stringify(bookmarks));
+  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
   return textOut;
 }
 
