@@ -572,6 +572,16 @@ function createPopupBM () {
   div.appendTo($(document.body));
 }
 
+function imgClickHandler (e) {
+  $(this).parent().toggleClass('checked');
+
+  setMirrorState($('img', $(this)).attr('title'), $(this).parent().hasClass('checked'));
+
+  filter();
+  e.preventDefault();
+  e.stopPropagation();
+}
+
 function load () {
   var i;
   loadMenu('bookmarks');
@@ -589,14 +599,7 @@ function load () {
   for (i = 0; i < mirrors.length; i += 1) {
     var imga = $('<a href=\'#\'><img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\'/></a>');
 
-    imga.click(function () {
-      $(this).parent().toggleClass('checked');
-
-      setMirrorState($('img', $(this)).attr('title'), $(this).parent().hasClass('checked'));
-
-      filter();
-      return false;
-    });
+    imga.click(imgClickHandler);
 
     var div = $(isMirrorEnable(mirrors[i].mirrorName) ? '<div class=\'mirrorIcon checked\'></div>' : '<div class=\'mirrorIcon\'></div>');
 
