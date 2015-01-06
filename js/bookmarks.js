@@ -1,6 +1,6 @@
 ﻿/*globals getMangaMirror, loadMenu, wssql*/
 var mirrors;
-var bmsAll;
+var allBookmarks;
 
 function openTab (urlToOpen) {
   chrome.runtime.sendMessage({
@@ -47,11 +47,14 @@ function switchOnglet (ong, tab) {
 
 function isMirrorEnable (mirrorName) {
   try {
-    if (typeof localStorage.bookmarkMirrorsState !== 'undefined') {
-      var obj = JSON.parse(localStorage.bookmarkMirrorsState);
-      var i;
+    var bookmarkMirrorsState = localStorage.getItem('bookmarkMirrorsState');
 
-      for (i = 0; i < obj.length; i += 1) {
+    if (bookmarkMirrorsState !== null) {
+      var obj = JSON.parse(bookmarkMirrorsState);
+      var i = -1;
+      var length = obj.length;
+
+      while (++i < length) {
         if (obj[i].mirror === mirrorName) {
           return obj[i].state;
         }
@@ -67,8 +70,10 @@ function isMirrorEnable (mirrorName) {
 
 function setMirrorState (mirrorName, state) {
   try {
-    if (typeof localStorage.bookmarkMirrorsState !== 'undefined') {
-      var obj = JSON.parse(localStorage.bookmarkMirrorsState);
+    var bookmarkMirrorsState = localStorage.getItem('bookmarkMirrorsState');
+
+    if (bookmarkMirrorsState !== null) {
+      var obj = JSON.parse(bookmarkMirrorsState);
       var isFound = false;
       var i;
 
@@ -79,7 +84,7 @@ function setMirrorState (mirrorName, state) {
             state : state
           };
 
-          localStorage.bookmarkMirrorsState = JSON.stringify(obj);
+          localStorage.setItem('bookmarkMirrorsState', JSON.stringify(obj));
           isFound = true;
 
           break;
@@ -92,16 +97,16 @@ function setMirrorState (mirrorName, state) {
           state : state
         };
 
-        localStorage.bookmarkMirrorsState = JSON.stringify(obj);
+        localStorage.setItem('bookmarkMirrorsState', JSON.stringify(obj));
       }
     }
     else {
-      localStorage.bookmarkMirrorsState = JSON.stringify([
+      localStorage.setItem('bookmarkMirrorsState', JSON.stringify([
         {
           mirror : mirrorName,
           state : state
         }
-      ]);
+      ]));
     }
   }
   catch (e) {
@@ -124,51 +129,57 @@ function slideChange () {
   $('.scanImg img').css('max-height', metric);
 }
 
-function removeUnknown (lst) {
+function removeUnknown (list) {
   var lstRes = [];
-  var i = -1;
-  var length = lst.length;
 
-  while (++i < length) {
-    if (getMangaMirror(lst[i].mirror) !== null) {
-      lstRes[lstRes.length] = lst[i];
-    }
+  if (list && list.length) {
+    lstRes = list.filter(function (item) {
+      return getMangaMirror(item.mirror) !== null;
+    });
   }
 
   return lstRes;
 }
 
-function modifyBM (dataElt) {
+function modifyBookmark (dataElement) {
   var $bookmarkData = $('#bookmarkData');
   var dataAccessor = $bookmarkData.data.bind($bookmarkData);
-
-  dataAccessor('mirror', dataElt.data('mirror'));
-  dataAccessor('url', dataElt.data('url'));
-  dataAccessor('chapUrl', dataElt.data('chapUrl'));
-  dataAccessor('type', dataElt.data('type'));
-  dataAccessor('name', dataElt.data('name'));
-  dataAccessor('chapName', dataElt.data('chapName'));
-  dataAccessor('scanUrl', dataElt.data('scanUrl'));
-  dataAccessor('scanName', dataElt.data('scanName'));
-  dataAccessor('note', dataElt.data('note'));
-  $('#noteAMR').val(dataAccessor('note'));
-
+  var data = dataElement.data();
+  var $bookmarkPop = $('#bookmarkPop');
   var textDesc;
-  if (dataAccessor('type') === 'chapter') {
-    textDesc = 'Bookmark chapter \'' + dataAccessor('chapName') + '\' of \'' + dataAccessor('name') + '\' on \'' + dataAccessor('mirror');
-    textDesc += '\'. You can add notes below which will be associated with this bookmark.';
+
+  dataAccessor({
+    mirror: data.mirror,
+    url: data.url,
+    chapUrl: data.chapUrl,
+    type: data.type,
+    name: data.name,
+    chapName: data.chapName,
+    scanUrl: data.scanUrl,
+    scanName: data.scanName,
+    note: data.note
+  });
+
+  $('#noteAMR').val(data.note);
+
+  if (data.type === 'chapter') {
+    textDesc = ['Bookmark chapter "', data.chapName, '" of "', data.name, '" on "', data.mirror].join(' ');
   }
   else {
-    textDesc = 'Bookmark scan \'' + dataAccessor('scanName') + '\' of chapter \'' + dataAccessor('chapName') + '\' of \'' + dataAccessor('name') + '\' on \'' + dataAccessor('mirror');
-    textDesc += '\'. You can add notes below which will be associated with this bookmark.';
+    textDesc = ['Bookmark scan "', data.scanName, '" of chapter "', data.chapName, '" of "', data.name, '" on "', data.mirror].join(' ');
   }
-  $('#bookmarkPop #descEltAMR').text(textDesc);
-  $('#bookmarkPop').modal({
-    focus : false
-  });
+
+  textDesc += '". You can add notes below which will be associated with this bookmark.';
+
+  $bookmarkPop
+    .modal({
+      focus : false
+    })
+    .find('#descEltAMR')
+    .text(textDesc);
 }
 
-function sortBms (bms) {
+function sortBookmarks (bms) {
   bms.sort(function (a, b) {
     if (isSame(a.name, b.name)) {
       if (a.chapterUrl === b.chapterUrl) {
@@ -195,33 +206,30 @@ function sortBms (bms) {
 }
 
 function filter () {
-  var isOk = true;
-  var tmpLst = [];
+  var results;
   var found = false;
-  var valS;
-  var i;
 
   var $selected = $('#mangas option:selected');
-  var selectedValue = $selected.val();
+  var selectedValue = $selected.val().trim();
+  var searchTerm = $('#searchBoxInput').val().trim();
 
-  for (i = 0; i < bmsAll.length; i += 1) {
-    if (selectedValue.val() !== '') {
-      if (!isSame(selectedValue, bmsAll[i].name)) {
-        isOk = false;
-      }
+  results = allBookmarks.filter(function (bookmark) {
+    var isOk = true;
+
+    if (selectedValue.length === 0 && !isSame(selectedValue, bookmark.name)) {
+      isOk = false;
     }
 
-    if ($('#searchBoxInput').val() !== '') {
-      valS = $('#searchBoxInput').val().trim();
-      if (bmsAll[i].name.indexOf(valS) !== -1) {
+    if (searchTerm.length !== 0) {
+      if (bookmark.name.indexOf(searchTerm) !== -1) {
         found = true;
       }
 
-      if (bmsAll[i].chapName.indexOf(valS) !== -1) {
+      if (bookmark.chapName.indexOf(searchTerm) !== -1) {
         found = true;
       }
 
-      if (bmsAll[i].note.indexOf(valS) !== -1) {
+      if (bookmark.note.indexOf(searchTerm) !== -1) {
         found = true;
       }
 
@@ -230,35 +238,33 @@ function filter () {
       }
     }
 
-    if (!$('#mirrorsCheck img[title=\'' + bmsAll[i].mirror + '\']').parent().parent().hasClass('checked')) {
+    if (!$('#mirrorsCheck img[title=\'' + bookmark.mirror + '\']').parent().parent().hasClass('checked')) {
       isOk = false;
     }
 
-    if (isOk) {
-      tmpLst[tmpLst.length] = bmsAll[i];
-    }
-  }
+    return isOk;
+  });
 
-  if (tmpLst.length > 0) {
-    $('#results').css('display', 'block');
-    $('#nores').css('display', 'none');
-    renderManga(tmpLst);
+  if (results.length > 0) {
+    $('#results').show();
+    $('#nores').hide();
+    renderManga(results);
     slideChange();
   }
   else {
-    $('#results').css('display', 'none');
-    $('#nores').css('display', 'block');
+    $('#results').hide();
+    $('#nores').show();
   }
 }
 
-function addOptionValue (curMg, valMg) {
-  var opt = $('<option value=\'' + curMg + '\'>' + curMg + '</option>');
+function addOptionValue (currentManga, valMg) {
+  var opt = $('<option value=\'' + currentManga + '\'>' + currentManga + '</option>');
 
-  if (valMg !== null && valMg !== '' && isSame(valMg, curMg)) {
+  if (valMg !== null && valMg !== '' && isSame(valMg, currentManga)) {
     opt.attr('selected', true);
   }
 
-  opt.appendTo($('#mangas'));
+  $('#mangas').append(opt);
 }
 
 function loadBookmarks () {
@@ -268,32 +274,31 @@ function loadBookmarks () {
     $('#searchBoxInput').val(bookmarkMangasSearch);
   }
 
-  var bookmarks = localStorage.getItem('bookmarks');
-
-  var lstTmp = JSON.parse(bookmarks);
-
+  var lstTmp = JSON.parse(localStorage.getItem('bookmarks'));
   var valMg = null;
   var currentManga;
   var i;
 
-  bmsAll = removeUnknown(lstTmp);
-  if (bmsAll.length > 0) {
-    sortBms(bmsAll);
+  allBookmarks = removeUnknown(lstTmp);
+
+  var $mangas = $('#mangas').empty();
+
+  if (allBookmarks.length > 0) {
+    sortBookmarks(allBookmarks);
 
     if (typeof localStorage.bookmarkMangasSelect !== 'undefined') {
       valMg = localStorage.bookmarkMangasSelect;
     }
 
-    $('#mangas')
-      .empty()
+    $mangas
       .append('<option value=\'\' ' + ((valMg === '') ? 'selected=\'selected\'' : '') + '>All mangas</option>');
 
-    for (i = 0; i < bmsAll.length; i += 1) {
-      if (typeof currentManga !== 'undefined' && !isSame(currentManga, bmsAll[i].name)) {
+    for (i = 0; i < allBookmarks.length; i += 1) {
+      if (typeof currentManga !== 'undefined' && !isSame(currentManga, allBookmarks[i].name)) {
         addOptionValue(currentManga, valMg);
       }
 
-      currentManga = bmsAll[i].name;
+      currentManga = allBookmarks[i].name;
     }
 
     if (typeof currentManga !== 'undefined') {
@@ -303,8 +308,7 @@ function loadBookmarks () {
     filter();
   }
   else {
-    $('#mangas')
-      .empty()
+    $mangas
       .attr('disabled', 'true')
       .append('<option value=\'\'>No bookmarks found</option>');
 
@@ -373,7 +377,7 @@ function createScan (obj, where) {
   var aMod = $('<a href=\'#\'><img src=\'img/edit.png\' title=\'Modify\'/></a>');
 
   aMod.click(function () {
-    modifyBM($(this).parent().parent().parent().parent());
+    modifyBookmark($(this).parent().parent().parent().parent());
     return false;
   });
 
@@ -483,7 +487,7 @@ function renderManga (lstBms) {
       var aMod = $('<a href=\'#\'><img src=\'img/edit.png\' title=\'Modify\'/></a>');
 
       aMod.click(function () {
-        modifyBM($(this).parent().parent().parent().parent().parent());
+        modifyBookmark($(this).parent().parent().parent().parent().parent());
         return false;
       });
 
@@ -573,9 +577,12 @@ function createPopupBM () {
 }
 
 function imgClickHandler (e) {
-  $(this).parent().toggleClass('checked');
+  var $this = $(this);
+  var $parent = $this.parent();
 
-  setMirrorState($('img', $(this)).attr('title'), $(this).parent().hasClass('checked'));
+  $parent.toggleClass('checked');
+
+  setMirrorState($this.find('img').attr('title'), $parent.hasClass('checked'));
 
   filter();
   e.preventDefault();
@@ -583,29 +590,31 @@ function imgClickHandler (e) {
 }
 
 function load () {
-  var i;
   loadMenu('bookmarks');
 
   $('.showInit').show();
 
-  if (typeof localStorage.bookmarkTab !== 'undefined') {
-    switchOnglet($('#chapOng')[0], localStorage.bookmarkTab === 'ongC' ? 'ongC' : 'ongS');
+  var bookmarkTab = localStorage.getItem('bookmarkTab');
+
+  if (typeof bookmarkTab !== 'undefined') {
+    switchOnglet($('#chapOng')[0], bookmarkTab === 'ongC' ? 'ongC' : 'ongS');
   }
 
   wssql.init();
 
   mirrors = chrome.extension.getBackgroundPage().actMirrors;
 
-  for (i = 0; i < mirrors.length; i += 1) {
-    var imga = $('<a href=\'#\'><img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\'/></a>');
+  mirrors.forEach(function (mirror) {
+    var mirrorName = mirror.mirrorName;
+    var imga = $('<a href=\'#\'><img src=\'' + mirror.mirrorIcon + '\' title=\'' + mirrorName + '\'/></a>');
 
     imga.click(imgClickHandler);
 
-    var div = $(isMirrorEnable(mirrors[i].mirrorName) ? '<div class=\'mirrorIcon checked\'></div>' : '<div class=\'mirrorIcon\'></div>');
+    var div = isMirrorEnable(mirrorName) ? '<div class=\'mirrorIcon checked\'></div>' : '<div class=\'mirrorIcon\'></div>';
 
-    imga.appendTo(div);
-    div.appendTo($('#mirrorsCheck'));
-  }
+    $(div).append(imga);
+    $('#mirrorsCheck').append(div);
+  });
 
   var valSlide = localStorage.bookmarkSlideValue;
 
@@ -623,38 +632,37 @@ function load () {
   });*/
 
   $('#mangas').change(function () {
-    localStorage.bookmarkMangasSelect = $('#mangas option:selected').val();
+    localStorage.setItem('bookmarkMangasSelect', $(this).find('option:selected').val());
   });
 
   createPopupBM();
   loadBookmarks();
 }
 
+function updateBookmarkMangasSearch () {
+  localStorage.setItem('bookmarkMangasSearch',  $('#searchBoxInput').val());
+}
+
 $(function () {
-  $('#mangas').change(function () {
-    filter();
-  });
+  $('#mangas').change(filter);
 
   $('#searchBoxInput').keypress(function (e) {
     var key = e.keyCode || e.which;
+
     if (key === 13) {
-      localStorage.bookmarkMangasSearch = $('#searchBoxInput').val();
+      updateBookmarkMangasSearch();
       filter();
     }
   });
 
   $('#butFind').click(function () {
-    localStorage.bookmarkMangasSearch = $('#searchBoxInput').val();
+    updateBookmarkMangasSearch();
     filter();
   });
 
-  $('#chapOng').click(function () {
-    switchOnglet(this, 'ongC');
-  });
+  $('#chapOng').click(switchOnglet.bind(null, this, 'ongC'));
 
-  $('#scanOng').click(function () {
-    switchOnglet(this, 'ongS');
-  });
+  $('#scanOng').click(switchOnglet.bind(null, this, 'ongS'));
 
   load();
 });

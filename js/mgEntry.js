@@ -1,8 +1,12 @@
 ﻿/*globals wssql, amrcsql, getParameters*/
 
+/*var AMRC_REPOSITORY = 'https://ssl10.ovh.net/~allmanga/community/latest_v2/';
+var AMRC_ROOT = 'https://ssl10.ovh.net/~allmanga/community/';
+var AMRC_REPOSITORY_BACKUP = 'https://raw.github.com/AllMangasReader-dev/mirrors/master/';*/
+
 var AMRC_REPOSITORY = 'https://ssl10.ovh.net/~allmanga/community/latest_v2/';
 var AMRC_ROOT = 'https://ssl10.ovh.net/~allmanga/community/';
-var AMRC_REPOSITORY_BACKUP = 'https://raw.github.com/AllMangasReader-dev/mirrors/master/';
+var AMRC_REPOSITORY_BACKUP = 'https://raw.github.com/guilhermehn/mirrors/master/';
 
 function displayNotification (/*wsData, params*/) {
   console.log('noop');
@@ -163,6 +167,7 @@ function updateWebsitesFromRepository (callback) {
   $.ajax({
      type: 'GET',
      url: AMRC_REPOSITORY + 'websites.json',
+
      error: function () {
        AMRC_REPOSITORY = AMRC_REPOSITORY_BACKUP;
      }
@@ -679,7 +684,7 @@ function loadJSFromRepositoryForActivatedMirrors (list, pos, input) {
       error : 'Script ' + input.mirrorName + ' failed to be loaded...'
     };
   });
-  chrome.extension.getBackgroundPage().isReady(true)
+  chrome.extension.getBackgroundPage().isReady(true);
 }
 
 function waitForActivatedAndListFinish (mirrorsT, callback) {
