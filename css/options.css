@@ -34,7 +34,7 @@
   background-color: #CCCCFF;
 }
 
-#allmirrors tr:nth-child(even) {
+#allmirrors tr: nth-child(even) {
   background-color: #DDDDFF;
 }
 

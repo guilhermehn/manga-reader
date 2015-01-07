@@ -10,7 +10,7 @@
   background-color: #CCCCFF;
 }
 
-#allres tr:nth-child(even) {
+#allres tr: nth-child(even) {
   background-color: #DDDDFF;
 }
 

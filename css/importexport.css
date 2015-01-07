@@ -6,17 +6,17 @@
   padding: 4px;
 }
 .button img {
-  margin-left:5px;
-  vertical-align:middle;
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 .resImpDiv {
-  text-align:center;
+  text-align: center;
 }
 
 .resImport {
-  font-weight:bold;
-  margin-right:10px;
+  font-weight: bold;
+  margin-right: 10px;
 }
 .ongletCont {
   -webkit-transition: all .4s ease-in-out;

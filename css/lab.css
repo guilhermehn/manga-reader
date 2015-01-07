@@ -1,6 +1,6 @@
 ﻿#results thead {
   background-color:#EEEEEE;
-  font-weight:bold;
+  font-weight: bold;
 }
 #results thead * td {
   text-align: center;
@@ -13,24 +13,24 @@
 }
 
 #results * td {
-  font-size:8pt;
+  font-size: 8pt;
 }
 .article * {
-  color:black;
+  color: black;
 }
 
 .globerrors {
   display: none;
 }
 .globerrors li {
-  font-size:8pt;
+  font-size: 8pt;
   color: red;
 }
 #testinfos {
   word-break: break-word;
 }
 .bottominfo {
-  margin-top:10px;
-  font-size:10pt;
-  text-align:center;
+  margin-top: 10px;
+  font-size: 10pt;
+  text-align: center;
 }

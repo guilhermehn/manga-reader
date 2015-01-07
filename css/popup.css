@@ -7,141 +7,141 @@ body {
   font-family: Arial;
   font-size: 8pt;
   color: black;
-  /*white-space:pre-line;*/
-  overflow:hidden;
+  /*white-space: pre-line;*/
+  overflow: hidden;
   background-color: white;
-  min-width:550px;
-  margin:2px;
-  max-width:800px;
+  min-width: 550px;
+  margin: 2px;
+  max-width: 800px;
 }
 body.medium {
-  min-width:650px;
-  max-width:900px;
+  min-width: 650px;
+  max-width: 900px;
 }
 body.big {
-  min-width:750px;
-  max-width:1000px;
+  min-width: 750px;
+  max-width: 1000px;
 }
 /* Main containers */
 #header {
-  height:26px;
+  height: 26px;
 }
 
 #title {
-  display:inline-block;
-  padding-bottom:2px;
+  display: inline-block;
+  padding-bottom: 2px;
 }
 
 #title h3 {
   font-size: 14px;
   display: inline-block;
-  padding:0;
-  margin:0;
+  padding: 0;
+  margin: 0;
   color: black;
-  vertical-align:middle;
-  padding-left:4px;
+  vertical-align: middle;
+  padding-left: 4px;
 }
 
 #title img {
-  vertical-align:middle;
+  vertical-align: middle;
 }
 
 #access {
-  /*position:absolute;
-  right:0;
-  top:0;*/
-  float:right;
-  height:24px;
+  /*position: absolute;
+  right: 0;
+  top: 0;*/
+  float: right;
+  height: 24px;
 }
 #accessbar {
-  float:left;
-  margin-top:2px;
+  float: left;
+  margin-top: 2px;
 }
 
 #access ul, #accessbar ul {
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
 }
 
 #access ul li, #accessbar ul li {
   list-style-type: none;
-  display:inline-block;
+  display: inline-block;
   margin-right: 5px;
 }
 
 #access ul li img  {
-  padding-top:5px;
-  cursor:pointer;
+  padding-top: 5px;
+  cursor: pointer;
 }
 #accessbar ul li img {
-  cursor:pointer;
-  vertical-align:middle;
+  cursor: pointer;
+  vertical-align: middle;
 }
 #access ul li#dev, #access ul li#release {
   display: none;
 }
 #accessbar ul {
   background-color:#E0E0FF;
-  border-radius:4px;
-  margin-right:5px;
-  display:inline-block;
-  padding:3px;
-  padding-left:4px;
-  padding-right:4px;
+  border-radius: 4px;
+  margin-right: 5px;
+  display: inline-block;
+  padding: 3px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 #accessbar ul li {
   margin-right: 2px;
   margin-left: 2px;
 }
 #main {
-  margin-top:4px;
-  margin-bottom:0px;
-  max-height:400px;
-  overflow:auto;
-  padding-right:1px;
+  margin-top: 4px;
+  margin-bottom: 0px;
+  max-height: 400px;
+  overflow: auto;
+  padding-right: 1px;
 }
 
 
 .externHeader {
   position: fixed;
-  top:2px;
-  height:32px;
-  width:800px;
-  z-index:1000;
+  top: 2px;
+  height: 32px;
+  width: 800px;
+  z-index: 1000;
 }
 .externMangaList {
   position: fixed;
-  top:32px;
-  bottom:0px;
-  width:800px;
+  top: 32px;
+  bottom: 0px;
+  width: 800px;
 }
 .externFooter {
   position: fixed;
-  top:32px;
-  width:800px;
-  z-index:1000;
+  top: 32px;
+  width: 800px;
+  z-index: 1000;
 }
 .externMain {
   position: fixed;
-  bottom:70px;
-  /*padding-bottom:50px;*/
-  top:70px;
-  width:800px;
-  z-index:100;
-  overflow:auto;
+  bottom: 70px;
+  /*padding-bottom: 50px;*/
+  top: 70px;
+  width: 800px;
+  z-index: 100;
+  overflow: auto;
 }
 .externFootact {
   position: fixed;
-  bottom:0px;
-  width:800px;
-  z-index:1000;
-  /*background-color:white;*/
+  bottom: 0px;
+  width: 800px;
+  z-index: 1000;
+  /*background-color: white;*/
 }
 .externSearch {
   position: fixed;
-  top:32px;
-  bottom:0px;
-  width:800px;
+  top: 32px;
+  bottom: 0px;
+  width: 800px;
 }
 /* Selects */
 .list .manga .mgmirroricon + .custom-select {
@@ -156,13 +156,13 @@ body.big {
 select {
   display: inline-block;
   font: inherit;
-  outline:none;
+  outline: none;
   padding: 0px 12px 0px 0px;
-  -webkit-appearance:none;
+  -webkit-appearance: none;
   border-radius: 4px;
 }
 
-.custom-select:after {
+.custom-select: after {
   content: "▼";
   position: absolute;
   top: 0;
@@ -172,73 +172,73 @@ select {
   line-height: 19px;
   padding: 0 3px;
 
-  pointer-events:none;
+  pointer-events: none;
   border-radius: 0 4px 4px 0;
 }
 
 /* Categories management */
 #cats {
-  margin:2px;
-  padding:0;
-  max-height:36px;
-  width:100%;
-  overflow:auto;
-  list-style-type:none;
+  margin: 2px;
+  padding: 0;
+  max-height: 36px;
+  width: 100%;
+  overflow: auto;
+  list-style-type: none;
 }
 .category, .mgcategory {
-  border-radius:4px;
+  border-radius: 4px;
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#AAA), to(#CCC));
   border: 1px solid #DDD;
   color: #555;
-  display:inline-block;
-  padding-left:4px;
+  display: inline-block;
+  padding-left: 4px;
   padding-right: 4px;
-  cursor:pointer;
-  margin-bottom:2px;
-  margin-left:1px;
-  margin-right:1px;
-  min-width:20px;
-  text-align:center;
-  font-size:8pt;
-  text-decoration:none;
+  cursor: pointer;
+  margin-bottom: 2px;
+  margin-left: 1px;
+  margin-right: 1px;
+  min-width: 20px;
+  text-align: center;
+  font-size: 8pt;
+  text-decoration: none;
 }
 .category.empty {
-  border:0;
+  border: 0;
 }
-.category:hover {
-  border:1px solid #3278BE;
+.category: hover {
+  border: 1px solid #3278BE;
 }
 .category.include, .mgcategory {
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(#FFF));
   color: black;
-  text-decoration:none;
+  text-decoration: none;
 }
 .category.exclude {
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(#FFF));
   color: black;
-  text-decoration:line-through;
+  text-decoration: line-through;
 }
 .mgcategory{
-  cursor:default;
+  cursor: default;
 }
 .category img, .mgcategory img {
-  vertical-align:middle;
-  margin-left:2px;
-  cursor:pointer;
+  vertical-align: middle;
+  margin-left: 2px;
+  cursor: pointer;
 }
 .category.drop {
-  border:1px solid red;
+  border: 1px solid red;
 }
 .addcategory, .clearcategory {
   width: 10px;
   min-width: 10px;
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(#FFF));
   color: black;
-  text-decoration:none;
+  text-decoration: none;
 }
 .category input {
-  border:0;
-  font-size:7pt;
+  border: 0;
+  font-size: 7pt;
 }
 /* Manga management list mode */
 .list .manga {
@@ -250,7 +250,7 @@ select {
 }
 .list .manga.drop {
   border: 1px solid #FF0000;
-  padding:1px;
+  padding: 1px;
 }
 .list .manga.new {
   background-color: #FFDDDD;
@@ -269,28 +269,28 @@ select {
   border-bottom-right-radius: 4px 4px;
 }
 .list .manga .mgtable {
-  display:table;
+  display: table;
   width: 100%;
 }
 .list .manga .mgtable .mgline {
-  display:table-row;
+  display: table-row;
 }
 .list .manga .mgtable .mgline.next .mglist {
-  padding-top:1px;
-  padding-bottom:1px;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 .list .manga .mgtitle {
-  display:table-cell;
-  width:150px;
+  display: table-cell;
+  width: 150px;
   background-color: #CCCCFF;
-  border-radius:4px;
-  padding-left:2px;
+  border-radius: 4px;
+  padding-left: 2px;
 }
 body.medium .list .manga .mgtitle {
-  width:200px;
+  width: 200px;
 }
 body.big .list .manga .mgtitle {
-  width:250px;
+  width: 250px;
 }
 .list .manga.new .mgtitle {
   background-color: #FFCCCC;
@@ -322,63 +322,63 @@ body.big .list .manga .mgtitle {
 }
 
 .list .manga .mgtitle .mgtitlehead {
-  display:inline-block;
+  display: inline-block;
 }
 .list .manga .mgtitle .mgtitlehead img {
-  vertical-align:middle;
+  vertical-align: middle;
 }
 .list .manga .mgtitle .mgtitlehead span {
-  padding:0;
-  margin:0;
-  font-weight:bold;
-  font-size:9pt;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  font-size: 9pt;
   padding-left: 4px;
-  vertical-align:middle;
-  cursor:pointer;
+  vertical-align: middle;
+  cursor: pointer;
 }
 .list .manga .mgtitle .mgtitlehead .multiplemgs {
-  cursor:pointer;
+  cursor: pointer;
 }
 .list .manga .mgmirroricon {
-  cursor:pointer;
+  cursor: pointer;
 }
 .list .manga .mgtitle .mgtitleheadpics {
-  display:block;
-  float:right;
-  margin-right:2px;
-  margin-top:1px;
+  display: block;
+  float: right;
+  margin-right: 2px;
+  margin-top: 1px;
 }
 .list .manga .mgtitle .mgtitleheadpics img {
-  vertical-align:middle;
-  cursor:pointer;
-  margin-right:2px;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-right: 2px;
 }
 .list .manga .mglist {
-  display:table-cell;
+  display: table-cell;
   vertical-align: middle;
-  margin-right:auto;
-  width:auto;
+  margin-right: auto;
+  width: auto;
 }
 .list .manga .mglist img {
-  padding-left:2px;
-  vertical-align:middle;
+  padding-left: 2px;
+  vertical-align: middle;
 }
 .list .manga .mglist span {
-  padding-left:3px;
+  padding-left: 3px;
 }
 .list .manga .mglist span.custom-select {
-  padding-left:0px;
+  padding-left: 0px;
 }
 .list .manga .mgactions {
-  display:table-cell;
+  display: table-cell;
   vertical-align: middle;
-  width:128px;
-  margin-right:2px;
+  width: 128px;
+  margin-right: 2px;
 }
 .list .manga .mgactions img {
-  vertical-align:middle;
-  margin-right:2px;
-  cursor:pointer;
+  vertical-align: middle;
+  margin-right: 2px;
+  cursor: pointer;
 }
 
 /* Manga management block mode */
@@ -387,8 +387,8 @@ body.big .list .manga .mgtitle {
   background-color: #DDDDFF;
   padding: 2px;
   margin-bottom: 2px;
-  border-radius:4px;
-  border:1px solid #ABC;
+  border-radius: 4px;
+  border: 1px solid #ABC;
   color: #0000AA;
 }
 .block .manga.drop {
@@ -406,10 +406,10 @@ body.big .list .manga .mgtitle {
   position: relative;
 }
 .block .manga .mgtitle {
-  display:block;
+  display: block;
   background-color: #CCCCFF;
-  border-radius:4px;
-  padding-left:2px;
+  border-radius: 4px;
+  padding-left: 2px;
 }
 .block .manga.new .mgtitle {
   background-color: #FFCCCC;
@@ -419,10 +419,10 @@ body.big .list .manga .mgtitle {
 }
 
 .block .manga .mgelt .mgtitle {
-  display:block;
+  display: block;
   background-color: #CCCCFF;
-  border-radius:4px;
-  padding-left:2px;
+  border-radius: 4px;
+  padding-left: 2px;
 }
 .block .manga .mgelt.new .mgtitle {
   background-color: #FFCCCC;
@@ -432,65 +432,65 @@ body.big .list .manga .mgtitle {
 }
 
 .block .manga .mgtitle .mgtitlehead {
-  display:inline-block;
+  display: inline-block;
 }
 .block .manga .mgtitle .mgtitlehead img {
-  vertical-align:middle;
+  vertical-align: middle;
 }
 .block .manga .mgtitle .mgtitlehead span {
-  padding:0;
-  margin:0;
-  font-weight:bold;
-  font-size:9pt;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  font-size: 9pt;
   padding-left: 4px;
-  vertical-align:middle;
-  cursor:pointer;
+  vertical-align: middle;
+  cursor: pointer;
 }
 .block .manga .mgtitle .mgtitlehead .multiplemgs {
-  cursor:pointer;
+  cursor: pointer;
 }
 .block .manga .mgmirroricon {
-  cursor:pointer;
+  cursor: pointer;
 }
 .block .manga .mgtitle .mgtitleheadpics {
-  display:inline-block;
+  display: inline-block;
 }
 .block .manga .mgtitle .mgtitleheadpics img {
-  vertical-align:middle;
-  cursor:pointer;
-  margin-right:2px;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-right: 2px;
 }
 .block .manga .mgactions {
-  display:block;
-  float:right;
+  display: block;
+  float: right;
   vertical-align: middle;
-  width:128px;
-  margin-right:2px;
+  width: 128px;
+  margin-right: 2px;
 }
 .block .manga .mgactions img {
-  vertical-align:middle;
-  margin-right:2px;
-  cursor:pointer;
+  vertical-align: middle;
+  margin-right: 2px;
+  cursor: pointer;
 }
 
 .block .manga .mgfirstfloatimg {
-  float:left;
-  display:inline-block;
+  float: left;
+  display: inline-block;
   position: relative;
 }
 .block .manga .mgtable {
-  display:table;
+  display: table;
   margin-left: auto;
-  margin-right:auto;
-  margin-top:0px;
-  margin-bottom:2px;
+  margin-right: auto;
+  margin-top: 0px;
+  margin-bottom: 2px;
   vertical-align: middle;
   background-color: #D5D5FF;
-  padding-left:10px;
-  padding-right:10px;
-  padding-bottom:2px;
-  border-bottom-left-radius:4px;
-  border-bottom-right-radius:4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 2px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 .block .manga.new .mgtable {
   background-color: #FFD5D5;
@@ -516,17 +516,17 @@ body.big .list .manga .mgtitle {
   display: table-row;
 }
 .block .manga .mglist {
-  display:table-cell;
-  text-align:left;
+  display: table-cell;
+  text-align: left;
 }
 .block .manga .label {
-  display:table-cell;
-  text-align:right;
+  display: table-cell;
+  text-align: right;
 }
 .block .manga .value {
-  display:table-cell;
-  text-align:left;
-  padding-left:4px;
+  display: table-cell;
+  text-align: left;
+  padding-left: 4px;
   cursor: pointer;
 }
 /* Common List / Block */
@@ -538,20 +538,20 @@ body.big .list .manga .mgtitle {
   background: #EEEEFF;
   color: #0000AA;
   border: 1px solid #9999FF;
-  display:inline-block;
-  cursor:pointer;
-  min-width:40px;
-  margin-left:1px;
-  margin-right:1px;
-  text-align:center;
+  display: inline-block;
+  cursor: pointer;
+  min-width: 40px;
+  margin-left: 1px;
+  margin-right: 1px;
+  text-align: center;
 }
 .manga .button, .button {
-  padding-left:5px;
-  padding-right:5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .manga .button img, .button img {
-  margin-left:4px;
-  vertical-align:middle;
+  margin-left: 4px;
+  vertical-align: middle;
 }
 
 .manga.new .button {
@@ -564,116 +564,116 @@ body.big .list .manga .mgtitle {
   color: #555555;
   border: 1px solid #999999;
 }
-.manga .button:hover, .button:hover {
+.manga .button: hover, .button: hover {
   padding: 2px;
-  padding-left:4px;
-  padding-right:4px;
-  border-width:2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-width: 2px;
 }
-.manga .button:active, .mainbutton:active, .button:active {
+.manga .button: active, .mainbutton: active, .button: active {
   background: #DDDDFF;
 }
-.manga.new .button:active {
+.manga.new .button: active {
   background: #FFDDDD;
 }
-.manga.read .button:active {
+.manga.read .button: active {
   background: #DDDDDD;
 }
 .mainbutton {
-  vertical-align:middle;
-  padding-left:6px;
-  padding-right:6px;
+  vertical-align: middle;
+  padding-left: 6px;
+  padding-right: 6px;
 }
-.mainbutton:hover {
+.mainbutton: hover {
   padding: 3px;
-  border-width:2px;
-  padding-left:5px;
-  padding-right:5px;
+  border-width: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
-.mainbutton.checked:hover {
+.mainbutton.checked: hover {
   padding: 3px;
-  padding-left:6px;
-  padding-right:6px;
-  border-width:2px;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-width: 2px;
 }
 .mainbutton.checked {
   background: #F5F5FF;
   border: 2px solid #CCCCFF;
-  font-weight:bold;
+  font-weight: bold;
 }
 .mainbuttons {
-  /*margin-left:5px;*/
-  display:inline-block;
+  /*margin-left: 5px;*/
+  display: inline-block;
 }
 
 .globalquestion {
-  text-align:center;
+  text-align: center;
   border-radius: 4px;
   background-color: #EEEEFF;
-  padding-top:2px;
-  padding-bottom:2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 .desactivate {
   background-color: #FFEEEE;
-  font-weight:bold;
+  font-weight: bold;
 }
 /* Selects */
 .manga select {
-  border:1px solid #BBBBFF;
+  border: 1px solid #BBBBFF;
   background-color:#EEEEFF;
-  font-size:8pt;
-  height:18px;
+  font-size: 8pt;
+  height: 18px;
   width: 100%;
-  /*word-wrap:break-word;*/
+  /*word-wrap: break-word;*/
 }
 body.medium .manga select {
-  max-width:280px;
+  max-width: 280px;
 }
 body.big .manga select {
-  max-width:330px;
+  max-width: 330px;
 }
 .manga.new select {
   background-color:#FFEEEE;
-  border:1px solid #FFBBBB;
+  border: 1px solid #FFBBBB;
 }
 .manga.read select {
   background-color:#EEEEEE;
-  border:1px solid #BBBBBB;
+  border: 1px solid #BBBBBB;
 }
-.manga .custom-select:after {
+.manga .custom-select: after {
   background: #BBBBFF;
   color: #0000AA;
 }
-.manga.new .custom-select:after {
+.manga.new .custom-select: after {
   background: #FFBBBB;
   color: #AA0000;
 }
-.manga.read .custom-select:after {
+.manga.read .custom-select: after {
   background: #BBBBBB;
   color: #555555;
 }
 
 .manga .mgelt .mglist select, .list .manga .mgline select {
-  border:1px solid #BBBBFF;
+  border: 1px solid #BBBBFF;
   background-color:#EEEEFF;
 }
 .manga .mgelt.new .mglist select, .list .manga .mgline.new select {
   background-color:#FFEEEE;
-  border:1px solid #FFBBBB;
+  border: 1px solid #FFBBBB;
 }
 .manga .mgelt.read .mglist select, .list .manga .mgline.read select {
   background-color:#EEEEEE;
-  border:1px solid #BBBBBB;
+  border: 1px solid #BBBBBB;
 }
-.manga .mgelt .custom-select:after, .list .manga .mgline .custom-select:after {
+.manga .mgelt .custom-select: after, .list .manga .mgline .custom-select: after {
   background: #BBBBFF;
   color: #0000AA;
 }
-.manga .mgelt.new .custom-select:after, .list .manga .mgline.new .custom-select:after {
+.manga .mgelt.new .custom-select: after, .list .manga .mgline.new .custom-select: after {
   background: #FFBBBB;
   color: #AA0000;
 }
-.manga .mgelt.read .custom-select:after, .list .manga .mgline.read .custom-select:after {
+.manga .mgelt.read .custom-select: after, .list .manga .mgline.read .custom-select: after {
   background: #BBBBBB;
   color: #555555;
 }
@@ -681,9 +681,9 @@ body.big .manga select {
 /* Others */
 .manga .mgothers {
   background-color:#CCCCFF;
-  display:block;
-  padding:2px;
-  border-radius:4px;
+  display: block;
+  padding: 2px;
+  border-radius: 4px;
 }
 .manga.new .mgothers {
   background-color:#FFCCCC;
@@ -692,27 +692,27 @@ body.big .manga select {
   background-color:#CCCCCC;
 }
 .manga .mgothers.hide {
-  display:none;
+  display: none;
 }
 .manga .mgothers .mgotherscont {
-  text-align:right;
-  margin-bottom:1px;
+  text-align: right;
+  margin-bottom: 1px;
 }
 .manga .question, .manga .questionreset {
-  text-align:center;
+  text-align: center;
 }
-.manga .mgothers .mgotherscont .mginfos td:nth-child(1) {
-  text-align:left;
+.manga .mgothers .mgotherscont .mginfos td: nth-child(1) {
+  text-align: left;
 }
-.manga .mgothers .mgotherscont .mginfos td:nth-child(2) {
-  text-align:right;
+.manga .mgothers .mgotherscont .mginfos td: nth-child(2) {
+  text-align: right;
 }
 .manga .mgprogress {
-  display:inline-block;
-  width:100px;
-  height:8px;
-  vertical-align:middle;
-  margin-right:3px;
+  display: inline-block;
+  width: 100px;
+  height: 8px;
+  vertical-align: middle;
+  margin-right: 3px;
   background: #EEEEFF;
   border-color: #9999FF;
 }
@@ -738,14 +738,14 @@ body.big .manga select {
 }
 
 .manga .mgotherscont .mginfos, .manga .mgotherscont .mginfos tr {
-  width:100%;
+  width: 100%;
 }
 .manga .mgotherscont .mginfos .mginfo {
-  display:inline-block;
+  display: inline-block;
 }
 
 .stopupdate {
-  /*opacity:0.5;*/
+  /*opacity: 0.5;*/
   -webkit-filter: contrast(85%);
 }
 /* Scrollbars
@@ -755,7 +755,7 @@ body.big .manga select {
     height: 8px !important;
 }
 
-::-webkit-scrollbar-button:start:decrement, ::-webkit-scrollbar-button:end:increment {
+::-webkit-scrollbar-button: start: decrement, ::-webkit-scrollbar-button: end: increment {
     border-bottom-left-radius: 5px 5px !important;
     border-bottom-right-radius: 5px 5px !important;
     border-top-left-radius: 5px 5px !important;
@@ -773,13 +773,13 @@ body.big .manga select {
     border-top-right-radius: 5px 5px !important;
 }
 
-::-webkit-scrollbar-thumb:vertical, ::-webkit-scrollbar-thumb:horizontal {
+::-webkit-scrollbar-thumb: vertical, ::-webkit-scrollbar-thumb: horizontal {
     height: 50px !important;
     background-color: #9a9a9a !important;
     border-radius: 5px !important;
 }
 
-::-webkit-scrollbar-thumb:vertical:hover, ::-webkit-scrollbar-thumb:horizontal:hover {
+::-webkit-scrollbar-thumb: vertical: hover, ::-webkit-scrollbar-thumb: horizontal: hover {
     background-color: #5e5e5e !important;
 }
 
@@ -790,32 +790,32 @@ body.big .manga select {
 
 /* Search */
 #search table {
-  width:100%;
+  width: 100%;
 }
 #search .block {
   border: 1px solid #ABC;
-  border-radius:4px;
-  width:100%;
+  border-radius: 4px;
+  width: 100%;
 }
 #search .block .title {
-  margin:4px;
-  font-size:9pt;
-  font-weight:bold;
+  margin: 4px;
+  font-size: 9pt;
+  font-weight: bold;
 }
 #search .block table {
-  width:100%;
+  width: 100%;
 }
 #search #allres, #search #allres tr, #search #allres tbody {
-  display:block;
-  width:100%;
+  display: block;
+  width: 100%;
 }
 
 #search #allres {
   overflow: auto;
-  max-height:300px;
+  max-height: 300px;
 }
 #search #allres tr td {
-  display:inline-block;
+  display: inline-block;
 }
 #search tr.odd {
   background-color:#CCCCFF;
@@ -833,18 +833,18 @@ body.big .manga select {
   border-top-right-radius: 4px 4px;
 }
 #search td.mangaName {
-  width:60%;
-  color:black;
+  width: 60%;
+  color: black;
 }
 #search #allres tr td.listMirror {
-  text-align:left;
-  width:39%;
+  text-align: left;
+  width: 39%;
 }
 
 #search #results * img {
   vertical-align: middle;
-  margin-right:5px;
-  cursor:pointer;
+  margin-right: 5px;
+  cursor: pointer;
 }
 
 #search .imgSearch {
@@ -852,9 +852,9 @@ body.big .manga select {
 	width: 16px;
 	height: 16px;
 	cursor: pointer;
-	margin-left:10px;
-	margin-top:8px;
-	padding-left:20px;
+	margin-left: 10px;
+	margin-top: 8px;
+	padding-left: 20px;
 	background-image: url(../img/find.png);
 }
 
@@ -863,20 +863,20 @@ body.big .manga select {
 }
 
 #search #nbRes, #search #nores {
-  font-weight:bold;
-  width:100%;
-  text-align:center;
-  margin-bottom:10px;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
 }
 #search #filMirrors {
-  text-align:center;
+  text-align: center;
 }
 #search .mirrorF {
-  display:inline-block;
+  display: inline-block;
 }
 #search .mirrorStatus {
-  text-align:center!important;
-  height:14px;
+  text-align: center!important;
+  height: 14px;
 }
 
 #search .mirrorIcon img {
@@ -886,89 +886,89 @@ body.big .manga select {
   opacity: 0.3;
 }
 #search #selectors {
-  display:inline-block;
-  text-align:right;
-  float:right;
+  display: inline-block;
+  text-align: right;
+  float: right;
   border-bottom-left-radius: 4px 4px;
   border-bottom-right-radius: 4px 4px;
   border-top-left-radius: 4px 4px;
   border-top-right-radius: 4px 4px;
   background-color:#CCCCFF;
-  padding-left:5px;
-  padding-right:5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 #search #selectors img {
-  vertical-align:middle;
+  vertical-align: middle;
   margin-right: 5px;
-  cursor:pointer;
+  cursor: pointer;
 }
 #search #searchBox p {
-  font-size:8pt;
-  margin:0;
+  font-size: 8pt;
+  margin: 0;
 }
 #search #selectors select {
-  font-size:9pt;
-  border:1px solid #BBBBFF;
+  font-size: 9pt;
+  border: 1px solid #BBBBFF;
   background-color:#EEEEFF;
-  font-size:8pt;
-  height:18px;
-  max-width:250px;
+  font-size: 8pt;
+  height: 18px;
+  max-width: 250px;
 }
-#search #selectors .custom-select:after {
+#search #selectors .custom-select: after {
   background: #BBBBFF;
   color: #0000AA;
 }
 #search input {
-  border:none;
+  border: none;
   border-bottom-left-radius: 4px 4px;
   border-bottom-right-radius: 4px 4px;
   border-top-left-radius: 4px 4px;
   border-top-right-radius: 4px 4px;
   background-color:#DDDDFF;
-  font-size:9pt;
-  padding:2px;
+  font-size: 9pt;
+  padding: 2px;
 }
 
 #nomangas {
-  font-size:10pt;
-  text-align:center;
+  font-size: 10pt;
+  text-align: center;
 }
 
 #search .optmgsearch {
-  float:right;
-  border-radius:4px;
+  float: right;
+  border-radius: 4px;
   background-color:#EEEEFF;
-  padding:2px;
-  padding-right:0;
+  padding: 2px;
+  padding-right: 0;
 }
 #search .optmgsearch img {
-  margin-right:2px;
-  cursor:pointer;
+  margin-right: 2px;
+  cursor: pointer;
 }
 
 #search .eltmirrorsearch {
-  display:inline-block;
-  border-radius:4px;
+  display: inline-block;
+  border-radius: 4px;
   background-color:#EEEEFF;
-  padding:1px;
-  margin-right:2px;
-  margin-bottom:2px;
-  padding-left:4px;
+  padding: 1px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  padding-left: 4px;
 }
 
 #search #results * img.addsinglemg {
-  margin-right:1px;
-  padding-right:0;
+  margin-right: 1px;
+  padding-right: 0;
 }
 
 #desactivateLink {
-  text-decoration:underline;
-  color:blue;
-  cursor:pointer;
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
 }
 
 .lastupdatedate {
-  margin-left:4px;
-  width:16px;
-  margin-top:1px;
+  margin-left: 4px;
+  width: 16px;
+  margin-top: 1px;
 }
