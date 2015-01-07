@@ -519,17 +519,14 @@ function renderManga (lstBms) {
     }
   }
 
-  $('#resultschap .mangaChapsDiv .chapLine:first').addClass('firstLine');
-  $('#resultschap .mangaChapsDiv .chapLine:last').addClass('lastLine');
-
-  if (divChaps === undefined) {
+  if (typeof divChaps === 'undefined') {
     $('#resultschap').empty();
-    $('#noreschap').css('display', 'block');
+    $('#noreschap').show();
   }
 
-  if (divScans === undefined) {
+  if (typeof divScans === 'undefined') {
     $('#resultsscans').empty();
-    $('#noresscans').css('display', 'block');
+    $('#noresscans').show();
   }
 
   $('a[rel^=\'prettyPhoto\']').prettyPhoto({
@@ -546,34 +543,43 @@ function createPopupBM () {
   divData.append('<span>This div is used to store data for AMR</span>');
   $(document.body).append(divData);
 
-  var div = $('<div id=\'bookmarkPop\' style=\'display:none\'></div>');
-
-  $('<h3>Bookmark</h3>').appendTo(div);
-  $('<div id=\'descEltAMR\'></div>').appendTo(div);
-  $('<table><tr><td style=\'vertical-align:top\'><b>Note:</b></td><td><textarea id=\'noteAMR\' cols=\'50\' rows=\'5\' /></td></tr></table>').appendTo(div);
+  var div = $('<div id=\'bookmarkPop\' style=\'display:none\'></div>')
+    .append('<h3>Bookmark</h3>')
+    .append('<div id=\'descEltAMR\'></div>')
+    .append('<table><tr><td style=\'vertical-align:top\'><b>Note:</b></td><td><textarea id=\'noteAMR\' cols=\'50\' rows=\'5\' /></td></tr></table>');
 
   var btn = $('<a id=\'saveBtnAMR\' class=\'buttonAMR\'>Save</a>');
-  btn.click(function () {
+
+  btn.on('click', function (e) {
+    var bookmarkData = $('#bookmarkData').data();
+
     var obj = {
       action : 'addUpdateBookmark',
-      mirror : $('#bookmarkData').data('mirror'),
-      url : $('#bookmarkData').data('url'),
-      chapUrl : $('#bookmarkData').data('chapUrl'),
-      type : $('#bookmarkData').data('type'),
-      name : $('#bookmarkData').data('name'),
-      chapName : $('#bookmarkData').data('chapName')
+      mirror : bookmarkData.mirror,
+      url : bookmarkData.url,
+      chapUrl : bookmarkData.chapUrl,
+      type : bookmarkData.type,
+      name : bookmarkData.name,
+      chapName : bookmarkData.chapName,
+      note: $('#noteAMR').val()
     };
-    if ($('#bookmarkData').data('type') !== 'chapter') {
-      obj.scanUrl = $('#bookmarkData').data('scanUrl');
-      obj.scanName = $('#bookmarkData').data('scanName');
+
+    if (bookmarkData.type !== 'chapter') {
+      obj.scanUrl = bookmarkData.scanUrl;
+      obj.scanName = bookmarkData.scanName;
     }
-    obj.note = $('#noteAMR').val();
+
     chrome.runtime.sendMessage(obj, loadBookmarks);
+
     $.modal.close();
-    return false;
+
+    e.preventDefault();
+    e.stopPropagation();
   });
-  btn.appendTo(div);
-  div.appendTo($(document.body));
+
+  div.append(btn);
+
+  $(document.body).append(div);
 }
 
 function imgClickHandler (e) {
@@ -606,13 +612,13 @@ function load () {
 
   mirrors.forEach(function (mirror) {
     var mirrorName = mirror.mirrorName;
-    var imga = $('<a href=\'#\'><img src=\'' + mirror.mirrorIcon + '\' title=\'' + mirrorName + '\'/></a>');
+    var img = $('<a href=\'#\'><img src=\'' + mirror.mirrorIcon + '\' title=\'' + mirrorName + '\'/></a>');
 
-    imga.click(imgClickHandler);
+    img.click(imgClickHandler);
 
     var div = isMirrorEnable(mirrorName) ? '<div class=\'mirrorIcon checked\'></div>' : '<div class=\'mirrorIcon\'></div>';
 
-    $(div).append(imga);
+    $(div).append(img);
     $('#mirrorsCheck').append(div);
   });
 
