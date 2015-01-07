@@ -164,17 +164,8 @@ function clickOnUpdate () {
   });
 }
 
-function sortIntDesc (a, b) {
-  if (a === b) {
-    return 0;
-  }
-  else if (a < b) {
-    return 1;
-  }
-  else {
-    return -1;
-  }
-  // return ((a === b) ? 0 : ((a < b) 1 : -1));
+function sortDescending (a, b) {
+  return b - a;
 }
 
 function getAndRemoveConflictualEntries (outgoing, incoming) {
@@ -197,7 +188,7 @@ function getAndRemoveConflictualEntries (outgoing, incoming) {
   if (removeIncome.length > 0) {
     console.log('sort');
     console.log(removeIncome);
-    removeIncome.sort(sortIntDesc);
+    removeIncome.sort(sortDescending);
     console.log(removeIncome);
     for (i = removeIncome.length - 1; i >= 0; i--) {
       incoming.remove(removeIncome[i], removeIncome[i]);
@@ -205,7 +196,7 @@ function getAndRemoveConflictualEntries (outgoing, incoming) {
   }
 
   if (removeOutgoing.length > 0) {
-    removeOutgoing.sort(sortIntDesc);
+    removeOutgoing.sort(sortDescending);
     for (i = removeOutgoing.length - 1; i >= 0; i--) {
       outgoing.remove(removeOutgoing[i], removeOutgoing[i]);
     }
