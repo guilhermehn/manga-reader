@@ -521,7 +521,7 @@ chrome.contextMenus.create({
 function isReady (statusReadyT, reasonT) {
   if (statusReadyT === false) {
     chrome.browserAction.setIcon({
-      path : 'img/blue-sharingan.png'
+      path: 'img/blue-sharingan.png'
     });
 
     statusReady = statusReadyT;
@@ -535,7 +535,7 @@ function isReady (statusReadyT, reasonT) {
 
   if (statusReadyT === true && statusReady === false) {
     chrome.browserAction.setIcon({
-      path : 'img/amrlittle.png'
+      path: 'img/amrlittle.png'
     });
     statusReady = statusReadyT;
     reason = null;
@@ -544,8 +544,8 @@ function isReady (statusReadyT, reasonT) {
 
   if (typeof statusReadyT === 'undefined' && typeof reasonT === 'undefined') {
     return {
-      statusReady : statusReady,
-      reason : reason
+      statusReady: statusReady,
+      reason: reason
     };
   }
 }
@@ -562,8 +562,8 @@ function instantiateMirrors () {
   var lst = [];
   for (var i = 0; i < mirrors.length; i++) {
     lst[lst.length] = {
-      mirror : mirrors[i].mirrorName,
-      activated : true
+      mirror: mirrors[i].mirrorName,
+      activated: true
     };
   }
   localStorage.setItem('mirrorStates', JSON.stringify(lst));
@@ -834,162 +834,180 @@ function refreshUpdate () {
   }
 }
 
+function getStoredBookmarks () {
+  var json = localStorage.getItem('bookmarks');
+  var bookmarks;
+
+  if (json === null) {
+    return [];
+  }
+
+  try {
+    bookmarks = JSON.parse(json);
+  }
+  catch (e) {
+    console.error('Error getting the bookmarks:', e.getStack());
+    bookmarks = [];
+  }
+  finally {
+    return bookmarks;
+  }
+}
+
+function setWindowTitle (curVersion) {
+  var title = 'All Mangas Reader';
+
+  if (chrome.extension.isBeta()) {
+    title += ' Beta Channel';
+  }
+
+  chrome.browserAction.setTitle({
+    title : [title, curVersion].join(' ')
+  });
+}
+
+function openNewVersionPage () {
+  if (chrome.extension.isBeta()) {
+    chrome.tabs.create({
+      'url' : 'https://github.com/AllMangasReader-dev/AMR/commits/develop'
+    });
+  }
+  else {
+    chrome.tabs.create({
+      'url' : 'http://wiki.allmangasreader.com/changelog'
+    });
+  }
+}
+
+function updateStoredVersion (version) {
+  localStorage.setItem('version', version);
+}
+
+function extensionHasBeenUpdated (currentVersion) {
+  var prevVersion = localStorage.getItem('version');
+
+  if (typeof prevVersion === 'undefined' || prevVersion === null || prevVersion === 'null') {
+    return false;
+  }
+
+  return currentVersion !== prevVersion;
+}
+
+function getStoredMangasList () {
+  var list = localStorage.getItem('mangas');
+  var mangas;
+
+  if (typeof list === 'undefined' || list === null || list === 'null') {
+    return [];
+  }
+
+  mangas = JSON.parse(list);
+
+  return mangas.map(function (manga) {
+    manga.url = replaceInUrls(manga.url, 'submanga.me', 'submanga.com');
+    manga.lastChapterReadURL = replaceInUrls(manga.lastChapterReadURL, 'submanga.me', 'submanga.com');
+
+    manga.url = replaceInUrls(manga.url, 'www.mangafox.com', 'mangafox.me');
+    manga.lastChapterReadURL = replaceInUrls(manga.lastChapterReadURL, 'www.mangafox.com', 'mangafox.me');
+
+    return new MangaElt(manga);
+  });
+}
+
+function getActiveMirrors (mirrors) {
+  return mirrors.filter(function (mirror) {
+    return isMirrorActivated(mirror.mirrorName);
+  });
+}
+
+function scheduleNextUpdate (lastUpdate, interval, fn) {
+  var now = new Date();
+  var remainingTime = now.getTime() - lastUpdate - interval;
+
+  if (remainingTime > 0) {
+    fn();
+  }
+  else {
+    return setTimeout(fn, -remainingTime);
+  }
+}
+
 /* Initialise the list of followed mangas */
 function init () {
   getMirrors(function (mirrorsT) {
-    mirrors = mirrorsT;
-    var i;
-
     var doDeleteMirs = false;
+    var params = getParameters();
+    var currentVersion = chrome.extension.getVersion();
+    var hasBeenUpdated = extensionHasBeenUpdated(currentVersion);
 
-    for (i = 0; i < mirrors.length; i++) {
-      if (localStorage[mirrors[i].mirrorName]) {
+    mirrors = mirrorsT;
+
+    mirrors.forEach(function (mirror) {
+      var mirrorName = mirror.mirrorName;
+
+      if (localStorage.getItem(mirrorName)) {
         doDeleteMirs = true;
-        localStorage.removeItem(mirrors[i].mirrorName);
+        localStorage.removeItem(mirrorName);
       }
-    }
+    });
 
     if (doDeleteMirs) {
       localStorage.removeItem('lastMangasUpdate');
     }
 
     initMirrorState();
-    actMirrors = [];
 
-    for (i = 0; i < mirrors.length; i++) {
-      if (isMirrorActivated(mirrors[i].mirrorName)) {
-        actMirrors[actMirrors.length] = mirrors[i];
-      }
+    // get active mirrors
+    actMirrors = getActiveMirrors(mirrors);
+
+    // get mangas list
+    MANGA_LIST = getStoredMangasList();
+
+    // get user stored bookmarks
+    bookmarks = getStoredBookmarks();
+
+    if (hasBeenUpdated) {
+      // store the new version
+      updateStoredVersion(currentVersion);
+
+      // open the changelog page
+      openNewVersionPage();
     }
 
-    var list = localStorage.getItem('mangas');
-    MANGA_LIST = [];
-
-    if (!(list === undefined || list === null || list === 'null')) {
-      var mangas = JSON.parse(list);
-
-      for (i = 0; i < mangas.length; i++) {
-        mangas[i].url = replaceInUrls(mangas[i].url, 'submanga.me', 'submanga.com');
-        mangas[i].lastChapterReadURL = replaceInUrls(mangas[i].lastChapterReadURL, 'submanga.me', 'submanga.com');
-        mangas[i].url = replaceInUrls(mangas[i].url, 'www.mangafox.com', 'mangafox.me');
-        mangas[i].lastChapterReadURL = replaceInUrls(mangas[i].lastChapterReadURL, 'www.mangafox.com', 'mangafox.me');
-        MANGA_LIST[i] = new MangaElt(mangas[i]);
-      }
-    }
-
-    var bms = localStorage.getItem('bookmarks');
-    if (bms !== undefined) {
-      bookmarks = JSON.parse(bms);
-    }
-    else {
-      bookmarks = [];
-    }
-
-    var pars = getParameters();
-    var ancVersion = localStorage.getItem('version');
-    if (ancVersion === undefined || ancVersion === null || ancVersion === 'null') {
-      ancVersion = null;
-    }
-
-    var curVersion = chrome.extension.getVersion();
-    if (ancVersion === null || curVersion !== ancVersion) {
-      localStorage.setItem('version', curVersion);
-      if (pars.openupdate === 1) {
-        if (chrome.extension.isBeta()) {
-          chrome.tabs.getAllInWindow(undefined, function (tabs) {
-            var tab;
-            while (tab = tabs.shift()) {
-              if (tab.url && tab.url === 'https://github.com/AllMangasReader-dev/AMR/commits/develop') {
-                chrome.tabs.update(tab.id, {
-                  selected : true
-                });
-                return;
-              }
-            }
-
-            chrome.tabs.create({
-              'url' : 'https://github.com/AllMangasReader-dev/AMR/commits/develop'
-            });
-          });
-        }
-        else {
-          chrome.tabs.create({
-            'url' : 'http://wiki.allmangasreader.com/changelog'
-          });
-        }
-      }
-      localStorage.setItem('versionViewRelease', localStorage.getItem('version'));
-    }
-
-    if (chrome.extension.isBeta()) {
-      chrome.browserAction.setTitle({
-        title : 'All Mangas Reader Beta Channel ' + curVersion
-      });
-    }
-    else {
-      chrome.browserAction.setTitle({
-        title : 'All Mangas Reader ' + curVersion
-      });
-    }
-
-    // var dailyStr = getDailyStr();
-    // var weeklyStr = getWeeklyStr();
-    // var monthlyStr = getMonthlyStr();
+    // update window title
+    setWindowTitle(currentVersion);
 
     saveList();
 
-    var nextTime;
-
-    if (pars.sync === 1) {
-      console.log('synchronization started');
+    if (params.sync === 1) {
+      console.info('Synchronization started');
       sync.start();
     }
-    if (!localStorage.getItem('lastChaptersUpdate')) {
+
+    var lastChaptersUpdate = localStorage.getItem('lastChaptersUpdate');
+    var lastMangasUpdate = localStorage.getItem('lastMangasUpdate');
+    var lastWsUpdate = localStorage.getItem('lastWsUpdate');
+
+    if (!lastChaptersUpdate || params.checkmgstart === 1) {
       refreshAllLasts();
     }
     else {
-      if (pars.checkmgstart === 1) {
-        refreshAllLasts();
-      }
-      else {
-        nextTime = new Date().getTime() - localStorage.getItem('lastChaptersUpdate') - pars.updatechap;
-        if (nextTime > 0) {
-          refreshAllLasts();
-        }
-        else {
-          console.log('Next time to refresh chapters list : ' + (-nextTime));
-          timeoutChap = setTimeout(function () {
-            refreshAllLasts();
-          }, -nextTime);
-        }
-      }
+      timeoutChap = scheduleNextUpdate(lastChaptersUpdate, params.updatechap, refreshAllLasts);
     }
-    if (!localStorage.getItem('lastMangasUpdate')) {
+
+    if (!lastMangasUpdate) {
       refreshMangaLists();
     }
     else {
-      nextTime = new Date().getTime() - localStorage.getItem('lastMangasUpdate') - pars.updatemg;
-      if (nextTime > 0) {
-        refreshMangaLists();
-      }
-      else {
-        console.log('Next time to refresh manga list : ' + (-nextTime));
-        timeoutMg = setTimeout(refreshMangaLists, -nextTime);
-        refreshNewMirrorsMangaLists();
-      }
+      timeoutMg = scheduleNextUpdate(lastChaptersUpdate, params.updatemg, refreshMangaLists);
+      refreshNewMirrorsMangaLists();
     }
-    if (!localStorage.getItem('lastWsUpdate')) {
+
+    if (!lastWsUpdate) {
       refreshWebsites();
     }
     else {
-      nextTime = new Date().getTime() - localStorage.getItem('lastWsUpdate') - updatews;
-      if (nextTime > 0) {
-        refreshWebsites();
-      }
-      else {
-        console.log('Next time to refresh websites : ' + (-nextTime));
-        timeoutWs = setTimeout(refreshWebsites, -nextTime);
-      }
+      timeoutWs = scheduleNextUpdate(lastChaptersUpdate, updatews, refreshWebsites);
     }
   });
 }
