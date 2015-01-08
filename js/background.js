@@ -1,4 +1,4 @@
-/*globals translate, wssql, MangaElt, BSync, getMangaMirror*/
+/*globals translate, wssql, MangaElt, BSync, getMangaMirror, getMirrors*/
 var MANGA_LIST;
 var mirrors;
 var ctxIds = [];
@@ -225,20 +225,20 @@ function activateMirror (mirrorName) {
   }
 }
 
-function jsonmangaelt (mangaelt) {
+function getJsonFromElement (element) {
   var obj = {
-    mirror: mangaelt.mirror,
-    name: mangaelt.name,
-    url: mangaelt.url,
-    lastChapterReadURL: mangaelt.lastChapterReadURL,
-    lastChapterReadName: mangaelt.lastChapterReadName,
-    read: mangaelt.read,
-    update: mangaelt.update,
-    display: mangaelt.display,
-    ts: mangaelt.ts,
-    upts: mangaelt.upts,
-    listChaps: JSON.stringify(mangaelt.listChaps),
-    cats: JSON.stringify(mangaelt.cats)
+    mirror: element.mirror,
+    name: element.name,
+    url: element.url,
+    lastChapterReadURL: element.lastChapterReadURL,
+    lastChapterReadName: element.lastChapterReadName,
+    read: element.read,
+    update: element.update,
+    display: element.display,
+    ts: element.ts,
+    upts: element.upts,
+    listChaps: JSON.stringify(element.listChaps),
+    cats: JSON.stringify(element.cats)
   };
 
   return JSON.stringify(obj);
@@ -246,17 +246,21 @@ function jsonmangaelt (mangaelt) {
 
 function getJSONList () {
   var results = [];
-  $.each(MANGA_LIST, function (index, object) {
-    var value = jsonmangaelt(object);
-    if (value !== undefined) {
+
+  MANGA_LIST.forEach(function (object) {
+    var value = getJsonFromElement(object);
+
+    if (typeof value !== 'undefined') {
       results.push(value);
     }
   });
+
   return '[' + results.join(', ') + ']';
 }
 
 function grayscale (cnv, w, h) {
   var imageData = cnv.getImageData(0, 0, w, h);
+
   for (var j = 0; j < imageData.height; j++) {
     for (var i = 0; i < imageData.width; i++) {
       var index = (i * 4) * imageData.width + (j * 4);
@@ -270,20 +274,29 @@ function grayscale (cnv, w, h) {
       imageData.data[index + 2] = average;
     }
   }
+
   cnv.putImageData(imageData, 0, 0, 0, 0, imageData.width, imageData.height);
 }
 
 function drawIcon (isgrey) {
+  var width = canvas.width;
+  var height = canvas.height;
+  var halfWidth = width / 2;
+  var halfHeight = height / 2;
+
   canvasContext.save();
-  canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-  canvasContext.translate(canvas.width / 2, canvas.height / 2);
-  canvasContext.drawImage(sharinganImage, -canvas.width / 2, -canvas.height / 2);
+  canvasContext.clearRect(0, 0, width, height);
+  canvasContext.translate(halfWidth, halfHeight);
+  canvasContext.drawImage(sharinganImage, -halfWidth, -halfHeight);
+
   if (isgrey) {
-    grayscale(canvasContext, canvas.width, canvas.height);
+    grayscale(canvasContext, width, height);
   }
+
   canvasContext.restore();
+
   chrome.browserAction.setIcon({
-    imageData : canvasContext.getImageData(0, 0, canvas.width, canvas.height)
+    imageData : canvasContext.getImageData(0, 0, width, height)
   });
 }
 
@@ -354,15 +367,10 @@ function refreshTag () {
 function saveList () {
   try {
     localStorage.setItem('mangas', getJSONList());
-    try {
-      refreshTag();
-    }
-    catch (e) {
-      console.log(e);
-    }
+    refreshTag();
   }
   catch (e) {
-    console.log(e);
+    console.error('Error while saving the manga list:', e.getStack());
   }
 }
 
@@ -370,10 +378,11 @@ function refreshUpdateWith (update) {
   try {
     var params = getParameters();
     params.updated = update;
+
     localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
-    console.log(e);
+    console.error('Error while refreshing with update:', update, '\n', e.getStack());
   }
 }
 
@@ -384,7 +393,7 @@ function refreshSync () {
     localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
-    console.log(e);
+    console.error('Error while refreshing the sync date:', e.getStack());
   }
 }
 
@@ -686,25 +695,29 @@ function refreshAllLasts (refreshTimer, perform) {
 
 function refreshMangaLists (refreshTimer, perform) {
   try {
-    if (perform === undefined || perform === true) {
-      console.log('Refreshing mangas lists at ' + new Date());
-      localStorage.setItem('lastMangasUpdate', new Date().getTime());
-      for (var i = 0; i < mirrors.length; i++) {
-        if (mirrors[i].canListFullMangas && isMirrorActivated(mirrors[i].mirrorName)) {
-          mirrors[i].getMangaList('', mangaListLoaded);
+    if (typeof perform === 'undefined' || perform === true) {
+      var now = new Date();
+
+      console.info('Refreshing mangas lists at', now);
+
+      localStorage.setItem('lastMangasUpdate', now.getTime());
+
+      mirrors.forEach(function (mirror) {
+        if (mirror.canListFullMangas && isMirrorActivated(mirror.mirrorName)) {
+          mirror.getMangaList('', mangaListLoaded);
         }
-      }
+      });
     }
   }
   catch (e) {
-    console.log(e);
+    console.error('Error while refreshing mangas list:', e.getStack());
   }
 
   var nextTime = getParameters().updatemg;
 
   if (refreshTimer) {
     clearTimeout(timeoutMg);
-    nextTime = -(new Date().getTime() - localStorage.getItem('lastMangasUpdate') - nextTime);
+    nextTime = -(new Date().getTime() - (+localStorage.getItem('lastMangasUpdate')) - nextTime);
   }
 
   console.log('Next time to refresh manga list : ' + nextTime);
@@ -713,16 +726,16 @@ function refreshMangaLists (refreshTimer, perform) {
 }
 
 function refreshNewMirrorsMangaLists () {
-  for (var i = 0; i < mirrors.length; i++) {
-    if (mirrors[i].canListFullMangas && isMirrorActivated(mirrors[i].mirrorName)) {
-      wssql.webdb.getMangaList(mirrors[i].mirrorName, function (list, mirror) {
+  mirrors.forEach(function (mirror) {
+    if (mirror.canListFullMangas && isMirrorActivated(mirror.mirrorName)) {
+      wssql.webdb.getMangaList(mirror.mirrorName, function (list, mirror) {
         if (!list || list === null || list.length === 0) {
-          console.log('New web site added : ' + mirror + ' --> loading manga list');
+          console.info('New website added:', mirror, '- getting it\'s mangas list.');
           getMangaMirror(mirror).getMangaList('', mangaListLoaded);
         }
       });
     }
-  }
+  });
 }
 
 function updateMirrors (callback) {
