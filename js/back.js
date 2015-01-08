@@ -112,14 +112,13 @@ function whichImageIsFirst (needFirst) {
   return resp;
 }
 
-function setHWZoom (img) {
+function setHWZoom (img, zoomFactor) {
   var $img = $(img);
   var data = $img.data();
-  var zoom = data.zoom;
 
   $img.css({
-    height: zoom * data.baseheight + 'px',
-    width: zoom * data.basewidth + 'px',
+    height: zoomFactor * data.baseheight + 'px',
+    width: zoomFactor * data.basewidth + 'px',
     'max-width': 'none'
   });
 }
@@ -145,13 +144,12 @@ function setZoom (factor) {
     }
     else {
       $this.data({
-        zoom: factor,
         baseheight: $this.height(),
         basewidth: $this.width()
       });
     }
 
-    setHWZoom(this);
+    setHWZoom(this, factor);
   });
 
   var actualHeight = getBodyHeight();
@@ -1653,75 +1651,68 @@ function nbLoaded (where) {
   var loaded = $(where)
     .find('.imageAMR')
     .filter(function () {
+      console.debug($(this).data('finish'));
       return $(this).data('finish') === 1;
     });
 
   return loaded.length;
 }
 
-function loadImageAMR (where, url, img, pos, res, mode, second) {
-  if (!second) {
-    $(img).data('urlToLoad', url);
-    $(img).data('resize', res.resize);
-    $(img).data('modedisplay', mode);
+function loadImageAMR (where, url, img, pos, res, mode, retry) {
+  var mirrorScript = getMirrorScript();
 
-    $(img).load(onLoadImage);
-    $(img).error(onErrorImage);
+  if (!retry) {
+    $(img)
+      .data({
+        urlToLoad: url,
+        resize: res.resize,
+        modedisplay: mode
+      })
+      .load(onLoadImage)
+      .error(onErrorImage);
   }
 
   if (res.imgorder === 1) {
     if (nbLoaded(where) === pos) {
-      getMirrorScript().getImageFromPageAndWrite(url, img, document, window.location.href);
+      mirrorScript.getImageFromPageAndWrite(url, img, document, window.location.href);
     }
     else {
-      setTimeout(function () {
-        loadImageAMR(where, url, img, pos, res, mode, true);
-      }, 100);
+      setTimeout(loadImageAMR.bind(null, where, url, img, pos, res, mode, true), 100);
     }
   }
   else {
-    getMirrorScript().getImageFromPageAndWrite(url, img, document, window.location.href);
+    mirrorScript.getImageFromPageAndWrite(url, img, document, window.location.href);
   }
 }
 
 function onLoadNextImage () {
-  var lstbtn = [];
-  var id = 'nChapBtn';
-  var i = 0;
-  while ($('#' + id + i).length > 0) {
-    lstbtn[lstbtn.length] = $('#' + id + i);
-    i++;
-  }
   var self = this;
-  $.each(lstbtn, function () {
-    var $this = $(this);
-    if ($this.data('nbloaded')) {
-      $this.data('nbloaded', $this.data('nbloaded') + 1);
-    }
-    else {
-      $this.data('nbloaded', 1);
-    }
-    var prog;
-    if ($('.AMRprogress', $this).length === 0) {
-      prog = $('<span class="buttonAMR AMRprogress></span>');
-      prog.css('position', 'relative');
-      prog.css('top', '0');
-      prog.css('left', '0');
-      prog.css('width', '0px');
-      prog.css('height', '4px');
-      prog.css('border-radius', '2px');
-      prog.css('border-radius', '2px');
-      prog.css('background-color', '#8888EE');
-      prog.css('opacity', '1');
-      prog.css('display', 'block');
 
-      prog.appendTo($this);
+  $('[id^=nChapBtn]').each(function () {
+    var $this = $(this);
+    var nbloaded = $this.data('nbloaded');
+    var prog = $this.find('.AMRprogress');
+
+    $this.data('nbloaded', (nbloaded ? nbloaded : 0) + 1);
+
+    if (prog.length === 0) {
+      prog = $('<span class="buttonAMR AMRprogress></span>');
+      prog.css({
+        position: 'relative',
+        top: '0',
+        left: '0',
+        width: '0px',
+        height: '4px',
+        'border-radius': '2px',
+        'background-color': '#8888EE',
+        opacity: '1',
+        display: 'block'
+      });
+
+      $this.append(prog);
     }
-    else {
-      prog = $('.AMRprogress', $this);
-    }
-    //  console.log((this[0].offsetWidth * ($this.data('nbloaded') / $(self).data('total'))) + ' --> ' + $this.data('nbloaded') + ' ; ' + $(self).data('total'));
-    prog.css('width', (this[0].offsetWidth * ($this.data('nbloaded') / $(self).data('total'))) + 'px');
+
+    prog.css('width', (this.offsetWidth * (nbloaded / $(self).data('total'))) + 'px');
   });
 }
 
@@ -1731,16 +1722,19 @@ function onErrorNextImage () {
 
 function loadNextChapter (urlNext) {
   //  load an iframe with urlNext and get list of images
+  var mirrorScript = getMirrorScript();
+
   chrome.runtime.sendMessage({
     action: 'getNextChapterImages',
     url: urlNext,
-    mirrorName: getMirrorScript().mirrorName
+    mirrorName: mirrorScript.mirrorName
   }, function (resp) {
     var lst = resp.images;
+    var img;
 
     if (lst !== null) {
       for (var i = 0; i < lst.length; i++) {
-        var img = new Image();
+        img = new Image();
 
         $(img)
           .load(onLoadNextImage)
@@ -1753,50 +1747,59 @@ function loadNextChapter (urlNext) {
             total: lst.length
           });
 
-        getMirrorScript().getImageFromPageAndWrite(lst[i], img, document, urlNext);
+        mirrorScript.getImageFromPageAndWrite(lst[i], img, document, urlNext);
       }
     }
   });
 }
 
+var imageCheckerInterval;
+
 function waitForImages (where, mode, res, title) {
   var isOk = true;
-  var nbOk = 0;
-  var nbTot = 0;
+  var loadedImagesLength = 0;
+  var images = $(where).find('.imageAMR');
+  var total = images.length;
 
-  $(where).find('.imageAMR').each(function () {
-    if ($(this).data('finish') !== 1) {
-      isOk = false;
+  images.each(function () {
+    var data = $(this).data();
+
+    if (data.finish === '1') {
+      loadedImagesLength++;
     }
     else {
-      nbOk++;
+      isOk = false;
     }
-    if (this.offsetWidth !== $(this).data('owidth')) {
-      $('#' + $(this).data('divLoad')).hide();
+
+    if (this.offsetWidth !== data.owidth) {
+      $('#' + data.divLoad).hide();
     }
-    nbTot++;
   });
 
-  if (res.load === 1 && nbTot !== 0) {
-    $('title').text(Math.floor(nbOk / nbTot * 100) + ' % - ' + title);
+  if (res.load === 1 && total !== 0) {
+    document.title = Math.floor(loadedImagesLength / total * 100) + ' % - ' + title;
   }
 
   if (isOk) {
     transformImagesInBook(where, mode, res);
     getMirrorScript().doAfterMangaLoaded(document, window.location.href);
 
-    $('title').text(title);
+    document.title = title;
 
-    if ($.data(document.body, 'nexturltoload') && prefetchChapter) {
-      loadNextChapter($.data(document.body, 'nexturltoload'));
+    var data = $.data(document.body);
+
+    if (data.nexturltoload && prefetchChapter) {
+      loadNextChapter(data.nexturltoload);
     }
 
-    if ($.data(document.body, 'sendwhendownloaded')) {
-      chrome.runtime.sendMessage($.data(document.body, 'sendwhendownloaded'), $.noop);
+    if (data.sendwhendownloaded) {
+      chrome.runtime.sendMessage(data.sendwhendownloaded, $.noop);
     }
+
+    clearTimeout(imageCheckerInterval);
   }
   else {
-    setTimeout(waitForImages.bind(null, where, mode, res, title), 500);
+    imageCheckerInterval = setTimeout(waitForImages.bind(null, where, mode, res, title), 500);
   }
 }
 
@@ -1815,34 +1818,17 @@ function writeImages (where, list, mode, res) {
 
   for (var i = 0; i < list.length; i++) {
     tr = $('<tr></tr>');
-    tr.appendTo(table);
+    td = $('<td></td>').css('text-align', 'center');
 
-    td = $('<td></td>');
-    td.css('text-align', 'center');
-    td.appendTo(tr);
-
-    spanner = $('<div class="spanForImg"></div>');
-
-    spanner
+    spanner = $('<div class="spanForImg"></div>')
       .css({
         'vertical-align': 'middle',
         'text-align': 'center'
       })
       .data('order', i);
 
-    td.append(spanner);
+    div = $('<div id="loader' + i + '" class="divLoading"></div>').css('background', 'url(' + IMAGE_PATH + 'loading.gif' + ') no-repeat center center');
 
-    div = $('<div id="loader' + i + '" class="divLoading"></div>');
-    div.css('background', 'url(' + chrome.extension.getURL('img/loading.gif') + ') no-repeat center center');
-
-    spanner.append(div);
-
-    //  Using $ to create this image instead of DOM native method fix a
-    // weird bug on canary and only some websites.
-    // My thought is that a version of canary was mistaking the embedded $
-    // on the website and when the extension creates image from DOM and container
-    // from website's $. We can't have both of them interract (DOM restriction)
-    // It might be a Canary issue more than an AMR issue... Here it is fixed...
     img = new Image();
 
     $(img)
@@ -1855,22 +1841,29 @@ function writeImages (where, list, mode, res) {
 
     loadImageAMR(where, list[i], img, i, res, mode);
 
+    table.append(tr);
+    tr.append(td);
+    td.append(spanner);
+    spanner.append(div);
     spanner.append(img);
   }
 
-  var title = $('title').text();
-  waitForImages(where, mode, res, title);
+  waitForImages(where, mode, res, document.title);
 }
 
 function initPage () {
   var mirrorScript = getMirrorScript();
 
   if (mirrorScript.isCurrentPageAChapterPage(document, window.location.href)) {
+    console.info('-> Binding shortcuts');
     bindHotkeys();
 
+    console.info('-> Getting settings');
     chrome.runtime.sendMessage({
       action: 'parameters'
     }, function (response) {
+      console.info('-> Got settings');
+
       useLeftRightKeys = response.lrkeys === 1;
       autoBookmarkScans = response.autobm === 1;
       prefetchChapter = response.prefetch === 1;
@@ -1879,43 +1872,38 @@ function initPage () {
 
       var $body = $(document.body);
 
-      mirrorScript.getInformationsFromCurrentPage(document, window.location.href, function (res) {
-        $body.data('curpageinformations', res);
+      mirrorScript.getInformationsFromCurrentPage(document, window.location.href, function (currentManga) {
+        $body.data('curpageinformations', currentManga);
 
         chrome.runtime.sendMessage({
           action: 'mangaInfos',
-          url: res.currentMangaURL
+          url: currentManga.currentMangaURL
         }, function (resp) {
           chrome.runtime.sendMessage({
             action: 'barState'
           }, function (barState) {
-            createDataDiv(res);
+            createDataDiv(currentManga);
             var imagesUrl = mirrorScript.getListImages(document, window.location.href);
             var select = mirrorScript.getMangaSelectFromPage(document, window.location.href);
             var isSel = true;
+            var whereNav;
 
             if (select === null) {
-              var selectIns = $('<select></select>');
-              selectIns.data('mangaCurUrl', res.currentChapterURL);
-              mirrorScript.getListChaps(res.currentMangaURL, res.name, selectIns, callbackListChaps);
+              var selectIns = $('<select></select>').data('mangaCurUrl', currentManga.currentChapterURL);
+              mirrorScript.getListChaps(currentManga.currentMangaURL, currentManga.name, selectIns, callbackListChaps);
               isSel = false;
             }
 
             mirrorScript.doSomethingBeforeWritingScans(document, window.location.href);
 
             if (isSel) {
-              var whereNav;
-              if (response.newbar === 1) {
-                whereNav = createBar(barState.barVis);
-              }
-              else {
-                whereNav = mirrorScript.whereDoIWriteNavigation(document, window.location.href);
-              }
+              whereNav = response.newbar === 1 ? createBar(barState.barVis) : mirrorScript.whereDoIWriteNavigation(document, window.location.href);
 
-              writeNavigation(whereNav, select, res, response);
+              writeNavigation(whereNav, select, currentManga, response);
             }
 
             var where = mirrorScript.whereDoIWriteScans(document, window.location.href);
+
             amrWhereScans = where;
 
             $body.data('amrparameters', response);
@@ -1926,7 +1914,7 @@ function initPage () {
               curmode = resp.display;
             }
 
-            //  If not use res.mode
+            //  If not use currentManga.mode
             if (curmode === -1) {
               curmode = response.displayMode;
             }
@@ -1936,11 +1924,11 @@ function initPage () {
 
           var payload = {
             action: 'readManga',
-            url: res.currentMangaURL,
+            url: currentManga.currentMangaURL,
             mirror: mirrorScript.mirrorName,
-            lastChapterReadName: res.currentChapter,
-            lastChapterReadURL: res.currentChapterURL,
-            name: res.name
+            lastChapterReadName: currentManga.currentChapter,
+            lastChapterReadURL: currentManga.currentChapterURL,
+            name: currentManga.name
           };
 
           if (response.addauto === 1 || resp !== null) {
@@ -1960,11 +1948,11 @@ function initPage () {
           if (sendStats) {
             var statobj = {
               action: 'readMgForStat',
-              url: res.currentMangaURL,
+              url: currentManga.currentMangaURL,
               mirror: mirrorScript.mirrorName,
-              lastChapterReadName: res.currentChapter,
-              lastChapterReadURL: res.currentChapterURL,
-              name: res.name
+              lastChapterReadName: currentManga.currentChapter,
+              lastChapterReadURL: currentManga.currentChapterURL,
+              name: currentManga.name
             };
 
             chrome.runtime.sendMessage(statobj, function (response) {
