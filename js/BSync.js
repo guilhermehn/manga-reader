@@ -8,9 +8,9 @@ function eachSync (obj, fn, context) {
   }
 }
 
-function BSync (OPT) {
+function BSync (options) {
   this.options = {};
-  this.initialize(OPT);
+  this.initialize(options);
 
   return this;
 }
@@ -57,21 +57,17 @@ BSync.prototype.attach = function () {
   this.isAttached = true;
 
   if (!this.options.name || !this.options.folder) {
-    throw ('No name (name or folder) given, bailing out');
+    throw ('No name (name or folder) given, stopping.');
   }
 
-  /*if (!this.options.debug && parseInt(this.options.interval) < 120 * 1000) {
-    this.options.interval = 120 * 1000
-  }*/
-  setTimeout(function () {
-    self.traverse();
-  }, 10000);
+  setTimeout(this.traverse.bind(this), 10000);
 
   chrome.bookmarks.onCreated.addListener(function (id, bookmark) {
-    var ts;
-    if (bookmark.url && self.folder && self.folder.id === bookmark.parentId && (ts = self.isValidBookmark(bookmark))) {
+    var ts = self.isValidBookmark(bookmark);
+
+    if (bookmark.url && self.folder && self.folder.id === bookmark.parentId && ts) {
       setTimeout(function () {
-        if (self.bookmark && (parseInt(self.syncedAt) !== parseInt(ts)) && (self.bookmark.id !== bookmark.id)) {
+        if (self.bookmark && (parseInt(self.syncedAt, 10) !== parseInt(ts, 10)) && (self.bookmark.id !== bookmark.id)) {
           if (self.options.debug) {
             console.log('REMOVING AND PROCEESSING ON CREATED');
           }
@@ -188,7 +184,7 @@ BSync.prototype.getFolder = function () {
 BSync.prototype.traverse = function (tree) {
   var self = this;
   var bookmarks = [];
-  var _37;
+  var prevBookmark;
   var _38;
   var folder = this.folder;
   var now = new Date().getTime();
@@ -221,23 +217,21 @@ BSync.prototype.traverse = function (tree) {
     var ts;
 
     results.forEach(function (bookmark) {
-      // console.log('Bookmark : ' + results.title);
       ts = self.isValidBookmark(bookmark);
 
       if (ts) {
-        // console.log('Bookmark : ' + results.title + ' date : ' + ts + ' ; curTS : ' + _3c);
         if (self.options.deleteOther) {
           bookmarks.push(bookmark);
         }
         if (bookmark.url.indexOf('void') !== -1 && (ts > _3c)) {
-          _37 = bookmark;
-          _37.syncedAt = ts;
+          prevBookmark = bookmark;
+          prevBookmark.syncedAt = ts;
           _3c = ts;
         }
       }
     });
 
-    if (!_37) {
+    if (!prevBookmark) {
       if (self.options.debug) {
         console.log('NO BOOKMARK FOUND > WRITING');
       }
@@ -254,32 +248,33 @@ BSync.prototype.traverse = function (tree) {
     }
 
     if (self.options.deleteOther) {
-      bookmarks.forEach(function (b, i) {
-        if (String(b.id) !== String(_37.id)) {
+      bookmarks.forEach(function (bookmark) {
+        var id = bookmark.id + '';
+
+        if (id !== (prevBookmark.id + '')) {
           try {
-            chrome.bookmarks.remove(String(b.id));
+            chrome.bookmarks.remove(id);
           }
-          catch (ex) {}
+          catch (e) {
+            console.error('Error while removing the bookmark: ', e.getStack());
+          }
         }
       });
     }
 
-    self.synced = _37.syncedAt;
-    self.bookmark = self.bookmark || _37;
-    return self.process(_37);
+    self.synced = prevBookmark.syncedAt;
+    self.bookmark = self.bookmark || prevBookmark;
+    return self.process(prevBookmark);
   });
 
   return this.start();
 };
 
 BSync.prototype.process = function (bookmarkData, _43) {
-  console.debug(bookmarkData);
-
   var content = this.getJSON(bookmarkData);
-  var self = this;
 
   if (!content) {
-    if (self.options.debug) {
+    if (this.options.debug) {
       console.log('NO CONTENT FOUND > WRITING');
     }
 
@@ -294,23 +289,25 @@ BSync.prototype.process = function (bookmarkData, _43) {
   this.syncedAt = bookmarkData.syncedAt;
 
   if (!_43 && this.shouldWrite()) {
-    if (self.options.debug) {
+    if (this.options.debug) {
       console.debug('About to write');
     }
+
     this.options.onWrite(content, bookmarkData);
   }
   else {
     if (this.shouldRead()) {
-      if (self.options.debug) {
+      if (this.options.debug) {
         console.debug('About to read');
       }
+
       this.syncedAtPrevious = this.syncedAt;
       this.markTimestamp();
       this.bookmark = bookmarkData;
       this.options.onRead(content, bookmarkData);
     }
     else {
-      if (self.options.debug) {
+      if (this.options.debug) {
         console.info('NOTHING TO DO :)');
       }
     }
@@ -320,32 +317,41 @@ BSync.prototype.process = function (bookmarkData, _43) {
 };
 
 BSync.prototype.shouldRead = function () {
+  var update = this.options.getUpdate();
+
   if (this.options.debug) {
     console.log('\n\nChecking shouldRead()');
     console.log('this.syncedAtPrevious: ' + this.syncedAtPrevious);
     console.log('this.syncedAt: ' + this.syncedAt);
-    console.log('his.options.getUpdate(): ' + this.options.getUpdate());
+    console.log('his.options.getUpdate(): ' + update);
   }
 
-  return this.options.getUpdate() === undefined || (this.content && this.syncedAt > this.options.getUpdate());
+  return typeof update === 'undefined' || (this.content && this.syncedAt > update);
 };
 
 BSync.prototype.shouldWrite = function () {
+  var update = this.options.getUpdate();
+
   if (this.options.debug) {
     console.log('\n\nChecking shouldWrite()');
     console.log('this.syncedAtPrevious: ' + this.syncedAtPrevious);
     console.log('this.syncedAt: ' + this.syncedAt);
-    console.log('his.options.getUpdate(); ' + this.options.getUpdate());
+    console.log('his.options.getUpdate(); ' + update);
   }
 
-  return !this.content || (this.options.getUpdate() && (this.options.getUpdate() > this.syncedAt));
+  return !this.content || (update && (update > this.syncedAt));
 };
 
 BSync.prototype.write = function (bookmark) {
   var self = this;
-  if (this.content && JSON.stringify(this.content) === JSON.stringify(bookmark)) {
+  var bookmarkJson = JSON.stringify(bookmark);
+
+  console.group('Bsync.write()');
+  console.info('Staring bookmark write');
+
+  if (this.content && JSON.stringify(this.content) === bookmarkJson) {
     if (self.options.debug) {
-      console.log('SORRY SAME CONTENT / BAILING OUT');
+      console.warning('SORRY SAME CONTENT / BAILING OUT');
     }
 
     return false;
@@ -355,38 +361,38 @@ BSync.prototype.write = function (bookmark) {
     try {
       chrome.bookmarks.remove('' + this.bookmark.id);
     }
-    catch (e) {}
+    catch (e) {
+      console.error('Error while removing the bookmark:', e.getStack());
+    }
   }
 
   this.syncedAtPrevious = this.syncedAt;
   this.syncedAt = this.options.getUpdate() || new Date().getTime();
-  // console.log('resultat de getUpdate: ' + this.options.getUpdate());
 
   var _49 = function (obj) {
-    eachSync(obj, function (_4b, key) {
-      if (_4b && _4b.toLowerCase && _4b.toLowerCase()) {
-        obj[key] === _4b; // .replace(new RegExp('(' + String.fromCharCode(10) + '|' + String.fromCharCode(13) + ')', 'g'), self.options.newLine)
+    eachSync(obj, function (item, key) {
+      if (item && item.toLowerCase && item.toLowerCase()) {
+        obj[key] = item;
       }
     });
 
     return obj;
   };
 
-  // console.log('To write : ' + $H(bookmark).toJSON());
-  bookmark = _49(bookmark);
+  bookmarkJson = JSON.stringify(_49(bookmark));
 
-  // console.log('To write after each : ' + $H(bookmark).toJSON());
-  // console.log('Written in bookmark : ' + JSON.stringify(bookmark));
-  //
   chrome.bookmarks.create({
     parentId: this.folder.id.toString(),
     title: this.options.name + '.' + this.syncedAt,
-    url: 'javascript:void("' + JSON.stringify(bookmark) + '");void(' + (Math.random() * 1000) + ');'
+    url: 'javascript:void("' + bookmarkJson + '");void(' + (new Date().getTime()) + ');'
   }, function (_4d) {
     self.bookmark = _4d;
   });
 
-  self.options.debug && console.log('\nWROTE > ' + JSON.stringify(bookmark));
+  if (this.options.debug) {
+    console.log('\nWROTE > ' + bookmarkJson);
+  }
+
   this.markTimestamp(true);
   return this;
 };
@@ -396,9 +402,7 @@ BSync.prototype.start = function () {
     return this.attach();
   }
 
-  this.timer = setTimeout(function () {
-    this.traverse();
-  }.bind(this), this.options.interval);
+  this.timer = setTimeout(this.traverse.bind(this), this.options.interval);
 
   this.isRunning = true;
 
