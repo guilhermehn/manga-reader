@@ -216,8 +216,9 @@ function activateMirror (mirrorName) {
           }
         }
         catch (e) {
-          console.log(e);
+          console.error('Error while activating a mirror:', e.getStack());
         }
+
         break;
       }
     }
