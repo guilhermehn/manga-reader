@@ -219,7 +219,7 @@ function sendExtRequest (request, button, callback, backsrc) {
 function restoreMirrors () {
   var bkg = chrome.extension.getBackgroundPage();
   mirrors = bkg.mirrors || [];
-  mangas = bkg.mangaList || [];
+  mangas = bkg.MANGA_LIST || [];
   actmirrors = bkg.actMirrors || [];
 
   loadSelectors();
