@@ -70,7 +70,7 @@ BSync.prototype.attach = function () {
   chrome.bookmarks.onCreated.addListener(function (id, bookmark) {
     var ts;
     if (bookmark.url && self.folder && self.folder.id === bookmark.parentId && (ts = self.isValidBookmark(bookmark))) {
-      (function () {
+      setTimeout(function () {
         if (self.bookmark && (parseInt(self.syncedAt) !== parseInt(ts)) && (self.bookmark.id !== bookmark.id)) {
           if (self.options.debug) {
             console.log('REMOVING AND PROCEESSING ON CREATED');
@@ -84,7 +84,7 @@ BSync.prototype.attach = function () {
         else {
           return false;
         }
-      }).delay(800, this);
+      }, 800);
     }
   });
 
@@ -273,65 +273,45 @@ BSync.prototype.traverse = function (tree) {
 };
 
 BSync.prototype.process = function (bookmarkData, _43) {
-  var content;
+  console.debug(bookmarkData);
+
+  var content = this.getJSON(bookmarkData);
   var self = this;
 
-  if (!(content = this.getJSON(bookmarkData))) {
+  if (!content) {
     if (self.options.debug) {
-      console.log(' NO CONTENT FOUND > WRITING');
+      console.log('NO CONTENT FOUND > WRITING');
     }
 
     this.options.onWrite();
     // return this.options.onError('NO CONTENT')
 
-    console.log('BSYNC ERROR : ' + ' NO CONTENT');
+    console.error('BSYNC ERROR: NO CONTENT');
     return;
   }
 
   this.content = content;
-
-  var syncedAt = this.syncedAt;
   this.syncedAt = bookmarkData.syncedAt;
 
-  if (0) {
+  if (!_43 && this.shouldWrite()) {
+    if (self.options.debug) {
+      console.debug('About to write');
+    }
+    this.options.onWrite(content, bookmarkData);
+  }
+  else {
     if (this.shouldRead()) {
-      this.syncedAtPrevious = syncedAt;
+      if (self.options.debug) {
+        console.debug('About to read');
+      }
+      this.syncedAtPrevious = this.syncedAt;
       this.markTimestamp();
       this.bookmark = bookmarkData;
       this.options.onRead(content, bookmarkData);
     }
     else {
-      if (this.shouldWrite()) {
-        this.options.onWrite(content, bookmarkData);
-      }
-      else {
-        if (self.options.debug) {
-          console.log(' NOTHING TO DO :) ');
-        }
-      }
-    }
-  }
-  else {
-    if (!_43 && this.shouldWrite()) {
       if (self.options.debug) {
-        console.log('\nAbout to write');
-      }
-      this.options.onWrite(content, bookmarkData);
-    }
-    else {
-      if (this.shouldRead()) {
-        if (self.options.debug) {
-          console.log('\nAbout to read');
-        }
-        this.syncedAtPrevious = this.syncedAt;
-        this.markTimestamp();
-        this.bookmark = bookmarkData;
-        this.options.onRead(content, bookmarkData);
-      }
-      else {
-        if (self.options.debug) {
-          console.log(' NOTHING TO DO :) ');
-        }
+        console.info('NOTHING TO DO :)');
       }
     }
   }
@@ -393,7 +373,6 @@ BSync.prototype.write = function (bookmark) {
   };
 
   // console.log('To write : ' + $H(bookmark).toJSON());
-  console.debug($H);
   bookmark = _49(bookmark);
 
   // console.log('To write after each : ' + $H(bookmark).toJSON());
@@ -458,19 +437,15 @@ BSync.prototype.markTimestamp = function (local) {
 };
 
 BSync.prototype.getJSON = function (bookmark) {
-  var url = bookmark.url;
+  var url = bookmark.url.replace(/^.+?void\(("|')(.*?)\1\);void.*?$/, '$2');
   var json = '';
-  url = url.replace(/^.*?void\('(.*?)'\);void.*?$/, '$1');
-
-  // url = url.replace(new RegExp(this.options.newLine, 'g'), String.fromCharCode(10));
-  // console.log('JSON to parse : ' + url);
 
   if (url) {
     try {
       json = JSON.parse(url);
     }
     catch (ex) {
-      // console.log('Erreur de parsing JSON -->''');
+      console.error('Error loading the sync json:', ex.getStack());
       json = '';
     }
   }
@@ -479,13 +454,13 @@ BSync.prototype.getJSON = function (bookmark) {
 };
 
 BSync.prototype.isValidBookmark = function (bookmark) {
-  var _5a;
-
   if (!bookmark) {
     return false;
   }
 
-  if (!(_5a = bookmark.title.match(new RegExp('^' + this.options.name + '\\.' + '([0-9]{10,}?)$')))) {
+  var _5a = bookmark.title.match(new RegExp('^' + this.options.name + '\\.' + '([0-9]{10,}?)$'));
+
+  if (!_5a) {
     return false;
   }
 
