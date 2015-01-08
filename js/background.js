@@ -605,7 +605,7 @@ function WaitForAllLists (sizeAll, onFinish, doSpin) {
   this.sizeAll = sizeAll;
   this.onFinish = onFinish;
   this.doSpin = doSpin;
-  this.hasStart = false;
+  this.started = false;
   this.doEase = true;
 }
 
@@ -2020,16 +2020,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 function hasDesactivatedOnce () {
   var states = localStorage.getItem('mirrorStates');
-  var lstTmp = JSON.parse(states);
+  var list;
   var nbActi = 0;
-  if (lstTmp.length > 0) {
-    for (var j = 0; j < lstTmp.length; j++) {
-      if (lstTmp[j].activated) {
-        nbActi++;
-      }
-    }
+
+  if (states) {
+    list = JSON.parse(states);
+
+    nbActi = list.filter(item => item.activated).length;
   }
-  return (nbActi <= 25);
+
+  return nbActi <= 25;
 }
 
 function ease (x) {
@@ -2037,18 +2037,22 @@ function ease (x) {
 }
 
 function drawIconAtRotation (doEase) {
-  if (doEase === undefined) {
+  if (typeof doEase === 'undefined') {
     doEase = false;
   }
+
   canvasContext.save();
   canvasContext.clearRect(0, 0, canvas.width, canvas.height);
   canvasContext.translate(canvas.width / 2, canvas.height / 2);
   canvasContext.rotate(2 * Math.PI * (doEase ? ease(rotation) : rotation));
   canvasContext.drawImage(sharinganImage, -canvas.width / 2, -canvas.height / 2);
+
   if (getParameters().nocount === 1 && !hasNew()) {
     grayscale(canvasContext, canvas.width, canvas.height);
   }
+
   canvasContext.restore();
+
   chrome.browserAction.setIcon({
     imageData : canvasContext.getImageData(0, 0, canvas.width, canvas.height)
   });
@@ -2059,13 +2063,14 @@ WaitForAllLists.prototype.incMade = function () {
 };
 
 WaitForAllLists.prototype.wait = function () {
-  var self;
-  if (!this.hasStart) {
-    this.hasStart = true;
+  if (!this.started) {
+    this.started = true;
   }
+
   if (this.sizeAll <= this.nbMade) {
     if (this.doSpin) {
       rotation += 1 / animationFrames;
+
       if (rotation > 1) {
         rotation = 0;
         drawIconAtRotation(true);
@@ -2073,10 +2078,7 @@ WaitForAllLists.prototype.wait = function () {
       }
       else {
         drawIconAtRotation();
-        self = this;
-        setTimeout(function () {
-          self.wait();
-        }, animationSpeed);
+        setTimeout(this.wait.bind(this), animationSpeed);
       }
     }
     else {
@@ -2086,28 +2088,32 @@ WaitForAllLists.prototype.wait = function () {
   else {
     if (this.doSpin) {
       rotation += 1 / animationFrames;
+
       if (rotation > 1) {
         rotation = rotation - 1;
         this.doEase = false;
       }
+
       drawIconAtRotation(this.doEase);
     }
-    self = this;
-    setTimeout(function () {
-      self.wait();
-    }, animationSpeed);
+
+    setTimeout(this.wait.bind(this), animationSpeed);
   }
 };
 
 function hasNew () {
+  var lastName;
+
   for (var i = 0; i < mangaList.length; i++) {
     if (mangaList[i].listChaps.length > 0) {
-      var lastName = mangaList[i].listChaps[0][1];
+      lastName = mangaList[i].listChaps[0][1];
+
       if (lastName !== mangaList[i].lastChapterReadURL && mangaList[i].read === 0) {
         return true;
       }
     }
   }
+
   return false;
 }
 
@@ -2119,7 +2125,7 @@ function refreshUpdateSyncSite (update) {
     localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -2130,7 +2136,7 @@ function resetUpdate () {
     localStorage.setItem('parameters', JSON.stringify(params));
   }
   catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -2138,6 +2144,7 @@ chrome.extension.getVersion = function () {
   if (!chrome.extension.version_) {
     initManifestVars();
   }
+
   return chrome.extension.version_;
 }
 
@@ -2145,6 +2152,7 @@ chrome.extension.isBeta = function () {
   if (chrome.extension.beta_ === undefined) {
     initManifestVars();
   }
+
   return chrome.extension.beta_;
 }
 
