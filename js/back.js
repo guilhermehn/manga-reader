@@ -49,7 +49,7 @@ function createDataDiv (res) {
   $(document.body).append(divData);
 }
 
-function stopEventProp (e) {
+function stopEventPropagation (e) {
   e.stopPropagation();
 }
 
@@ -1236,6 +1236,44 @@ function writeNavigation (where, select, res, params) {
     });
 }
 
+var keyboardShortcuts = {
+  // b
+  66: function goToNextChapter () {
+    var $nChapBtn0 = $('#nChapBtn0');
+
+    if ($nChapBtn0.length > 0) {
+      window.location.href = $nChapBtn0.attr('href');
+    }
+  },
+
+  // n
+  78: function goToPrevChapter () {
+    var $pChapBtn0 = $('#pChapBtn0');
+
+    if ($pChapBtn0.length > 0) {
+      window.location.href = $pChapBtn0.attr('href');
+    }
+  },
+
+  // s
+  83: window.scrollBy.bind(window, 0, 40),
+
+  // w
+  87: window.scrollBy.bind(window, 0, -40),
+
+  // +
+  107: zoomIn,
+
+  // -
+  109: zoomOut
+};
+
+function runShortcut (which) {
+  if (typeof keyboardShortcuts[which] === 'function') {
+    keyboardShortcuts[which]();
+  }
+}
+
 function bindHotkeys () {
   //  disable default websites shortcuts (mangafox)
   document.onkeypress = null;
@@ -1244,35 +1282,15 @@ function bindHotkeys () {
 
   $(document)
     .unbind('keyup keydown keypress')
-    .keyup(stopEventProp)
-    .delegate('*', 'keyup', stopEventProp)
+    .keyup(stopEventPropagation)
+    .delegate('*', 'keyup', stopEventPropagation)
     .keydown(function (e) {
-      var t = getTarget(e);
+      var target = e.target || e.srcElement;
+      var which = e.which;
 
-      if (!((t.type && t.type === 'text') || t.nodeName.toLowerCase() === 'textarea')) {
-        if (e.which === 87) { // W
-          window.scrollBy(0, -40);
-        }
-
-        if (e.which === 83) { // S
-          window.scrollBy(0, 40);
-        }
-
-        if (e.which === 107) { // +
-          zoomIn();
-        }
-
-        if (e.which === 109) { // -
-          zoomOut();
-        }
-
-        if (e.which === 66 && $('#pChapBtn0').length > 0) { // b
-          window.location.href = $('#pChapBtn0').attr('href');
-        }
-
-        if (e.which === 78 && $('#nChapBtn0').length > 0) { // n
-          window.location.href = $('#nChapBtn0').attr('href');
-        }
+      // Run shortcuts only if no input is focused
+      if (!((target.type && target.type === 'text') || target.nodeName.toLowerCase() === 'textarea')) {
+        runShortcut(which);
 
         if (useLeftRightKeys) {
           var doubleTap;
@@ -1284,7 +1302,7 @@ function bindHotkeys () {
           if ((e.which === 37) || (e.which === 65)) {
             doubleTap = false;
 
-            if (typeof lastpresstime !== undefined && new Date().getTime() - lastpresstime < 500 && dirpress === 1) {
+            if (typeof lastpresstime !== 'undefined' && (new Date().getTime() - lastpresstime) < 500 && dirpress === 1) {
               doubleTap = true;
             }
 
