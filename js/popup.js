@@ -1515,24 +1515,25 @@ function init () {
   setTimeout(function () {
     wssql.init();
     mirrors = chrome.extension.getBackgroundPage().actMirrors || [];
-    mangas = chrome.extension.getBackgroundPage().mangaList || [];
+    mangas = chrome.extension.getBackgroundPage().MANGA_LIST || [];
     bookmarks = chrome.extension.getBackgroundPage().bookmarks || [];
     setColor();
     loadCategories();
     loadMangas();
-    setTimeout(function () {
-      loadSearch();
-    }, 10);
+    setTimeout(loadSearch, 10);
     firstLastMg();
     bindCategories();
     displayMangasByCat();
     saveCategories();
+
     if (!localStorage['versionViewRelease'] || localStorage['versionViewRelease'] !== localStorage['version']) {
       $('#release').css('display', 'inline-block');
     }
+
     if (parameters.dev === 1) {
       $('#dev').css('display', 'inline-block');
     }
+
     bindFoot();
     bindActions();
   }, 5);

@@ -29,6 +29,7 @@
       "js/wssql.js",
       "js/amrcsql.js",
       "js/lib.js",
+      "js/actionDispatcher.js",
       "js/background.js"
     ]
   },

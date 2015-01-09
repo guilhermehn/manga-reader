@@ -526,19 +526,21 @@ function isReady (statusReadyT, reasonT) {
 
     statusReady = statusReadyT;
 
-    if (reason !== undefined) {
+    if (typeof reason !== 'undefined') {
       reason = reasonT;
     }
 
     return;
   }
 
-  if (statusReadyT === true && statusReady === false) {
+  if (statusReadyT && !statusReady) {
     chrome.browserAction.setIcon({
       path: 'img/amrlittle.png'
     });
+
     statusReady = statusReadyT;
     reason = null;
+
     return;
   }
 
@@ -552,21 +554,23 @@ function isReady (statusReadyT, reasonT) {
 
 function replaceInUrls (url, find, rep) {
   var res = url;
-  if (url !== undefined && url !== null && url.indexOf(find) !== -1) {
+
+  if (typeof url !== 'undefined' && url !== null && url.indexOf(find) !== -1) {
     res = url.replace(find, rep);
   }
+
   return res;
 }
 
 function instantiateMirrors () {
-  var lst = [];
-  for (var i = 0; i < mirrors.length; i++) {
-    lst[lst.length] = {
-      mirror: mirrors[i].mirrorName,
+  var mirrorsStates = mirrors.map(function (mirror) {
+    return {
+      mirror: mirror.mirrorName,
       activated: true
     };
-  }
-  localStorage.setItem('mirrorStates', JSON.stringify(lst));
+  });
+
+  localStorage.setItem('mirrorStates', JSON.stringify(mirrorsStates));
 }
 
 function initMirrorState () {
