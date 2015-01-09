@@ -1,4 +1,4 @@
-/*globals translate, wssql, MangaElt, BSync, getMangaMirror, getMirrors*/
+/*globals translate, wssql, MangaElt, BSync, getMangaMirror, getMirrors, updateWebsitesFromRepository*/
 var MANGA_LIST;
 var mirrors;
 var ctxIds = [];
@@ -415,31 +415,25 @@ function jsonmangaelttosync (mangaelt) {
 }
 
 function getJSONListToSync () {
-  var results = [];
-  $.each(MANGA_LIST, function (index, object) {
-    var value = jsonmangaelttosync(object);
-    if (value !== undefined) {
-      results.push(value);
-    }
-  });
+  var results = MANGA_LIST
+    .map(jsonmangaelttosync)
+    .filter(json => typeof json !== 'undefined');
+
   return '[' + results.join(', ') + ']';
 }
 
 // Here we shouldn't be using this...
 var sync = new BSync({
   getUpdate : function () {
-    // console.log('GET UPDATE');
-    var params = getParameters();
-    return params.updated;
+    return getParameters().updated;
   },
 
-  onRead : function (json, bookmark) {
+  onRead : function (json) {
+    debugger;
     console.log('Reading incoming synchronisation');
 
     if (!(typeof json === 'undefined' || json === null || json === 'null')) {
       console.log(' - Updating incoming entries');
-
-      // var lstTmp = $A(eval('(' + json.mangas + ')')); --> remove prototype usage
 
       var lstTmp = JSON.parse(json.mangas);
       var i;
@@ -447,16 +441,20 @@ var sync = new BSync({
 
       for (i = 0; i < lstTmp.length; i++) {
         tmpManga = new MangaElt(lstTmp[i]);
+
         console.log('\t - Reading manga entry : ' + tmpManga.name + ' in mirror : ' + tmpManga.mirror);
+
         var mangaExist = isInMangaList(tmpManga.url);
+
         if (mangaExist === null) {
           console.log('\t  --> Manga not found in current list, adding manga... ');
+
           if (!isMirrorActivated(tmpManga.mirror)) {
             activateMirror(tmpManga.mirror);
           }
-          var last = MANGA_LIST.length;
-          MANGA_LIST[last] = tmpManga;
-          MANGA_LIST[last].refreshLast();
+
+          MANGA_LIST.push(tmpManga);
+          MANGA_LIST[MANGA_LIST.length].refreshLast();
         }
         else {
           // Verify chapter last
@@ -466,25 +464,22 @@ var sync = new BSync({
         }
       }
 
-      console.log(' - Deleting mangas not in incoming list');
-      var deleteAr = [];
-      for (i = 0; i < MANGA_LIST.length; i++) {
-        var found = false;
-        for (var j = 0; j < lstTmp.length; j++) {
-          tmpManga = new MangaElt(lstTmp[j]);
-          if (MANGA_LIST[i].url === tmpManga.url) {
-            found = true;
-            break;
-          }
-        }
+      console.warning(' - Deleting mangas not in incoming list');
+
+      MANGA_LIST = MANGA_LIST.filter(function (mangaEntry) {
+        var found = lstTmp.some(function (manga) {
+          var mangaElement = new MangaElt(manga);
+
+          return mangaEntry.url === mangaElement.url;
+        });
+
         if (!found) {
-          console.log('\t - Deleting manga entry in current list : ' + MANGA_LIST[i].name + ' in mirror : ' + MANGA_LIST[i].mirror);
-          deleteAr[deleteAr.length] = i;
+          console.warning('\t - Deleting manga entry in current list : ' + mangaEntry.name + ' in mirror : ' + mangaEntry.mirror);
+          return false;
         }
-      }
-      for (i = deleteAr.length - 1; i >= 0; i--) {
-        MANGA_LIST.remove(deleteAr[i], deleteAr[i]);
-      }
+
+        return true;
+      });
     }
 
     saveList();
@@ -495,16 +490,19 @@ var sync = new BSync({
   onWrite : function () {
     console.log('Writing current configuration to synchronise');
     var params = getParameters();
+
     this.write({
       mangas : getJSONListToSync(),
       updated : params.updated
     });
+
     refreshSync();
   }
 });
 
 function sendSearch (selectedText) {
   var serviceCall = chrome.extension.getURL('search.html') + '?s=' + selectedText;
+
   chrome.tabs.create({
     url : serviceCall
   });
@@ -619,6 +617,7 @@ function WaitForAllLists (sizeAll, onFinish, doSpin) {
 
 function refreshManga (mg, waiter, pos) {
   var mirror = getMangaMirror(mg.mirror);
+
   if (mirror === null) {
     return;
   }
@@ -638,6 +637,7 @@ function refreshManga (mg, waiter, pos) {
 
 function refreshAllLasts (refreshTimer, perform) {
   var params = getParameters();
+
   try {
     var i;
 
@@ -646,21 +646,15 @@ function refreshAllLasts (refreshTimer, perform) {
 
       localStorage.setItem('lastChaptersUpdate', new Date().getTime());
 
-      var mangasToRefreshCount = 0;
       var pos = 0;
       var mirror;
-
-      for (i = 0; i < MANGA_LIST.length; i++) {
-        if (getMangaMirror(MANGA_LIST[i].mirror) !== null) {
-          mangasToRefreshCount++;
-        }
-      }
-
+      var mangasToRefreshCount = MANGA_LIST.filter(manga => getMangaMirror(manga.mirror) !== null).length;
       var waiter = new WaitForAllLists(mangasToRefreshCount, saveList, params.refreshspin);
 
       for (i = 0; i < MANGA_LIST.length; i++) {
         mirror = getMangaMirror(MANGA_LIST[i].mirror);
-        if (mirror !== null && mirror.savebandwidth === undefined || !mirror.savebandwidth) {
+
+        if (mirror !== null && mirror.hasOwnProperty('savebandwidth') || !mirror.savebandwidth) {
           refreshManga(MANGA_LIST[i], waiter, pos);
           pos++;
         }
@@ -668,7 +662,8 @@ function refreshAllLasts (refreshTimer, perform) {
 
       for (i = 0; i < MANGA_LIST.length; i++) {
         mirror = getMangaMirror(MANGA_LIST[i].mirror);
-        if (mirror !== null && mirror.savebandwidth !== undefined && mirror.savebandwidth) {
+
+        if (mirror !== null && mirror.hasOwnProperty('savebandwidth') && mirror.savebandwidth) {
           refreshManga(MANGA_LIST[i], waiter, pos);
           pos++;
         }
@@ -678,16 +673,17 @@ function refreshAllLasts (refreshTimer, perform) {
     }
   }
   catch (e) {
-    console.log(e);
+    console.error('Error while refreshing chapters:', e.getStack());
   }
 
   var nextTime = params.updatechap;
+
   if (refreshTimer) {
     clearTimeout(timeoutChap);
     nextTime =  -(new Date().getTime() - localStorage.getItem('lastChaptersUpdate') - nextTime);
   }
 
-  console.log('Next time to refresh chapters list : ' + nextTime);
+  console.info('Time until next chapters list update:', nextTime / 1000, 'seconds');
   timeoutChap = setTimeout(refreshAllLasts, nextTime);
 }
 
@@ -740,13 +736,7 @@ function updateMirrors (callback) {
   getMirrors(function (mirrorsT) {
     mirrors = mirrorsT;
     initMirrorState();
-    actMirrors = [];
-
-    for (var i = 0; i < mirrors.length; i++) {
-      if (isMirrorActivated(mirrors[i].mirrorName)) {
-        actMirrors[actMirrors.length] = mirrors[i];
-      }
-    }
+    actMirrors = mirrors.filter(mirror => isMirrorActivated(mirror.mirrorName));
 
     refreshNewMirrorsMangaLists();
     callback();
@@ -754,66 +744,37 @@ function updateMirrors (callback) {
 }
 
 function refreshWebsites (refreshTimer, perform) {
+  var now = new Date();
+
   try {
-    if (perform === undefined || perform === true) {
-      console.log('Refreshing websites implementations at ' + new Date());
-      localStorage.setItem('lastWsUpdate', new Date().getTime());
+    if (typeof perform === 'undefined' || perform === true) {
+      console.log('Refreshing websites implementations at ' + now);
+
+      localStorage.setItem('lastWsUpdate', now.getTime());
+
       updateWebsitesFromRepository(function () {
         updateMirrors(function () {});
       });
     }
   }
   catch (e) {
-    console.log(e);
+    console.error('Error updating the websites scripts:', e.getStack());
   }
+
   var nextTime = updatews;
+
   if (refreshTimer) {
     clearTimeout(timeoutWs);
-    nextTime =  - (new Date().getTime() - localStorage.getItem('lastWsUpdate') - nextTime);
+    nextTime =  - (now.getTime() - localStorage.getItem('lastWsUpdate') - nextTime);
   }
+
   console.log('Next time to refresh websites implementations : ' + nextTime);
-  timeoutWs = setTimeout(function () {
-    refreshWebsites();
-  }, nextTime);
-}
 
-function getDailyStr () {
-  var d = new Date();
-  var m = d.getMonth() + 1;
-  var mstr = '' + m;
-  if (m < 10) {
-    mstr = '0' + mstr;
-  }
-  var j = d.getDate();
-  var jstr = '' + j;
-  if (j < 10) {
-    jstr = '0' + jstr;
-  }
-  return d.getFullYear() + '/' + mstr + '/' + jstr;
-}
-
-function getWeeklyStr () {
-  var d = new Date();
-  var w = d.getWeek();
-  var wstr = '' + w;
-  if (w < 10) {
-    wstr = '0' + wstr;
-  }
-  return d.getFullYear() + '/' + wstr;
-}
-
-function getMonthlyStr () {
-  var d = new Date();
-  var m = d.getMonth() + 1;
-  var mstr = '' + m;
-  if (m < 10) {
-    mstr = '0' + mstr;
-  }
-  return d.getFullYear() + '/' + mstr;
+  timeoutWs = setTimeout(refreshWebsites, nextTime);
 }
 
 function formatMgName (name) {
-  if (name === undefined || name === null || name === 'null') {
+  if (typeof name === 'undefined' || name === null || name === 'null') {
     return '';
   }
 
