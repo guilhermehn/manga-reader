@@ -570,38 +570,32 @@ function instantiateMirrors () {
 }
 
 function initMirrorState () {
-  var states = localStorage.getItem('mirrorStates');
-  if (typeof states === 'undefined' || states === null || states === 'null') {
+  var statesJson = localStorage.getItem('mirrorStates');
+
+  if (typeof statesJson === 'undefined' || statesJson === null || statesJson === 'null') {
     instantiateMirrors();
   }
   else {
-    var lstTmp = JSON.parse(states);
+    var states = JSON.parse(statesJson);
 
-    if (lstTmp.length > 0) {
+    if (states.length > 0) {
       var toUpdate = false;
 
-      for (var i = 0; i < mirrors.length; i++) {
-        var isFound = false;
-
-        for (var j = 0; j < lstTmp.length; j++) {
-          if (lstTmp[j].mirror === mirrors[i].mirrorName) {
-            isFound = true;
-            break;
-          }
-        }
+      mirrors.forEach(function (mirror) {
+        var isFound = states.some(state => state.mirror === mirror.mirrorName);
 
         if (!isFound) {
-          lstTmp[lstTmp.length] = {
-            mirror : mirrors[i].mirrorName,
+          states.push({
+            mirror : mirror.mirrorName,
             activated : true
-          };
+          });
 
           toUpdate = true;
         }
-      }
+      });
 
       if (toUpdate) {
-        localStorage.setItem('mirrorStates', JSON.stringify(lstTmp));
+        localStorage.setItem('mirrorStates', JSON.stringify(states));
       }
     }
     else {
