@@ -1,4 +1,4 @@
-/*globals translate, wssql, MangaElt, BSync, getMangaMirror, getMirrors, updateWebsitesFromRepository*/
+/*globals translate, wssql, MangaElt, BSync, getMangaMirror, getMirrors, updateWebsitesFromRepository, actionDipatcher, ACTIONS*/
 var MANGA_LIST;
 var mirrors;
 var ctxIds = [];
@@ -1322,6 +1322,10 @@ function getBookmark (obj) {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (actionDipatcher(request, sender, sendResponse)) {
+      return;
+    }
+
     var mangaExist;
     var i;
     switch (request.action) {
@@ -1329,16 +1333,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         readManga(request, function () {
           sendResponse({});
         }, true);
+
         break;
       }
 
       case 'readMangas': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           readManga(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1346,16 +1353,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         killManga(request, function () {
           sendResponse({});
         }, true);
+
         break;
       }
 
       case 'killMangas': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           killManga(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1363,16 +1373,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         resetManga(request, function () {
           sendResponse({});
         }, true);
+
         break;
       }
 
       case 'resetMangas': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           resetManga(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1382,6 +1395,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             sendResponse({});
           }, true);
         }, false);
+
         break;
       }
 
@@ -1390,33 +1404,40 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           if (request.updatesamemangas) {
             if (getParameters().groupmgs === 1) {
               mangaExist = isInMangaList(request.url);
+
               if (mangaExist !== null) {
                 var othMg = getSimilarMangaTitles(mangaExist);
+
                 if (othMg.length > 0) {
                   for (i = 0; i < othMg.length; i++) {
                     othMg.read = request.read;
                   }
+
                   saveList();
                   refreshUpdate();
                 }
               }
             }
+
             sendResponse({});
           }
           else {
             sendResponse({});
           }
         }, true);
+
         break;
       }
 
       case 'markReadTops': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           markReadTop(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1425,33 +1446,40 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           if (request.updatesamemangas) {
             if (getParameters().groupmgs === 1) {
               mangaExist = isInMangaList(request.url);
+
               if (mangaExist !== null) {
                 var othMg = getSimilarMangaTitles(mangaExist);
+
                 if (othMg.length > 0) {
                   for (i = 0; i < othMg.length; i++) {
                     othMg.update = request.update;
                   }
+
                   saveList();
                   refreshUpdate();
                 }
               }
             }
+
             sendResponse({});
           }
           else {
             sendResponse({});
           }
         }, true);
+
         break;
       }
 
       case 'markUpdateTops': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           markUpdateTop(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1459,16 +1487,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         addCategory(request, function () {
           sendResponse({});
         }, true);
+
         break;
       }
 
       case 'addCategories': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           addCategory(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1476,6 +1507,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         removeCategory(request, function () {
           sendResponse({});
         });
+
         break;
       }
 
@@ -1483,16 +1515,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         removeCatManga(request, function () {
           sendResponse({});
         }, true);
+
         break;
       }
 
       case 'removeCatMangas': {
-        $.each(request.list, function (index, val) {
+        request.list.forEach(function (val) {
           removeCatManga(val, function () {}, false);
         });
+
         saveList();
         refreshUpdate();
         sendResponse({});
+
         break;
       }
 
@@ -1500,39 +1535,43 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         editCategory(request, function () {
           sendResponse({});
         });
+
         break;
       }
 
       case 'mangaInfos': {
         mangaExist = isInMangaList(request.url);
+        var payload = null;
+
         if (mangaExist !== null) {
-          sendResponse({
+          payload = {
             read: mangaExist.read,
             display: mangaExist.display
-          });
+          };
         }
-        else {
-          sendResponse(null);
-        }
+
+        sendResponse(payload);
+
         break;
       }
 
       case 'setDisplayMode': {
         mangaExist = isInMangaList(request.url);
+
         if (mangaExist !== null) {
           mangaExist.display = request.display;
           saveList();
           refreshUpdate();
-          sendResponse({});
         }
-        else {
-          sendResponse({});
-        }
+
+        sendResponse({});
+
         break;
       }
 
       case 'parameters': {
         sendResponse(getParameters());
+
         break;
       }
 
@@ -1580,11 +1619,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
         if (ancParams.sync !== obj.sync) {
           if (obj.sync === 1) {
-            console.log('synchronization started (parameter update)');
+            console.log('Synchronization started (parameter update)');
             sync.start();
           }
           else {
-            console.log('synchronization stopped (parameter update)');
+            console.log('Synchronization stopped (parameter update)');
             sync.stop();
           }
         }
@@ -1604,6 +1643,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         }
 
         sendResponse({});
+
         break;
       }
 
@@ -1613,6 +1653,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         });
 
         sendResponse({});
+
         break;
       }
 
@@ -1622,12 +1663,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         });
 
         sendResponse({});
+
         break;
       }
 
       case 'save': {
         saveList();
         sendResponse({});
+
         break;
       }
 
@@ -1635,22 +1678,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         getFilledMirrorsDesc(activatedMirrors(), function (mirrorsDesc) {
           sendResponse(mirrorsDesc);
         });
+
         break;
       }
 
       case 'actmirrors': {
         getActivatedMirrorsWithList({
           list: activatedMirrors()
-        }, function (mirrorsDesc) {
-          sendResponse(mirrorsDesc);
-        });
+        }, sendResponse);
+
         break;
       }
 
       case 'searchManga': {
-        if (getMangaMirror(request.mirrorName) !== null) {
-          getMangaMirror(request.mirrorName)
-          .getMangaList(request.search, function (mirror, lst) {
+        var mangaMirror = getMangaMirror(request.mirrorName);
+
+        if (mangaMirror !== null) {
+          mangaMirror.getMangaList(request.search, function (mirror, lst) {
             request.list = lst;
             sendResponse(request);
           });
@@ -1659,6 +1703,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           request.list = [];
           sendResponse(request);
         }
+
         break;
       }
 
@@ -1666,12 +1711,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({
           res: localStorage.getItem('searchMirrorsState')
         });
+
         break;
       }
 
       case 'pagematchurls': {
         doesCurrentPageMatchManga(request.url, activatedMirrors(), function (isOk, mirrorName, implementationURL) {
           var docache = true;
+
           if (!isOk) {
             sendResponse({
               isOk: false
@@ -1686,12 +1733,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
           $.loadScript(implementationURL, docache, function (sScriptBody) {
              var tabId = sender.tab.id;
+             var scriptObj = {
+               code: sScriptBody
+             };
+
              // inject all the scripts defined in the contentScript array (at the top of this file)
              batchInjectScripts(tabId, contentScripts, function () {
-               chrome.tabs.executeScript(tabId, {
-                 code: sScriptBody
-               }, function () {
+               chrome.tabs.executeScript(tabId, scriptObj, function () {
                  console.log('injected ' + implementationURL);
+
                  sendResponse({
                    isOk: isOk,
                    mirrorName: mirrorName,
@@ -1701,31 +1751,40 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
              });
            }, function () {
              console.log('Script ' + mirrorName + ' failed to be loaded in page...');
+
              sendResponse({
                isOk: false
              });
            }, 'text');
         });
+
         break;
       }
 
       case 'deletepub': {
         var params = getParameters();
         params.pub = 0;
+
         localStorage.setItem('parameters', JSON.stringify(params));
+
         sendResponse({});
+
         break;
       }
 
       case 'getListManga': {
         wssql.webdb.getMangaList(request.mirror, function (list) {
           var mangas = list;
-          if (mangas !== undefined && mangas !== null && mangas.length > 0) {
+          var mangaMirror;
+
+          if (typeof mangas !== 'undefined' && mangas !== null && mangas.length > 0) {
             sendResponse(mangas);
           }
           else {
-            if (getMangaMirror(request.mirror) !== null) {
-              getMangaMirror(request.mirror).getMangaList('', function (name, lst) {
+            mangaMirror = getMangaMirror(request.mirror);
+
+            if (mangaMirror !== null) {
+              mangaMirror.getMangaList('', function (name, lst) {
                 sendResponse(lst);
               });
             }
@@ -1734,14 +1793,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
           }
         });
+
         break;
       }
 
       case 'getListChap': {
+        var mangaMirror = getMangaMirror(request.mirror);
         mangaExist = isInMangaList(request.url);
+
         if (mangaExist === null) {
-          if (getMangaMirror(request.mirror) !== null) {
-            getMangaMirror(request.mirror).getListChaps(request.mangaUrl, request.mangaName, null, function (lst, obj) {
+          if (mangaMirror !== null) {
+            mangaMirror.getListChaps(request.mangaUrl, request.mangaName, null, function (lst, obj) {
               sendResponse(lst);
             });
           }
@@ -1752,32 +1814,30 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         else {
           sendResponse(mangaExist.listChaps);
         }
+
         break;
       }
 
       case 'nbMangaInMirror': {
-        var nb = 0;
-        for (i = 0; i < MANGA_LIST.length; i++) {
-          if (MANGA_LIST[i].mirror === request.mirror) {
-            nb++;
-          }
-        }
         sendResponse({
-          number: nb,
+          number: MANGA_LIST.filter(manga => manga.mirror === request.mirror).length,
           mirror: request.mirror
         });
+
         break;
       }
 
       case 'activateMirror': {
         activateMirror(request.mirror);
         sendResponse({});
+
         break;
       }
 
       case 'desactivateMirror': {
         desactivateMirror(request.mirror);
         sendResponse({});
+
         break;
       }
 
@@ -1786,6 +1846,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           mirror: request.mirror,
           activated: isMirrorActivated(request.mirror)
         });
+
         break;
       }
 
@@ -1794,61 +1855,58 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({
           list: lst
         });
+
         break;
       }
 
       case 'addUpdateBookmark': {
         addBookmark(request);
         sendResponse({});
+
         break;
       }
 
       case 'deleteBookmark': {
         deleteBookmark(request);
         sendResponse({});
+
         break;
       }
 
       case 'getBookmarkNote': {
         var noteBM = getBookmark(request);
+
         sendResponse({
           isBooked: noteBM.booked,
           note: noteBM.note,
           scanSrc: noteBM.scanSrc
         });
+
         break;
       }
 
       case 'createContextMenu': {
-        var isFound = false;
-
-        if (ctxIds.length > 0) {
-          for (i = 0; i < ctxIds.length; i++) {
-            if (ctxIds[i] === request.lstUrls[0]) {
-              isFound = true;
-              break;
-            }
-          }
-        }
+        var url = request.lstUrls[0];
+        var isFound = ctxIds.some(id => id === url);
 
         if (!isFound) {
-          ctxIds[ctxIds.length] = request.lstUrls[0];
-          var id = chrome.contextMenus.create({
+          ctxIds.push(url);
+
+          chrome.contextMenus.create({
             title: translate('background_bookmark_menu'),
             contexts: ['image'],
+            targetUrlPatterns: [encodeURI(request.lstUrls[0]), request.lstUrls[0]],
             onclick: function (info, tab) {
               chrome.tabs.executeScript(tab.id, {
                 code: 'clickOnBM(\'' + info.srcUrl + '\')'
-              }, function () {});
-            },
-            targetUrlPatterns: [encodeURI(request.lstUrls[0]), request.lstUrls[0]]
-          }, function () {
-            sendResponse({});
-          });
+              }, $.noop);
+            }
+          }, sendResponse.bind(null, {}));
         }
         else {
           sendResponse({});
         }
+
         break;
       }
 
@@ -1856,6 +1914,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({
           out: importMangas(request.mangas, request.merge)
         });
+
         break;
       }
 
@@ -1863,38 +1922,40 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({
           out: importBookmarks(request.bookmarks, request.merge)
         });
+
         break;
       }
 
       case 'hideBar': {
-        if (localStorage.getItem('isBarVisible') === 1) {
-          localStorage.setItem('isBarVisible', 0);
-          console.log('hiding bar');
-        }
-        else {
-          localStorage.setItem('isBarVisible', 1);
-        }
+        var isBarVisible = localStorage.getItem('isBarVisible');
+        var barState = isBarVisible ? 1 : 0;
+        localStorage.setItem('isBarVisible', barState);
+
         sendResponse({
-          res: localStorage.getItem('isBarVisible')
+          res: barState
         });
+
         break;
       }
 
       case 'showBar': {
         localStorage.setItem('isBarVisible', 1);
         sendResponse({});
+
         break;
       }
 
       case 'barState': {
-        if (typeof localStorage.getItem('isBarVisible') === 'undefined') {
+        var isBarVisible = localStorage.getItem('isBarVisible');
+
+        if (isBarVisible === null) {
           sendResponse({
             barVis: 1
           });
         }
         else {
           sendResponse({
-            barVis: localStorage.getItem('isBarVisible')
+            barVis: isBarVisible
           });
         }
         break;
@@ -2029,6 +2090,22 @@ function ease (x) {
   return (1 - Math.sin(Math.PI / 2 + x * Math.PI)) / 2;
 }
 
+function hasNew () {
+  var lastName;
+
+  for (var i = 0; i < MANGA_LIST.length; i++) {
+    if (MANGA_LIST[i].listChaps.length > 0) {
+      lastName = MANGA_LIST[i].listChaps[0][1];
+
+      if (lastName !== MANGA_LIST[i].lastChapterReadURL && MANGA_LIST[i].read === 0) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 function drawIconAtRotation (doEase) {
   if (typeof doEase === 'undefined') {
     doEase = false;
@@ -2094,22 +2171,6 @@ WaitForAllLists.prototype.wait = function () {
   }
 };
 
-function hasNew () {
-  var lastName;
-
-  for (var i = 0; i < MANGA_LIST.length; i++) {
-    if (MANGA_LIST[i].listChaps.length > 0) {
-      lastName = MANGA_LIST[i].listChaps[0][1];
-
-      if (lastName !== MANGA_LIST[i].lastChapterReadURL && MANGA_LIST[i].read === 0) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 function refreshUpdateSyncSite (update) {
   try {
     var params = getParameters();
@@ -2139,15 +2200,15 @@ chrome.extension.getVersion = function () {
   }
 
   return chrome.extension.version_;
-}
+};
 
 chrome.extension.isBeta = function () {
-  if (chrome.extension.beta_ === undefined) {
+  if (typeof chrome.extension.beta_ === 'undefined') {
     initManifestVars();
   }
 
   return chrome.extension.beta_;
-}
+};
 
 function initManifestVars () {
   var xhr = new XMLHttpRequest();
@@ -2177,16 +2238,20 @@ function setclipboard (text) {
 function deleteMangas (mangasToDel) {
   var deleteAr = [];
   var i;
+
   for (i = 0; i < mangasToDel.length; i++) {
     var tmpManga = new MangaElt(mangasToDel[i]);
     var mangaExist = isInMangaListId(tmpManga.url);
+
     if (mangaExist !== -1) {
       deleteAr[deleteAr.length] = mangaExist;
     }
   }
+
   deleteAr.sort(function (a, b) {
     return ((a < b) ? -1 : ((a === b) ? 0 : 1));
   });
+
   for (i = deleteAr.length - 1; i >= 0; i--) {
     MANGA_LIST.remove(deleteAr[i], deleteAr[i]);
   }
@@ -2195,10 +2260,11 @@ function deleteMangas (mangasToDel) {
 function importMangas (mangas, merge) {
   var textOut = '';
   var i;
+  var deleteAr = [];
 
   if (!merge) {
     textOut += translate('background_impexp_del') + '\n';
-    var deleteAr = [];
+
     for (i = 0; i < MANGA_LIST.length; i++) {
       textOut += '\t - ' + translate('background_impexp_del_ent', [MANGA_LIST[i].name, MANGA_LIST[i].mirror]) + '\n';
       deleteAr[deleteAr.length] = i;
@@ -2210,18 +2276,24 @@ function importMangas (mangas, merge) {
   }
 
   textOut += translate('background_impexp_add') + '\n';
+
   var lstTmp = mangas;
 
   for (i = 0; i < lstTmp.length; i++) {
     var tmpManga = new MangaElt(lstTmp[i]);
-    textOut += '\t - ' + translate('background_impexp_read', [tmpManga.name, tmpManga.mirror]) + '\n';
     var mangaExist = isInMangaList(tmpManga.url);
+
+    textOut += '\t - ' + translate('background_impexp_read', [tmpManga.name, tmpManga.mirror]) + '\n';
+
     if (mangaExist === null) {
       textOut += '\t  --> ' + translate('background_impexp_mg_notfound') + '\n';
+
       if (!isMirrorActivated(tmpManga.mirror)) {
         activateMirror(tmpManga.mirror);
       }
+
       var last = MANGA_LIST.length;
+
       MANGA_LIST[last] = tmpManga;
     }
     else {
@@ -2238,8 +2310,10 @@ function updateFromSite (mangas, merge) {
   var i;
   var tmpManga;
   var mangaExist;
+
   if (!merge) {
     var deleteAr = [];
+
     for (i = 0; i < MANGA_LIST.length; i++) {
       deleteAr[deleteAr.length] = i;
     }
@@ -2251,17 +2325,20 @@ function updateFromSite (mangas, merge) {
 
   for (i = 0; i < mangas.length; i++) {
     var mg = mangas[i];
+
     if (mg.change === 'new') {
       tmpManga = new MangaElt(mg);
+
       if (!isMirrorActivated(tmpManga.mirror)) {
         activateMirror(tmpManga.mirror);
       }
+
       var last = MANGA_LIST.length;
       MANGA_LIST[last] = tmpManga;
     }
-
     else if (mg.change === 'delete') {
       mangaExist = isInMangaListId(mg.url);
+
       if (mangaExist !== -1) {
         MANGA_LIST.remove(mangaExist, mangaExist);
       }
@@ -2269,25 +2346,31 @@ function updateFromSite (mangas, merge) {
     else {
       tmpManga = new MangaElt(mg);
       mangaExist = isInMangaList(tmpManga.url);
+
       if (mangaExist !== null) {
         mangaExist.consult(tmpManga, true);
       }
     }
   }
+
   refreshAllLasts();
 }
 
 function importBookmarks (bms, merge) {
   var textOut = '';
   var i;
+
   if (!merge) {
     textOut += translate('background_impexp_del_bm') + '\n';
+
     var deleteAr = [];
+
     if (bookmarks !== null) {
       for (i = 0; i < bookmarks.length; i++) {
         textOut += '\t - ' + translate('background_impexp_del_onebm') + ' : (type: ' + bookmarks[i].type + ', url: ' + bookmarks[i].url + ', chapter url: ' + bookmarks[i].chapUrl + ', mirror: ' + bookmarks[i].mirror + ((bookmarks[i].type === 'chapter') ? '' : ', scanName: ' + bookmarks[i].scanName) + ', note: ' + bookmarks[i].note + ')' + '\n';
         deleteAr[deleteAr.length] = i;
       }
+
       for (i = deleteAr.length - 1; i >= 0; i--) {
         bookmarks.remove(deleteAr[i], deleteAr[i]);
       }
@@ -2295,10 +2378,12 @@ function importBookmarks (bms, merge) {
   }
 
   textOut += translate('background_impexp_add_bm') + '\n';
+
   var lstTmp = bms;
 
   for (i = 0; i < lstTmp.length; i++) {
     textOut += '\t - ' + translate('background_impexp_read_entry') + ' : (type: ' + lstTmp[i].type + ', url: ' + lstTmp[i].url + ', chapter url: ' + lstTmp[i].chapUrl + ', mirror: ' + lstTmp[i].mirror + ((lstTmp[i].type === 'chapter') ? '' : ', scanName: ' + lstTmp[i].scanName) + ', note: ' + lstTmp[i].note + ')' + '\n'
+
     var isFound = false;
     var posFound;
     var obj = lstTmp[i];
@@ -2309,12 +2394,14 @@ function importBookmarks (bms, merge) {
           if (obj.type === 'chapter') {
             isFound = true;
             posFound = j;
+
             break;
           }
           else {
             if (obj.scanUrl === bookmarks[j].scanUrl) {
               isFound = true;
               posFound = j;
+
               break;
             }
           }
@@ -2324,6 +2411,7 @@ function importBookmarks (bms, merge) {
 
     if (!isFound) {
       textOut += '\t  --> ' + translate('background_impexp_new_bm') + '\n';
+
       bookmarks[bookmarks.length] = {
         mirror : obj.mirror,
         url : obj.url,
@@ -2343,6 +2431,7 @@ function importBookmarks (bms, merge) {
   }
 
   localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
   return textOut;
 }
 
