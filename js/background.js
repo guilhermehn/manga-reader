@@ -836,10 +836,9 @@ function setWindowTitle (curVersion) {
 function openNewVersionPage () {
   var url = isBetaVersion() ? 'https://github.com/AllMangasReader-dev/AMR/commits/develop' : 'http://wiki.allmangasreader.com/changelog';
 
-    chrome.tabs.create({
-      url : url
-    });
-  }
+  chrome.tabs.create({
+    url : url
+  });
 }
 
 function updateStoredVersion (version) {
