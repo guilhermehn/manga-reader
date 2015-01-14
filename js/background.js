@@ -813,10 +813,18 @@ function getStoredBookmarks () {
   }
 }
 
+function isBetaVersion () {
+  if (typeof chrome.extension.beta_ === 'undefined') {
+    initManifestVars();
+  }
+
+  return chrome.extension.beta_;
+}
+
 function setWindowTitle (curVersion) {
   var title = 'All Mangas Reader';
 
-  if (chrome.extension.isBeta()) {
+  if (isBetaVersion()) {
     title += ' Beta Channel';
   }
 
@@ -826,14 +834,10 @@ function setWindowTitle (curVersion) {
 }
 
 function openNewVersionPage () {
-  if (chrome.extension.isBeta()) {
+  var url = isBetaVersion() ? 'https://github.com/AllMangasReader-dev/AMR/commits/develop' : 'http://wiki.allmangasreader.com/changelog';
+
     chrome.tabs.create({
-      'url' : 'https://github.com/AllMangasReader-dev/AMR/commits/develop'
-    });
-  }
-  else {
-    chrome.tabs.create({
-      'url' : 'http://wiki.allmangasreader.com/changelog'
+      url : url
     });
   }
 }
@@ -896,7 +900,7 @@ function init () {
   getMirrors(function (mirrorsT) {
     var doDeleteMirs = false;
     var params = getParameters();
-    var currentVersion = chrome.extension.getVersion();
+    var currentVersion = getExtensionVersion();
     var hasBeenUpdated = extensionHasBeenUpdated(currentVersion);
 
     mirrors = mirrorsT;
@@ -2207,21 +2211,13 @@ function resetUpdate () {
   }
 }
 
-chrome.extension.getVersion = function () {
+function getExtensionVersion () {
   if (!chrome.extension.version_) {
     initManifestVars();
   }
 
   return chrome.extension.version_;
-};
-
-chrome.extension.isBeta = function () {
-  if (typeof chrome.extension.beta_ === 'undefined') {
-    initManifestVars();
-  }
-
-  return chrome.extension.beta_;
-};
+}
 
 function initManifestVars () {
   var xhr = new XMLHttpRequest();
