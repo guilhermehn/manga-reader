@@ -73,7 +73,6 @@ function saveOptions () {
   obj.notificationtimer = parseInt(document.getElementById('notificationtimer').value, 10);
 
   obj.refreshspin = document.getElementById('refreshspinCk').checked ? 1 : 0;
-  obj.savebandwidth = document.getElementById('savebandwidthCk').checked ? 1 : 0;
   obj.checkmgstart = document.getElementById('checkmgstartCk').checked ? 1 : 0;
 
   obj.nocount = document.getElementById('noCount').checked ? 1 : 0;
@@ -423,7 +422,6 @@ function restoreOptions () {
   document.getElementById('notificationtimer').value = response.notificationtimer;
 
   document.getElementById('refreshspinCk').checked = (response.refreshspin === 1);
-  document.getElementById('savebandwidthCk').checked = (response.savebandwidth === 1);
   document.getElementById('checkmgstartCk').checked = (response.checkmgstart === 1);
 
   document.getElementById('noCount').checked = (response.nocount === 1);

@@ -1947,49 +1947,52 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
       case 'barState': {
         var isBarVisible = localStorage.getItem('isBarVisible');
+        var barState = isBarVisible === null ? 1 : isBarVisible;
 
-        if (isBarVisible === null) {
-          sendResponse({
-            barVis: 1
-          });
-        }
-        else {
-          sendResponse({
-            barVis: isBarVisible
-          });
-        }
+        sendResponse({
+          barVis: barState
+        });
+
         break;
       }
 
       case 'getNextChapterImages': {
         $.ajax({
           url: request.url,
+
           success: function (data) {
             var div = document.createElement('iframe');
-            div.style.display = 'none';
+            var $div = $(div).hide();
+
             var id = 'mangaNextChap';
-            var i = 0;
-            while ($('#' + id + i).length > 0) {
-              i++;
-            }
+            var i = $('[id^=' + id).length;
+
             id = id + i;
-            $(div).attr('id', id);
+            $div.attr('id', id);
+
+            var frame = document.getElementById(id).contentWindow.document;
+
             document.body.appendChild(div);
-            document.getElementById(id).contentWindow.document.documentElement.innerHTML = data;
-            $(document.getElementById(id).contentWindow.document).ready(function () {
-              var imagesUrl = getMangaMirror(request.mirrorName).getListImages(document.getElementById(id).contentWindow.document, request.url);
+            frame.documentElement.innerHTML = data;
+
+            $(frame).ready(function () {
+              var imagesUrl = getMangaMirror(request.mirrorName).getListImages(frame, request.url);
+
               sendResponse({
                 images: imagesUrl
               });
+
               $('#' + id).remove();
             });
           },
+
           error: function () {
             sendResponse({
               images: null
             });
           }
         });
+
         break;
       }
 
@@ -1999,6 +2002,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           ts: ((getParameters().syncAMR) ? getParameters().syncAMR : 0),
           haschange: (getParameters().changesSinceSync === 1)
         });
+
         break;
       }
 
@@ -2006,6 +2010,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         updateFromSite(request.lst, true);
         refreshUpdateSyncSite(request.ts);
         sendResponse({});
+
         break;
       }
 
@@ -2013,12 +2018,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         updateFromSite(request.lst, false);
         refreshUpdateSyncSite(request.ts);
         sendResponse({});
+
         break;
       }
 
       case 'siteUpdated': {
         refreshUpdateSyncSite(request.ts);
         sendResponse({});
+
         break;
       }
 
@@ -2028,6 +2035,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             id: ltId
           });
         });
+
         break;
       }
 
@@ -2035,6 +2043,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         pstat.webdb.updateStat(request.id, request.time_spent, function () {
           sendResponse({});
         });
+
         break;
       }
 
@@ -2053,6 +2062,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             });
           });
         });
+
         break;
       }
 
@@ -2064,6 +2074,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             });
           });
         });
+
         break;
       }
     }
@@ -2092,8 +2103,10 @@ function ease (x) {
 
 function hasNew () {
   var lastName;
+  var i = -1;
+  var length = MANGA_LIST.length;
 
-  for (var i = 0; i < MANGA_LIST.length; i++) {
+  while (++i < length) {
     if (MANGA_LIST[i].listChaps.length > 0) {
       lastName = MANGA_LIST[i].listChaps[0][1];
 
