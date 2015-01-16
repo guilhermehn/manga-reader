@@ -1,16 +1,27 @@
 {
   "name": "AMR",
   "version": "1.5.6",
-  "description": "[![Coverage Status](https://coveralls.io/repos/AllMangasReader-dev/AMR/badge.png)](https://coveralls.io/r/AllMangasReader-dev/AMR) [![Code Climate](https://codeclimate.com/github/AllMangasReader-dev/AMR.png)](https://codeclimate.com/github/AllMangasReader-dev/AMR)",
+  "description": "AllMangaReader Rebirth",
   "main": "index.js",
   "devDependencies": {
+    "jshint-stylish": "^1.0.0",
+    "jsmin": "^1.0.1",
     "jsonlint": "1.6.x",
+    "jsxhint": "^0.9.0",
     "react-tools": "^0.12.2"
   },
   "scripts": {
+    "postinstall": "mkdir js/components/dist",
+
     "test": "jsonlint manifest.json _locales/*/*.json",
-    "react": "jsx js/components/src js/components/build",
-    "react:watch": "npm run react -- --watch"
+
+    "jsx": "jsx js/components/src js/components/build",
+    "jsx:watch": "npm run jsx -- --watch",
+    "jsx:lint": "jsxhint -c .jshintrc_build js/components/src/*.js --reporter=./node_modules/jshint-stylish/stylish.js",
+
+    "concat": "cat js/components/build/*.js > js/components/dist/Components.js",
+
+    "build": "npm run jsx:lint && npm run jsx && npm run concat"
   },
   "repository": {
     "type": "git",
