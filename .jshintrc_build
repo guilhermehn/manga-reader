@@ -11,7 +11,7 @@
   "noempty"       : true,
   "nonew"         : false,
   "plusplus"      : false,
-  "quotmark"      : "single",
+  "quotmark"      : false,
   "undef"         : true,
   "unused"        : true,
   "maxdepth"      : false,
