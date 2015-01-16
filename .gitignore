@@ -2,3 +2,4 @@ node_modules
 js/vendor
 .module-cache
 js/components/build
+npm-debug.log
