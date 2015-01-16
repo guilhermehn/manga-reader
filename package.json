@@ -4,10 +4,13 @@
   "description": "[![Coverage Status](https://coveralls.io/repos/AllMangasReader-dev/AMR/badge.png)](https://coveralls.io/r/AllMangasReader-dev/AMR) [![Code Climate](https://codeclimate.com/github/AllMangasReader-dev/AMR.png)](https://codeclimate.com/github/AllMangasReader-dev/AMR)",
   "main": "index.js",
   "devDependencies": {
-    "jsonlint": "1.6.x"
+    "jsonlint": "1.6.x",
+    "react-tools": "^0.12.2"
   },
   "scripts": {
-    "test": "jsonlint manifest.json _locales/*/*.json"
+    "test": "jsonlint manifest.json _locales/*/*.json",
+    "react": "jsx js/components/src js/components/build",
+    "react:watch": "npm run react -- --watch"
   },
   "repository": {
     "type": "git",
