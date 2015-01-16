@@ -8,19 +8,16 @@
     "jsmin": "^1.0.1",
     "jsonlint": "1.6.x",
     "jsxhint": "^0.9.0",
-    "react-tools": "^0.12.2"
+    "react-tools": "^0.12.2",
+    "uglify-js": "^2.4.16"
   },
   "scripts": {
     "postinstall": "mkdir js/components/dist",
-
     "test": "jsonlint manifest.json _locales/*/*.json",
-
     "jsx": "jsx js/components/src js/components/build",
-    "jsx:watch": "npm run jsx -- --watch",
     "jsx:lint": "jsxhint -c .jshintrc_build js/components/src/*.js --reporter=./node_modules/jshint-stylish/stylish.js",
-
-    "concat": "cat js/components/build/*.js > js/components/dist/Components.js",
-
+    "jsx:watch": "npm run jsx -- --watch",
+    "concat": "cat js/components/build/Base.js js/components/build/*Component.js > js/components/dist/Components.js",
     "build": "npm run jsx:lint && npm run jsx && npm run concat"
   },
   "repository": {

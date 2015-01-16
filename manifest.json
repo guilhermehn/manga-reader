@@ -21,6 +21,7 @@
     "scripts" : [
       "js/vendor/jquery/dist/jquery.min.js",
       "js/vendor/react/react-with-addons.min.js",
+      "js/components/build/*.js",
       "js/jQuery.loadScript.js",
       "js/i18n.js",
       "js/MangaElt.js",

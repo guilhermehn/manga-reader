@@ -62,7 +62,7 @@
   }
 ];
 
-function loadMenu (cur) {
+function loadMenu (current) {
   chrome.runtime.sendMessage({
     action: 'parameters'
   }, function (response) {
@@ -73,7 +73,7 @@ function loadMenu (cur) {
       if (!menu.cond || menu.cond === 'lab' || response.dev !== 1) {
         var li = $('<li></li>');
 
-        if (menu.name === cur) {
+        if (menu.name === current) {
           li
             .addClass('selected')
             .text(menu.title);
