@@ -3,3 +3,4 @@ js/vendor
 .module-cache
 js/components/build
 npm-debug.log
+.module-cache
