@@ -14,11 +14,14 @@
   "scripts": {
     "postinstall": "mkdir js/components/dist",
     "test": "jsonlint manifest.json _locales/*/*.json",
-    "jsx": "jsx js/components/src js/components/build",
+    "jsx:build": "jsx js/components/src js/components/build",
     "jsx:lint": "jsxhint -c .jshintrc_build js/components/src/*.js --reporter=./node_modules/jshint-stylish/stylish.js",
     "jsx:watch": "npm run jsx -- --watch",
-    "concat": "cat js/components/build/Base.js js/components/build/*Component.js > js/components/dist/Components.js",
-    "build": "npm run jsx:lint && npm run jsx && npm run concat"
+    "jsx": "npm run jsx:build && npm run jsx:lint",
+    "js:concat": "cat js/components/build/Base.js js/components/build/*Component.js > js/components/dist/Components.js",
+    "js:min": "uglifyjs js/components/dist/Components.js -o js/components/dist/Components.min.js -c -m --wrap --lint",
+    "js": "npm run js:concat && npm run js:wrap && npm run js:min",
+    "build": "npm run jsx:lint && npm run jsx && npm run js"
   },
   "repository": {
     "type": "git",
