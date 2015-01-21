@@ -1966,16 +1966,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           success: function (data) {
             var div = document.createElement('iframe');
             var $div = $(div).hide();
-
             var id = 'mangaNextChap';
             var i = $('[id^=' + id).length;
 
             id = id + i;
             $div.attr('id', id);
 
-            var frame = document.getElementById(id).contentWindow.document;
-
             document.body.appendChild(div);
+
+            var frame = document.getElementById(id).contentWindow.document;
             frame.documentElement.innerHTML = data;
 
             $(frame).ready(function () {
