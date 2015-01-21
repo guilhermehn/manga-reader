@@ -124,10 +124,8 @@ function setHWZoom (img, zoomFactor) {
 }
 
 var getBodyHeight = (function () {
-  var $body = $('body');
-
   return function () {
-    return $body.outerHeight(true);
+    return $('body').outerHeight(true);
   };
 })();
 
@@ -1921,6 +1919,8 @@ function initPage () {
 
             writeImages(where, imagesUrl, curmode, response);
           });
+
+          debugger;
 
           var payload = {
             action: 'readManga',

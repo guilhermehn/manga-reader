@@ -21,7 +21,7 @@
     "scripts" : [
       "js/vendor/jquery/dist/jquery.min.js",
       "js/vendor/react/react-with-addons.min.js",
-      "js/components/build/*.js",
+      "js/components/dist/Components.min.js",
       "js/jQuery.loadScript.js",
       "js/i18n.js",
       "js/MangaElt.js",
@@ -31,8 +31,6 @@
       "js/wssql.js",
       "js/amrcsql.js",
       "js/lib.js",
-      "js/actions.js",
-      "js/actionDispatcher.js",
       "js/background.js"
     ]
   },
@@ -66,7 +64,7 @@
       ],
       "js" : [
         "js/lib.js",
-        "js/jquery.js",
+        "js/vendor/jquery/dist/jquery.min.js",
         "js/backsite.js"
       ]
     },
@@ -79,7 +77,7 @@
         "css/backamrc.css"
       ],
       "js" : [
-        "js/jquery.js",
+        "js/vendor/jquery/dist/jquery.min.js",
         "js/backamrc.js"
       ]
     }

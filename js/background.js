@@ -19,7 +19,12 @@ var sharinganImage = document.createElement('img');
 sharinganImage.src = 'img/amrlittle.png';
 var statusReady = true;
 var reason;
-var contentScripts = ['js/jquery.js', 'js/jquery.scrollTo-1.4.3.1-min.js', 'js/jquery.simplemodal-1.4.4.js', 'js/back.js'];
+var contentScripts = [
+  'js/vendor/jquery/dist/jquery.min.js',
+  'js/jquery.scrollTo-1.4.3.1-min.js',
+  'js/jquery.simplemodal-1.4.4.js',
+  'js/back.js'
+];
 
 /**
  * Returns the week number for this date.  dowOffset is the day of week the week
@@ -301,31 +306,38 @@ function drawIcon (isgrey) {
 }
 
 function refreshTag () {
-  var nbNews = 0;
+  var newChaptersCount = 0;
   var listDone = [];
-  for (var i = 0; i < MANGA_LIST.length; i++) {
-    if (MANGA_LIST[i].listChaps.length > 0) {
-      var shortName = formatMgName(MANGA_LIST[i].name);
-      var found = false;
-      for (var j = 0; j < listDone.length; j++) {
-        if (listDone[j] === shortName) {
-          found = true;
-          break;
-        }
-      }
-      if (!found || getParameters().groupmgs === 0) {
-        var lastName = MANGA_LIST[i].listChaps[0][1];
-        if (lastName !== MANGA_LIST[i].lastChapterReadURL && MANGA_LIST[i].read === 0) {
+  var params = getParameters();
+  var groupMangas = params.groupmgs === 0;
+  var lastName;
+
+  MANGA_LIST.forEach(function (manga) {
+    if (manga.listChaps.length > 0) {
+      var shortName = formatMgName(manga.name);
+      var notFound = listDone.every(done => done === shortName);
+
+      if (notFound || groupMangas) {
+        lastName = manga.listChaps[0][1];
+
+        if (lastName !== manga.lastChapterReadURL && manga.read === 0) {
           listDone[listDone.length] = shortName;
-          nbNews++;
+          newChaptersCount++;
         }
       }
     }
-  }
-  var params = getParameters();
-  if (nbNews === 0) {
+  });
+
+  /*console.log(JSON.stringify(MANGA_LIST
+    .filter(manga => manga.listChaps.length > 0)
+    .map(manga => formatMgName(manga.name))
+    .filter(manga => (listDone.every(item => item !== manga) || groupMangas))
+    .filter(manga => manga.read === 0 && manga.listChaps[0][1] !== manga.lastChapterReadURL)));*/
+
+  if (newChaptersCount === 0) {
     if (params.nocount === 1) {
       drawIcon(true);
+
       chrome.browserAction.setBadgeText({
         text : ''
       });
@@ -341,6 +353,7 @@ function refreshTag () {
           text : ''
         });
       }
+
       chrome.browserAction.setBadgeBackgroundColor({
         color : [127, 127, 127, 255]
       });
@@ -349,14 +362,16 @@ function refreshTag () {
   else {
     if (params.nocount === 1) {
       drawIcon(false);
+
       chrome.browserAction.setBadgeText({
         text : ''
       });
     }
     else {
       chrome.browserAction.setBadgeText({
-        text : nbNews.toString()
+        text : newChaptersCount.toString()
       });
+
       chrome.browserAction.setBadgeBackgroundColor({
         color : [255, 0, 0, 255]
       });
@@ -429,7 +444,6 @@ var sync = new BSync({
   },
 
   onRead : function (json) {
-    debugger;
     console.log('Reading incoming synchronisation');
 
     if (!(typeof json === 'undefined' || json === null || json === 'null')) {
@@ -987,6 +1001,7 @@ function getSimilarMangaTitles (mg) {
 }
 
 function readManga (request, callback, doSave) {
+  debugger;
   var mangaExist = isInMangaList(request.url);
   if (mangaExist === null) {
     var newManga = new MangaElt(request);
@@ -1145,10 +1160,17 @@ function removeCategory (request, callback) {
 }
 
 function editCategory (request, callback) {
-  if (MANGA_LIST.length > 0) {
-    for (var i = 0; i < MANGA_LIST.length; i++) {
-      if (MANGA_LIST[i].cats.length > 0) {
-        for (var j = 0; j < MANGA_LIST[i].cats.length; j++) {
+  var i = 0;
+  var j;
+  var mangaListLength = MANGA_LIST.length;
+  var catergoryListLength;
+
+  if (mangaListLength > 0) {
+    for (i = 0; i < mangaListLength; i++) {
+      catergoryListLength = MANGA_LIST[i].cats.length;
+
+      if (catergoryListLength > 0) {
+        for (j = 0; j < catergoryListLength; j++) {
           if (MANGA_LIST[i].cats[j] === request.cat) {
             MANGA_LIST[i].cats[j] = request.newcat;
           }
@@ -1156,40 +1178,42 @@ function editCategory (request, callback) {
       }
     }
   }
+
   saveList();
   refreshUpdate();
   callback();
 }
 
 function activatedMirrors () {
-  var list = [];
   var states = localStorage.getItem('mirrorStates');
-  var lstTmp = JSON.parse(states);
-  if (lstTmp.length > 0) {
-    for (var j = 0; j < lstTmp.length; j++) {
-      if (lstTmp[j].activated === true) {
-        list[list.length] = lstTmp[j];
-      }
-    }
+
+  if (!states) {
+    return [];
   }
-  return list;
+
+  var statesList = JSON.parse(states);
+
+  return statesList.filter(state => state.activated === true);
+}
+
+function injectScript (tabId, scripts, i, callback) {
+  if (i >= scripts.length) {
+    return callback();
+  }
+
+  var payload = {
+    file: scripts[i]
+  };
+
+  chrome.tabs.executeScript(tabId, payload, function () {
+    console.log('>> Injected script', scripts[i]);
+
+    injectScript(tabId, scripts, i + 1, callback);
+  });
 }
 
 function batchInjectScripts (tabId, scripts, callback) {
-  function injectScript (scripts, index) {
-    if (!scripts[index]) {
-      return callback();
-    }
-
-    chrome.tabs.executeScript(tabId, {
-      file: scripts[index]
-    }, function () {
-      console.log('injected script ' + scripts[index]); // TESTING
-      injectScript(scripts, ++index);
-    });
-  }
-
-  injectScript(scripts, 0);
+  injectScript(tabId, scripts, 0, callback);
 }
 
 function desactivateMirror (mirrorName) {
@@ -1325,9 +1349,9 @@ function getBookmark (obj) {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (actionDipatcher(request, sender, sendResponse)) {
+    /*if (actionDipatcher(request, sender, sendResponse)) {
       return;
-    }
+    }*/
 
     var mangaExist;
     var i;
@@ -1752,8 +1776,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                  });
                });
              });
-           }, function () {
-             console.log('Script ' + mirrorName + ' failed to be loaded in page...');
+           }, function (err) {
+             console.error('Script', mirrorName, 'failed to be loaded in page:', err);
 
              sendResponse({
                isOk: false
