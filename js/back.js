@@ -1803,31 +1803,27 @@ function waitForImages (where, mode, res, title) {
 
 function writeImages (where, list, mode, res) {
   var table = $('<table class="AMRtable"></table>');
-  var tr;
-  var td;
-  var spanner;
-  var div;
-  var img;
 
-  table.css('text-align', 'center');
-  table.css('position', 'static');
-  table.css('width', '100%');
-  table.appendTo(where);
+  table.css({
+    'text-align': 'center',
+    position: 'static',
+    width: '100%'
+  });
 
-  for (var i = 0; i < list.length; i++) {
-    tr = $('<tr></tr>');
-    td = $('<td></td>').css('text-align', 'center');
+  list.forEach(function (item, i) {
+    var tr = $('<tr></tr>');
+    var td = $('<td></td>').css('text-align', 'center');
 
-    spanner = $('<div class="spanForImg"></div>')
+    var spanner = $('<div class="spanForImg"></div>')
       .css({
         'vertical-align': 'middle',
         'text-align': 'center'
       })
       .data('order', i);
 
-    div = $('<div id="loader' + i + '" class="divLoading"></div>').css('background', 'url(' + IMAGE_PATH + 'loading.gif' + ') no-repeat center center');
+    var div = $('<div id="loader' + i + '" class="divLoading"></div>').css('background', 'url(' + IMAGE_PATH + 'loading.gif' + ') no-repeat center center');
 
-    img = new Image();
+    var img = new Image();
 
     $(img)
       .addClass('imageAMR')
@@ -1837,14 +1833,16 @@ function writeImages (where, list, mode, res) {
         idScan: i
       });
 
-    loadImageAMR(where, list[i], img, i, res, mode);
+    loadImageAMR(where, item, img, i, res, mode);
 
     table.append(tr);
     tr.append(td);
     td.append(spanner);
     spanner.append(div);
     spanner.append(img);
-  }
+  });
+
+  where.append(table);
 
   waitForImages(where, mode, res, document.title);
 }

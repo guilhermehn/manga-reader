@@ -305,78 +305,50 @@ function drawIcon (isgrey) {
   });
 }
 
+function setBagdeText (count, params) {
+  var text;
+
+  if (params.nocount === 1) {
+    text = '';
+  }
+  else if (params.displayzero === 1) {
+    text = count.toString();
+  }
+
+  chrome.browserAction.setBadgeText({
+    text : text
+  });
+}
+
+function setBadgeColor (colors) {
+  chrome.browserAction.setBadgeBackgroundColor({
+    color : colors
+  });
+}
+
 function refreshTag () {
-  var newChaptersCount = 0;
   var listDone = [];
   var params = getParameters();
   var groupMangas = params.groupmgs === 0;
-  var lastName;
 
   MANGA_LIST.forEach(function (manga) {
     if (manga.listChaps.length > 0) {
       var shortName = formatMgName(manga.name);
-      var notFound = listDone.every(done => done === shortName);
+      var notFound = listDone.every(done => done !== shortName);
 
       if (notFound || groupMangas) {
-        lastName = manga.listChaps[0][1];
+        var lastName = manga.listChaps[0][1];
 
         if (lastName !== manga.lastChapterReadURL && manga.read === 0) {
-          listDone[listDone.length] = shortName;
-          newChaptersCount++;
+          listDone.push(shortName);
         }
       }
     }
   });
 
-  /*console.log(JSON.stringify(MANGA_LIST
-    .filter(manga => manga.listChaps.length > 0)
-    .map(manga => formatMgName(manga.name))
-    .filter(manga => (listDone.every(item => item !== manga) || groupMangas))
-    .filter(manga => manga.read === 0 && manga.listChaps[0][1] !== manga.lastChapterReadURL)));*/
-
-  if (newChaptersCount === 0) {
-    if (params.nocount === 1) {
-      drawIcon(true);
-
-      chrome.browserAction.setBadgeText({
-        text : ''
-      });
-    }
-    else {
-      if (params.displayzero === 1) {
-        chrome.browserAction.setBadgeText({
-          text : '0'
-        });
-      }
-      else {
-        chrome.browserAction.setBadgeText({
-          text : ''
-        });
-      }
-
-      chrome.browserAction.setBadgeBackgroundColor({
-        color : [127, 127, 127, 255]
-      });
-    }
-  }
-  else {
-    if (params.nocount === 1) {
-      drawIcon(false);
-
-      chrome.browserAction.setBadgeText({
-        text : ''
-      });
-    }
-    else {
-      chrome.browserAction.setBadgeText({
-        text : newChaptersCount.toString()
-      });
-
-      chrome.browserAction.setBadgeBackgroundColor({
-        color : [255, 0, 0, 255]
-      });
-    }
-  }
+  setBagdeText(listDone.length, params);
+  drawIcon(params.nocount === 1 && listDone.length === 0);
+  setBadgeColor(listDone.length === 1 ? [127, 127, 127, 255] : [255, 0, 0, 255]);
 }
 
 function saveList () {
@@ -891,9 +863,7 @@ function getStoredMangasList () {
 }
 
 function getActiveMirrors (mirrors) {
-  return mirrors.filter(function (mirror) {
-    return isMirrorActivated(mirror.mirrorName);
-  });
+  return mirrors.filter(mirror => isMirrorActivated(mirror.mirrorName));
 }
 
 function scheduleNextUpdate (lastUpdate, interval, fn) {
@@ -1001,172 +971,187 @@ function getSimilarMangaTitles (mg) {
 }
 
 function readManga (request, callback, doSave) {
-  debugger;
   var mangaExist = isInMangaList(request.url);
+
   if (mangaExist === null) {
     var newManga = new MangaElt(request);
     var simMgs = getSimilarMangaTitles(newManga);
+
     if (simMgs.length > 0) {
       for (var i = 0; i < simMgs.length; i++) {
         if (simMgs[i].read === 1) {
           newManga.read = 1;
           break;
         }
+
         if (simMgs[i].update === 0) {
           newManga.update = 0;
           break;
         }
       }
     }
+
     MANGA_LIST[MANGA_LIST.length] = newManga;
     newManga.refreshLast();
     refreshUpdate();
     saveList();
   }
   else {
-    var ancLstChap = mangaExist.lastChapterReadURL;
-    if (ancLstChap !== undefined) {
+    var prevListChap = mangaExist.lastChapterReadURL;
+
+    if (prevListChap !== undefined) {
       mangaExist.consult(request);
+
       if (doSave) {
         saveList();
       }
-      if (mangaExist.lastChapterReadURL !== ancLstChap) {
+      if (mangaExist.lastChapterReadURL !== prevListChap) {
         refreshUpdate();
       }
     }
   }
+
   callback();
 }
 
 function killManga (request, callback, doSave) {
   var mangaExist = isInMangaListId(request.url);
+
   if (mangaExist !== -1) {
-    // var mirName = MANGA_LIST[mangaExist].mirror;
-    // var mgName = MANGA_LIST[mangaExist].name;
     MANGA_LIST.remove(mangaExist, mangaExist);
+
     if (doSave) {
       saveList();
       refreshUpdate();
     }
   }
+
   callback();
 }
 
 function resetManga (request, callback, doSave) {
   var mangaExist = isInMangaList(request.url);
+
   if (mangaExist !== null) {
     if (mangaExist.listChaps.length > 0) {
       mangaExist.lastChapterReadURL = mangaExist.listChaps[mangaExist.listChaps.length - 1][1];
       mangaExist.lastChapterReadName = mangaExist.listChaps[mangaExist.listChaps.length - 1][0];
+
       if (doSave) {
         saveList();
         refreshUpdate();
       }
     }
   }
+
   callback();
 }
 
 function markReadTop (request, callback, doSave) {
   var mangaExist = isInMangaList(request.url);
+
   if (mangaExist !== null) {
     mangaExist.read = request.read;
+
     if (doSave) {
       saveList();
       refreshUpdate();
     }
   }
+
   callback();
 }
 
 function markUpdateTop (request, callback, doSave) {
   var mangaExist = isInMangaList(request.url);
+
   if (mangaExist !== null) {
     mangaExist.update = request.update;
+
     if (doSave) {
       saveList();
       refreshUpdate();
     }
   }
+
   callback();
 }
 
 function addCategory (request, callback, doSave) {
   var mangaExist = isInMangaList(request.url);
+
   if (mangaExist !== null) {
-    var isFound = false;
-    if (mangaExist.cats.length > 0) {
-      for (var i = 0; i < mangaExist.cats.length; i++) {
-        if (mangaExist.cats[i] === request.cat) {
-          isFound = true;
-          break;
-        }
-      }
-    }
-    if (!isFound) {
+    var notFound = mangaExist.cats.length > 0 && mangaExist.cats.every(category => category !== request.cat);
+
+    if (notFound) {
       mangaExist.cats[mangaExist.cats.length] = request.cat;
     }
+
     if (doSave) {
       saveList();
       refreshUpdate();
     }
   }
+
   callback();
 }
 
 function removeCatManga (request, callback, doSave) {
   var mangaExist = isInMangaList(request.url);
+
   if (mangaExist !== null) {
-    var isFound = -1;
-    if (mangaExist.cats.length > 0) {
-      for (var i = 0; i < mangaExist.cats.length; i++) {
-        if (mangaExist.cats[i] === request.cat) {
-          isFound = i;
-          break;
-        }
-      }
-    }
+    var isFound = mangaExist.cats.indexOf(request.cat);
+
     if (isFound !== -1) {
       mangaExist.cats.remove(isFound, isFound);
     }
+
     if (doSave) {
       saveList();
       refreshUpdate();
     }
   }
+
   callback();
 }
 
 function removeCategory (request, callback) {
-  if (MANGA_LIST.length > 0) {
-    var j;
-    for (var i = 0; i < MANGA_LIST.length; i++) {
+  var i = -1;
+  var length = MANGA_LIST.length;
+  var j;
+  var toRemove;
+
+  if (length > 0) {
+    while (++i < length) {
       if (MANGA_LIST[i].cats.length > 0) {
-        var toRem = [];
+        toRemove = [];
+
         for (j = 0; j < MANGA_LIST[i].cats.length; j++) {
           if (MANGA_LIST[i].cats[j] === request.cat) {
-            toRem[toRem.length] = j;
+            toRemove.push(j);
           }
         }
-        for (j = toRem.length - 1; j >= 0; j--) {
-          MANGA_LIST[i].cats.remove(toRem[j], toRem[j]);
+
+        for (j = toRemove.length - 1; j >= 0; j--) {
+          MANGA_LIST[i].cats.remove(toRemove[j], toRemove[j]);
         }
       }
     }
   }
+
   saveList();
   refreshUpdate();
   callback();
 }
 
 function editCategory (request, callback) {
-  var i = 0;
+  var i = -1;
   var j;
-  var mangaListLength = MANGA_LIST.length;
+  var length = MANGA_LIST.length;
   var catergoryListLength;
 
-  if (mangaListLength > 0) {
-    for (i = 0; i < mangaListLength; i++) {
+  if (length > 0) {
+    while (++i < length) {
       catergoryListLength = MANGA_LIST[i].cats.length;
 
       if (catergoryListLength > 0) {
@@ -1217,16 +1202,13 @@ function batchInjectScripts (tabId, scripts, callback) {
 }
 
 function desactivateMirror (mirrorName) {
-  var nb = 0;
+  var mangasFromMirror = MANGA_LIST.filter(manga => manga.mirror === mirrorName).length;
   var j;
-  for (var i = 0; i < MANGA_LIST.length; i++) {
-    if (MANGA_LIST[i].mirror === mirrorName) {
-      nb++;
-    }
-  }
-  if (nb === 0) {
+
+  if (mangasFromMirror === 0) {
     var states = localStorage.getItem('mirrorStates');
     var lstTmp = JSON.parse(states);
+
     if (lstTmp.length > 0) {
       for (j = 0; j < lstTmp.length; j++) {
         if (lstTmp[j].mirror === mirrorName) {
@@ -1234,18 +1216,22 @@ function desactivateMirror (mirrorName) {
             mirror : mirrorName,
             activated : false
           };
+
           localStorage.setItem('mirrorStates', JSON.stringify(lstTmp));
-          wssql.webdb.empty(mirrorName, function () {});
+          wssql.webdb.empty(mirrorName, $.noop);
           break;
         }
       }
     }
+
     var toRemove = -1;
+
     for (j = 0; j < actMirrors.length; j++) {
       if (actMirrors[j].mirrorName === mirrorName) {
         toRemove = j;
       }
     }
+
     if (toRemove !== -1) {
       actMirrors.remove(toRemove, toRemove);
     }
@@ -1255,6 +1241,7 @@ function desactivateMirror (mirrorName) {
 function addBookmark (obj) {
   var isFound = false;
   var posFound;
+
   if (bookmarks && bookmarks.length > 0) {
     for (var j = 0; j < bookmarks.length; j++) {
       if (obj.mirror === bookmarks[j].mirror && obj.url === bookmarks[j].url && obj.chapUrl === bookmarks[j].chapUrl && obj.type === bookmarks[j].type) {
@@ -1263,18 +1250,17 @@ function addBookmark (obj) {
           posFound = j;
           break;
         }
-        else {
-          if (obj.scanUrl === bookmarks[j].scanUrl) {
-            isFound = true;
-            posFound = j;
-            break;
-          }
+        else if (obj.scanUrl === bookmarks[j].scanUrl) {
+          isFound = true;
+          posFound = j;
+          break;
         }
       }
     }
   }
+
   if (!isFound && bookmarks && bookmarks.length) {
-    bookmarks[bookmarks.length] = {
+    bookmarks.push({
       mirror : obj.mirror,
       url : obj.url,
       chapUrl : obj.chapUrl,
@@ -1284,7 +1270,7 @@ function addBookmark (obj) {
       scanUrl : obj.scanUrl,
       scanName : obj.scanName,
       note : obj.note
-    };
+    });
   }
   else {
     bookmarks[posFound].note = obj.note;
