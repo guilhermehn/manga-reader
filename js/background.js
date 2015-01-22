@@ -478,7 +478,7 @@ var sync = new BSync({
         }
       }
 
-      console.warning(' - Deleting mangas not in incoming list');
+      console.warn(' - Deleting mangas not in incoming list');
 
       MANGA_LIST = MANGA_LIST.filter(function (mangaEntry) {
         var found = lstTmp.some(function (manga) {
@@ -488,7 +488,7 @@ var sync = new BSync({
         });
 
         if (!found) {
-          console.warning('\t - Deleting manga entry in current list : ' + mangaEntry.name + ' in mirror : ' + mangaEntry.mirror);
+          console.warn('\t - Deleting manga entry in current list : ' + mangaEntry.name + ' in mirror : ' + mangaEntry.mirror);
           return false;
         }
 
