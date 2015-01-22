@@ -110,14 +110,16 @@ BSync.prototype.testNetwork = function () {
   xhr.send();
 
   xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        clearTimeout(timeout);
-        timeout = null;
-        if (xhr.responseText.length > 100) {
-          self.traverse(true);
-        }
+    if (xhr.readyState === 4) {
+      clearTimeout(timeout);
+      timeout = null;
+
+      if (xhr.responseText.length > 100) {
+        self.traverse(true);
       }
-    };
+    }
+  };
+
   return this;
 };
 
@@ -238,10 +240,8 @@ BSync.prototype.traverse = function (tree) {
 
       self.options.onWrite();
 
-      // return self.options.onError('MISSING BOOKMARK')
-
       if (self.options.debug) {
-        console.log('BSYNC ERROR : MISSING BOOKMARK');
+        console.warn('Error: The bookmark does not exists.');
       }
 
       return;
@@ -351,7 +351,7 @@ BSync.prototype.write = function (bookmark) {
 
   if (this.content && JSON.stringify(this.content) === bookmarkJson) {
     if (self.options.debug) {
-      console.warning('SORRY SAME CONTENT / BAILING OUT');
+      console.warn('No changes made. Not writing.');
     }
 
     return false;
@@ -394,6 +394,7 @@ BSync.prototype.write = function (bookmark) {
   }
 
   this.markTimestamp(true);
+  console.groupEnd('Bsync.write()');
   return this;
 };
 
@@ -403,7 +404,6 @@ BSync.prototype.start = function () {
   }
 
   this.timer = setTimeout(this.traverse.bind(this), this.options.interval);
-
   this.isRunning = true;
 
   return this;
