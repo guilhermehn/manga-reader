@@ -53,11 +53,6 @@ function stopEventPropagation (e) {
   e.stopPropagation();
 }
 
-function getTarget (e) {
-  var evt = e || window.event;
-  return evt.target || evt.srcElement;
-}
-
 function elementInViewport2 (el) {
   var top = el.offsetTop;
   var left = el.offsetLeft;
@@ -73,13 +68,7 @@ function elementInViewport2 (el) {
   top += el.offsetTop;
   left += el.offsetLeft;
 
-  // console.log('top : ' + top + ' ; height : ' + height + ' ; wyo : ' + window.pageYOffset + ' ; wyo + wih : ' + (window.pageYOffset + window.innerHeight));
-  // left < (window.pageXOffset + window.innerWidth) &&
-  // (left + width) > window.pageXOffset
-  return (
-    top < (window.pageYOffset + window.innerHeight) &&
-    (top + height) > window.pageYOffset
-  );
+  return top < (window.pageYOffset + window.innerHeight) && (top + height) > window.pageYOffset;
 }
 
 function whichImageIsFirst (needFirst) {
@@ -190,34 +179,35 @@ function topVisible (el) {
   return top >= (window.pageYOffset);
 }
 
+function sumOffsets (el) {
+  return el.offsetTop + el.offsetHeight + el.offsetParent.offsetTop + el.offsetParent.offsetHeight;
+}
+
 function topbotVis (spanFimg) {
   var isTopVisible = true;
   var isBotVisible = true;
+  var visibleImages = $(spanFimg).find('img:visible');
 
-  var fTop = $('img:visible', $(spanFimg)).sort(function (a, b) {
+  var fTop = visibleImages.sort(function (a, b) {
     var aTop = a.offsetTop + a.offsetParent.offsetTop;
     var bTop = b.offsetTop + b.offsetParent.offsetTop;
-    return ((aTop < bTop) ? -1 : ((aTop === bTop) ? 0 : 1));
+    return aTop < bTop ? -1 : (aTop === bTop ? 0 : 1);
   }).first();
 
-  //  console.log(fTop);
   if (!topVisible(fTop[0])) {
     isTopVisible = false;
   }
 
-  var lBot = $('img:visible', $(spanFimg)).sort(function (a, b) {
-    var aBot = a.offsetTop + a.offsetHeight + a.offsetParent.offsetTop + a.offsetParent.offsetHeight;
-    var bBot = b.offsetTop + b.offsetHeight + b.offsetParent.offsetTop + b.offsetParent.offsetHeight;
-    //  console.log('Bottom : a : ' + aBot + ' ; b : ' + bBot + ' --> ' + ((aBot < bBot) ? -1 : ((aBot == bBot) ? 0 : 1)));
-    return ((aBot < bBot) ? -1 : ((aBot === bBot) ? 0 : 1));
+  var lBot = visibleImages.sort(function (a, b) {
+    var aBot = sumOffsets(a);
+    var bBot = sumOffsets(b);
+    return aBot < bBot ? -1 : (aBot === bBot ? 0 : 1);
   }).last();
 
-  //  console.log(lBot);
   if (!bottomVisible(lBot[0])) {
     isBotVisible = false;
   }
 
-  //  console.log({bottomVis: isBotVisible, topVis: isTopVisible});
   return {
     bottomVis: isBotVisible,
     topVis: isTopVisible
@@ -249,6 +239,7 @@ function enableContextMenu () {
 function createBar (isBarVisible) {
   var div = $('<div id="AMRBar"></div>');
   var divIn = $('<div id="AMRBarIn"></div>');
+  var $AMRBar = $('#AMRBar');
 
   var img = $('<img src="' + IMAGE_PATH + 'icon-32.png' + '" width="20px"/>');
   divIn.append(img);
@@ -262,7 +253,7 @@ function createBar (isBarVisible) {
 
   var imgBtn = $('<img src="' + IMAGE_PATH + 'down.png' + '" width="16px" title="Hide AMR Toolbar"/>');
 
-  imgBtn.appendTo(divBottom);
+  divBottom.append(imgBtn);
 
   imgBtn.on('click', function () {
     chrome.runtime.sendMessage({
@@ -362,8 +353,6 @@ function createBar (isBarVisible) {
       'border-top': '34px solid black'
     });
 
-  var $AMRBar = $('#AMRBar');
-
   if (isBarVisible === 0) {
     $AMRBar.css('text-align', 'left');
     $('#AMRBarIn').hide();
@@ -443,17 +432,21 @@ function addBookmarkButton () {
     obj.scanName = $data('scanName');
     var imgScan = $('.spanForImg img[src="' + obj.scanUrl + '"]');
     imgScan.css('border-color', '#999999');
+
     if ($('#noteAMR').val() !== '') {
       imgScan.attr('title', 'Note : ' + $('#noteAMR').val());
     }
+
     imgScan.data('note', $('#noteAMR').val());
     imgScan.data('booked', true);
   }
   else {
     $data('note', $('#noteAMR').val());
+
     if ($('#noteAMR').val() !== '') {
       $('.bookAMR').attr('title', 'Note : ' + $('#noteAMR').val());
     }
+
     $('.bookAMR').attr('src', chrome.extension.getURL('img/bookmarkred.png'));
     $data('chapbooked', true);
   }
@@ -491,21 +484,21 @@ function deleteBookmarkButton () {
 
 function showDialog () {
   var textDesc;
-  if ($('#bookmarkData').data('type') === 'chapter') {
-    textDesc = 'Bookmark chapter "' + $('#bookmarkData').data('chapName') + '" of "' + $('#bookmarkData').data('name') + '" on "' + $('#bookmarkData').data('mirror');
-    textDesc += '. You can add notes below which will be associated with this bookmark.';
+  var data = $('#bookmarkData').data();
+
+  if (data.type === 'chapter') {
+    textDesc = ['Bookmark chapter "', data.chapName, '" of "', data.name, '" on "', data.mirror, '. You can add notes below which will be associated with this bookmark.'];
   }
   else {
-    textDesc = 'Bookmark scan "' + $('#bookmarkData').data('scanName') + '" of chapter "' + $('#bookmarkData').data('chapName') + '" of "' + $('#bookmarkData').data('name') + '" on "' + $('#bookmarkData').data('mirror');
-    textDesc += '". You can add notes below which will be associated with this bookmark.';
+    textDesc = ['Bookmark scan "', data.scanName, '" of chapter "', data.chapName, '" of "', data.name, '" on "', data.mirror, '". You can add notes below which will be associated with this bookmark.'];
   }
 
-  $('#bookmarkPop #descEltAMR').text(textDesc);
+  $('#bookmarkPop #descEltAMR').text(textDesc.join(''));
 }
 
 function addTrailingLastChap (where) {
   if ($('#nChapBtn0').length === 0) {
-    $('<div style="width:100%; background-color:white; border-radius:5px;margin-top:15px;margin-bottom:15px;\"><img src="' + chrome.extension.getURL('img/warn.png') + '" style="vertical-align:middle;margin-right:10px;"/><span style="font-weight:bold;font-size:12pt;color:black;vertical-align:middle;\">This is the latest published chapter !</span></div>').appendTo(where);
+    $(where).append('<div style="width:100%; background-color:white; border-radius:5px;margin-top:15px;margin-bottom:15px;\"><img src="' + chrome.extension.getURL('img/warn.png') + '" style="vertical-align:middle;margin-right:10px;"/><span style="font-weight:bold;font-size:12pt;color:black;vertical-align:middle;\">This is the latest published chapter !</span></div>');
   }
 }
 
@@ -604,7 +597,6 @@ function onLoadImage () {
     $('#' + $(this).data('divLoad')).hide();
     $(this).data('finish', '1');
     $(this).hide();
-    //  Bookmark DIV MOD ??? TODO
   }
   else {
     src = $this.attr('src');
@@ -718,18 +710,20 @@ function onLoadImage () {
 }
 
 function isLandscape (img) {
-  if ($(img).data('canvasId')) {
-    var can = $('#' + $(img).data('canvasId'));
-    // console.log('landscape : ' + can.width() + ' --> ' + can.height());
+  var $img = $(img);
+
+  if ($img.data('canvasId')) {
+    var can = $('#' + $img.data('canvasId'));
+
     return can.width() > can.height();
   }
   else {
-    // console.log('probleme...');
-    if (parseInt($(img).css('width'), 10) > parseInt($(img).css('height'), 10)) {
+    if (parseInt($img.css('width'), 10) > parseInt($img.css('height'), 10)) {
       return true;
     }
-    return false;
   }
+
+  return false;
 }
 
 function transformImagesInBook (where, mode, res) {
@@ -790,27 +784,24 @@ function transformImagesInBook (where, mode, res) {
     .sort(function (a, b) {
       var nba = $(a).data('order');
       var nbb = $(b).data('order');
-      return ((nba < nbb) ? -1 : ((nba === nbb) ? 0 : 1));
+      return nba < nbb ? -1 : (nba === nbb ? 0 : 1);
     })
     .each(function (index) {
       var divMode = ($('div > img', this).data('canvasId'));
       // if (divMode) console.log('DIV MODE');
       // if (!divMode) console.log('NOT DIV MODE');
 
-      // console.log('displaying image position...');
       var td = $('<td></td>');
 
       if (!divMode) {
-        // $('img:first-child', this).css('margin-right', '10px');
         if ($('img:first-child', this).attr('src') !== chrome.extension.getURL('img/imgerror.png')) {
           $('img:first-child', this).css('margin-bottom', '50px');
-          // $('img:first-child', this).css('border', '10px solid white');
           td.css('vertical-align', 'middle');
         }
       }
-      $(this).appendTo(td);
 
-      // console.log('Displaying ' + $('img:first-child', this).data('urlToLoad') + ' in the table');
+      td.append(this);
+
       var trTmp;
       if (posImg[index] === 2 || mode === 1) {
         if (evenImg !== null) {
@@ -819,26 +810,26 @@ function transformImagesInBook (where, mode, res) {
           evenImg.appendTo(trForEven);
           evenImg.attr('colspan', '2');
           evenImg = null;
-          if (res.resize === 1) {
-            if (!divMode) {
-              $('img', trForEven).css('max-width', (screen.width - 200) + 'px');
-            }
+
+          if (res.resize === 1 && !divMode) {
+            $('img', trForEven).css('max-width', (screen.width - 200) + 'px');
           }
         }
+
         trTmp = $('<tr></tr>');
         trTmp.appendTo(tableRes);
         td.attr('colspan', '2');
         td.appendTo(trTmp);
-        if (res.resize === 1) {
-          if (!divMode) {
-            $('img', trTmp).css('max-width', (screen.width - 200) + 'px');
-          }
+
+        if (res.resize === 1 && !divMode) {
+          $('img', trTmp).css('max-width', (screen.width - 200) + 'px');
         }
       }
       else {
         if (evenImg !== null) {
           trTmp = $('<tr></tr>');
           trTmp.appendTo(tableRes);
+
           if (mode === 2) {
             evenImg.appendTo(trTmp);
             evenImg.css('text-align', 'right');
@@ -851,11 +842,11 @@ function transformImagesInBook (where, mode, res) {
             evenImg.appendTo(trTmp);
             evenImg.css('text-align', 'left');
           }
-          if (res.resize === 1) {
-            if (!divMode) {
-              $('img', trTmp).css('max-width', ((screen.width-200) / 2) + 'px');
-            }
+
+          if (res.resize === 1 && !divMode) {
+            $('img', trTmp).css('max-width', ((screen.width - 200) / 2) + 'px');
           }
+
           evenImg = null;
         }
         else {
@@ -867,10 +858,9 @@ function transformImagesInBook (where, mode, res) {
             trTmp.appendTo(tableRes);
             td.attr('colspan', '2');
             td.appendTo(trTmp);
-            if (res.resize === 1) {
-              if (!divMode) {
-                $('img', trTmp).css('max-width', ((screen.width-200) / 2) + 'px');
-              }
+
+            if (res.resize === 1 && !divMode) {
+              $('img', trTmp).css('max-width', ((screen.width - 200) / 2) + 'px');
             }
           }
         }
@@ -880,16 +870,17 @@ function transformImagesInBook (where, mode, res) {
   var divMode = ($('img:first-child', this).data('canvasId'));
 
   var td = $('<td></td>');
+
   if (!divMode) {
     $('img:first-child', this).css('margin-bottom', '50px');
     $('img:first-child', this).css('margin-right', '10px');
-    // $('img:first-child', this).css('border', '10px solid white');
     $('img:first-child', this).appendTo(td);
   }
 
   if (evenImg !== null) {
     var trTmp = $('<tr></tr>');
     trTmp.appendTo(tableRes);
+
     if (mode === 2) {
       evenImg.appendTo(trTmp);
       evenImg.css('text-align', 'right');
@@ -902,11 +893,11 @@ function transformImagesInBook (where, mode, res) {
       evenImg.appendTo(trTmp);
       evenImg.css('text-align', 'left');
     }
-    if (res.resize === 1) {
-      if (!divMode) {
-        $('img', trTmp).css('max-width', ((screen.width-200) / 2) + 'px');
-      }
+
+    if (res.resize === 1 && !divMode) {
+      $('img', trTmp).css('max-width', ((screen.width - 200) / 2) + 'px');
     }
+
     evenImg = null;
   }
 
