@@ -1287,7 +1287,7 @@ function bindHotkeys () {
           var viss;
 
           // Left key or A
-          if ((e.which === 37) || (e.which === 65)) {
+          if (e.which in [37, 65]) {
             doubleTap = false;
 
             if (typeof lastpresstime !== 'undefined' && (new Date().getTime() - lastpresstime) < 500 && dirpress === 1) {
@@ -1346,7 +1346,7 @@ function bindHotkeys () {
           }
 
           // Right key or D
-          if ((e.which === 39) || (e.which === 68)) {
+          if (e.which in [39, 68]) {
             doubleTap = false;
 
             if (lastpresstime !== undefined && new Date().getTime() - lastpresstime < 500 && dirpress !== undefined && dirpress === 2) {
