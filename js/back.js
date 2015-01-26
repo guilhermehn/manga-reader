@@ -56,7 +56,6 @@ function stopEventPropagation (e) {
 function elementInViewport2 (el) {
   var top = el.offsetTop;
   var left = el.offsetLeft;
-  var width = el.offsetWidth;
   var height = el.offsetHeight;
 
   while (el.offsetParent) {
@@ -455,27 +454,31 @@ function addBookmarkButton () {
 }
 
 function deleteBookmarkButton () {
+  var $bookmarkData = $('#bookmarkData');
+  var data = $bookmarkData.data();
+
   var obj = {
     action: 'deleteBookmark',
-    mirror: $('#bookmarkData').data('mirror'),
-    url: $('#bookmarkData').data('url'),
-    chapUrl: $('#bookmarkData').data('chapUrl'),
-    type: $('#bookmarkData').data('type')
+    mirror: data.mirror,
+    url: data.url,
+    chapUrl: data.chapUrl,
+    type: data.type
   };
 
-  if ($('#bookmarkData').data('type') !== 'chapter') {
-    obj.scanUrl = $('#bookmarkData').data('scanUrl');
-    var imgScan = $('.spanForImg img[src="' + obj.scanUrl + '"]');
-    imgScan.css('border-color', 'white');
-    imgScan.removeAttr('title');
-    imgScan.removeData('booked');
+  if (data.type !== 'chapter') {
+    obj.scanUrl = data.scanUrl;
+
+    $('.spanForImg img[src="' + obj.scanUrl + '"]')
+      .css('border-color', 'white')
+      .removeAttr('title')
+      .removeData('booked');
   }
   else {
     $('.bookAMR')
       .removeAttr('title')
-      .attr('src', chrome.extension.getURL('img/bookmark.png'));
+      .attr('src', IMAGE_PATH + 'bookmark.png');
 
-    $('#bookmarkData').removeData('chapbooked');
+    $bookmarkData.removeData('chapbooked');
   }
 
   chrome.runtime.sendMessage(obj, function () {});
@@ -772,8 +775,6 @@ function transformImagesInBook (where, mode, res) {
       }
     });
 
-  var parity = nbSinglePages % 2;
-
   $(where).css('text-align', 'center');
   var evenImg = null;
   var tableRes = $('<table class="AMRtable"></table>');
@@ -788,9 +789,6 @@ function transformImagesInBook (where, mode, res) {
     })
     .each(function (index) {
       var divMode = ($('div > img', this).data('canvasId'));
-      // if (divMode) console.log('DIV MODE');
-      // if (!divMode) console.log('NOT DIV MODE');
-
       var td = $('<td></td>');
 
       if (!divMode) {
@@ -868,13 +866,16 @@ function transformImagesInBook (where, mode, res) {
     });
 
   var divMode = ($('img:first-child', this).data('canvasId'));
-
   var td = $('<td></td>');
 
   if (!divMode) {
-    $('img:first-child', this).css('margin-bottom', '50px');
-    $('img:first-child', this).css('margin-right', '10px');
-    $('img:first-child', this).appendTo(td);
+    $(this)
+      .find('img:first-child')
+      .css({
+        'margin-bottom': '50px',
+        'margin-right': '10px'
+      })
+      .appendTo(td);
   }
 
   if (evenImg !== null) {
@@ -1343,6 +1344,7 @@ function bindHotkeys () {
             e.preventDefault();
             e.stopPropagation();
           }
+
           // Right key or D
           if ((e.which === 39) || (e.which === 68)) {
             doubleTap = false;
@@ -1392,6 +1394,7 @@ function bindHotkeys () {
                 else {
                   // Calculate next scan id
                   nb = curimg.data('order') + 1;
+
                   if (nb >= $('.spanForImg').length) {
                     // Current scan was last scan -> move to bottom of page
                     $.scrollTo($(document.body), 800, {
@@ -1414,6 +1417,7 @@ function bindHotkeys () {
                 }
               }
             }
+
             e.preventDefault();
             e.stopPropagation();
           }
@@ -1494,18 +1498,24 @@ function bindCalculateTime () {
   window.onbeforeunload = function () {
     if (isActive) {
       var now = new Date().getTime();
+
       if (debugTimes) {
         times[times.length] = now - startTime;
       }
+
       timespent += now - startTime;
       startTime = now;
     }
+
     updateStat();
+
     if (debugTimes) {
       var res = '';
+
       for (var i = 0; i < times.length; i++) {
         res += times[i] + ', ';
       }
+
       res += ' --> ' + timespent;
       return res;
     }
@@ -1525,7 +1535,6 @@ function bindCalculateTime () {
 
       timespent += now - startTime;
       startTime = now;
-
       isActive = false;
     });
 }
@@ -1568,24 +1577,22 @@ function onErrorImage () {
       butReco.click(function () {
         var $this = $(this);
 
-        var imgAnc = $this.prev();
-        var url = $(imgAnc).data('urlToLoad');
-        var divLoadId = $(imgAnc).data('divLoad');
-        var idScan = $(imgAnc).data('idScan');
         var spanner = $this.parent();
-        spanner.empty();
+        var $prev = $this.prev();
+        var url = $prev.data('urlToLoad');
+        var divLoadId = $prev.data('divLoad');
+        var idScan = $prev.data('idScan');
 
         var img = new Image();
         var $img = $(img);
 
-        $img.data('urlToLoad', url);
-        $img.css('border', '5px solid white');
-        $img.load(onLoadImage);
-        $img.error(onErrorImage);
+        $img
+          .data('urlToLoad', url)
+          .css('border', '5px solid white')
+          .load(onLoadImage)
+          .error(onErrorImage);
 
         getMirrorScript().getImageFromPageAndWrite(url, img, document, window.location.href);
-
-        spanner.append($img);
 
         var div = $('<div id="' + divLoadId + '" class="divLoading"></div>');
         div.css('background', 'url(' + chrome.extension.getURL('img/loading.gif') + ') no-repeat center center');
@@ -1595,6 +1602,8 @@ function onErrorImage () {
           divLoad: divLoadId
         });
 
+        spanner.empty();
+        spanner.append($img);
         spanner.append(div);
       });
     }
