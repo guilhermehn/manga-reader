@@ -2,6 +2,6 @@ node_modules
 js/vendor
 .module-cache
 js/components/build
-js/components/dist
 npm-debug.log
 .module-cache
+js/dist

@@ -716,7 +716,7 @@ function displayList (lst, updtSrv, where, noinfo) {
         }
       }
 
-      var tb = $('<table class=\'mgLst\'><thead><tr><td class=\'checker\'><div class=\'tip leftstick\'><input type=\'checkbox\' checked=\'checked\'/><span>Select updates to send to AMR's server and validate to send data.</span></div></td><td class=\'title\' colspan=\'3\'><div class=\'tip left\'>Manga Name - Categories - Website - Chapter name<span>Click on the manga name to go read this manga on the corresponding web site (if there are multiple websites for the same manga, click on the website icon). Click on the chapter name to go read the chapter online.</span></div></td><td class=\'proghead\'>Reading Progression</td></tr></thead><tbody></tbody><tfoot><tr><td class=\'empty\'></td><td colspan=\'3\' class=\'resume\'><span class=\'title\'></span></td><td class=\'progression\'></td></tr></tfoot></table>');
+      var tb = $('<table class=\'mgLst\'><thead><tr><td class=\'checker\'><div class=\'tip leftstick\'><input type=\'checkbox\' checked=\'checked\'/><span>Select updates to send to AMR\'s server and validate to send data.</span></div></td><td class=\'title\' colspan=\'3\'><div class=\'tip left\'>Manga Name - Categories - Website - Chapter name<span>Click on the manga name to go read this manga on the corresponding web site (if there are multiple websites for the same manga, click on the website icon). Click on the chapter name to go read the chapter online.</span></div></td><td class=\'proghead\'>Reading Progression</td></tr></thead><tbody></tbody><tfoot><tr><td class=\'empty\'></td><td colspan=\'3\' class=\'resume\'><span class=\'title\'></span></td><td class=\'progression\'></td></tr></tfoot></table>');
 
       tb.appendTo(where);
       var nbmg = 0;
@@ -749,7 +749,7 @@ function displayList (lst, updtSrv, where, noinfo) {
     else {
       var t;
       if (!noinfo) {
-        t = $('<div class='nochange'><span>No changes found.</span>&nbsp;<a class=\'viewlist button\' onclick=\'loadList();\'>Click here to view list</a></div>');
+        t = $('<div class=\'nochange\'><span>No changes found.</span>&nbsp;<a class=\'viewlist button\' onclick=\'loadList();\'>Click here to view list</a></div>');
 
         $('.validationamr').remove();
 
@@ -762,7 +762,7 @@ function displayList (lst, updtSrv, where, noinfo) {
         });
       }
       else {
-        t = $('<div class='nochange'><span>No changes found.</span></div>');
+        t = $('<div class=\'nochange\'><span>No changes found.</span></div>');
         where.append(t);
       }
     }
@@ -892,7 +892,7 @@ function addMultipleMangas (mgs, where) {
     // Add categories
     if (mgs[0].cats.length > 0) {
       for (var i = 0; i < mgs[0].cats.length; i++) {
-        $('<div class='category include'>' + mgs[0].cats[i] + '</div>').appendTo($('.title', trHead).closest('td'));
+        $('<div class=\'category include\'>' + mgs[0].cats[i] + '</div>').appendTo($('.title', trHead).closest('td'));
       }
     }
   }
@@ -900,7 +900,7 @@ function addMultipleMangas (mgs, where) {
   for (var i = 0; i < mgs.length; i++) {
     if (mgs[i].change) {
       var mirroricon = getIcon(mgs[i].mirror);
-      var trLine = $('<tr class=\'mangaentry body info' + (mgs[i].read === 1 ? ' read' : (isNew(mgs[i]) ? ' new': '')) + '\'><td class=\'empty\'></td><td class=\'checker\'><input type=\'checkbox\' checked=\'checked\'/></td><td class=\'mirroricon\'><a class=\'link\' onclick=\'openLink('' + mgs[i].url + '');\'><img src=\'' + mirroricon + '\' title=\'' + mgs[i].mirror + '\'/></a></td><td class=\'chapter\'><a class=\'chapter link\' onclick=\'openLink('' + mgs[i].lastChapterReadURL + '');\'>' + mgs[i].lastChapterReadName+ '</a></td><td class=\'progression\'></td></tr>');
+      var trLine = $('<tr class=\'mangaentry body info' + (mgs[i].read === 1 ? ' read' : (isNew(mgs[i]) ? ' new': '')) + '\'><td class=\'empty\'></td><td class=\'checker\'><input type=\'checkbox\' checked=\'checked\'/></td><td class=\'mirroricon\'><a class=\'link\' onclick=\'openLink(\'' + mgs[i].url + '\');\'><img src=\'' + mirroricon + '\' title=\'' + mgs[i].mirror + '\'/></a></td><td class=\'chapter\'><a class=\'chapter link\' onclick=\'openLink(\'' + mgs[i].lastChapterReadURL + '\');\'>' + mgs[i].lastChapterReadName+ '</a></td><td class=\'progression\'></td></tr>');
       trLine.appendTo(where);
       trLine.data('mangainfo', mgs[i]);
       createProgression(mgs[i].chapno, mgs[i].nbchaps, trLine);
@@ -931,7 +931,7 @@ function addMultipleMangas (mgs, where) {
 function addSingleManga (mg, where) {
   if (mg.change) {
     var mirroricon = getIcon(mg.mirror);
-    var trSingle = $('<tr class=\'mangaentry single info' + (mg.read === 1 ? ' read' : (isNew(mg) ? ' new': '')) + '\'><td class=\'checker\'><input type=\'checkbox\' checked=\'checked\'/></td><td class=\'mirroricon\'><img src=\'' + mirroricon + '\' title=\'' + mg.mirror + '\'/></td><td class=\'chapter\' colspan=\'2\'><a class=\'title link\' onclick=\'openLink('' + mg.url + '');\'>' + mg.name + '</a>&nbsp; - <a class=\'chapter link\' onclick=\'openLink('' + mg.lastChapterReadURL + '');\'>' + mg.lastChapterReadName + '</a></td><td class=\'progression\'></td></tr>');
+    var trSingle = $('<tr class=\'mangaentry single info' + (mg.read === 1 ? ' read' : (isNew(mg) ? ' new': '')) + '\'><td class=\'checker\'><input type=\'checkbox\' checked=\'checked\'/></td><td class=\'mirroricon\'><img src=\'' + mirroricon + '\' title=\'' + mg.mirror + '\'/></td><td class=\'chapter\' colspan=\'2\'><a class=\'title link\' onclick=\'openLink(\'' + mg.url + '\');\'>' + mg.name + '</a>&nbsp; - <a class=\'chapter link\' onclick=\'openLink(\'' + mg.lastChapterReadURL + '\');\'>' + mg.lastChapterReadName + '</a></td><td class=\'progression\'></td></tr>');
     trSingle.appendTo(where);
     trSingle.data('mangainfo', mg);
     createProgression(mg.chapno, mg.nbchaps, trSingle);
@@ -939,7 +939,7 @@ function addSingleManga (mg, where) {
     // Add categories
     if (mg.cats.length > 0) {
       for (var i = mg.cats.length - 1; i >=0 ; i--) {
-        $('.title', trSingle).after($('<div class='category include'>' + mg.cats[i] + '</div>'));
+        $('.title', trSingle).after($('<div class=\'category include\'>' + mg.cats[i] + '</div>'));
       }
     }
 
@@ -1203,7 +1203,7 @@ function onButtonClickAsync (button, call) {
 
   if (button.is('.button')) {
     button.addClass('disabled');
-    ancSrc = $('<img src='' + chrome.extension.getURL('img/ltload.gif') + ''></img>')
+    ancSrc = $('<img src=\'' + chrome.extension.getURL('img/ltload.gif') + '\'></img>')
     ancSrc.appendTo(button);
   }
 

@@ -440,7 +440,7 @@ var sync = new BSync({
           }
 
           MANGA_LIST.push(tmpManga);
-          MANGA_LIST[MANGA_LIST.length].refreshLast();
+          MANGA_LIST[MANGA_LIST.length - 1].refreshLast();
         }
         else {
           // Verify chapter last
