@@ -36,12 +36,22 @@ gulp.task('js', function () {
     .pipe(gulp.dest('js/dist'));
 });
 
+gulp.task('vendor', function () {
+  return gulp.src([
+      'js/vendor/jquery/dist/jquery.min.js',
+      'js/vendor/jquery-ui/jquery-ui.min.js',
+      'js/vendor/react/react-with-addons.js'
+    ])
+    .pipe(plugins.concat('vendor.js'))
+    .pipe(gulp.dest('.'));
+});
+
 gulp.task('default', function () {
-  gulp.start('jsx');
+  gulp.start(['vendor', 'js', 'jsx']);
 });
 
 gulp.task('watch', function () {
-  gulp.start(['js', 'jsx']);
+  gulp.start(['default']);
   gulp.watch(paths.jsx, ['jsx']);
   gulp.watch(paths.js, ['js']);
 });
