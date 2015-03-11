@@ -1,5 +1,5 @@
 ﻿/*globals loadMenu*/
-var IMAGE_PATH = chrome.extension.getURL('img/');
+var IMAGE_PATH = chrome.extension.getURL('../img/');
 
 function switchOnglet (ong, tab) {
   $('.tab').removeClass('checked');

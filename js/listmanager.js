@@ -1003,28 +1003,28 @@ function getModifsText (mg) {
   var lstres = [];
 
   if (mg.change === 'new') {
-    lstres[lstres.length] = {button: 'img/add.png', text: 'This manga will be added in your list.'};
+    lstres[lstres.length] = {button: '../img/add.png', text: 'This manga will be added in your list.'};
   }
   else if (mg.change === 'delete') {
-    lstres[lstres.length] = {button: 'img/cancel.png', text: 'This manga will be deleted from your list.'};
+    lstres[lstres.length] = {button: '../img/cancel.png', text: 'This manga will be deleted from your list.'};
   }
   else {
     if (mg.updatemode) {
       for (var i = 0; i < mg.updatemode.length; i++) {
         if (mg.updatemode[i] === 'chapter') {
-          lstres[lstres.length] = {button: 'img/update.png', text: 'Your latest chapter read will be changed'};
+          lstres[lstres.length] = {button: '../img/update.png', text: 'Your latest chapter read will be changed'};
         }
         if (mg.updatemode[i] === 'newunread') {
-          lstres[lstres.length] = {button: 'img/update.png', text: 'The total number of chapters will be updated.'};
+          lstres[lstres.length] = {button: '../img/update.png', text: 'The total number of chapters will be updated.'};
         }
         if (mg.updatemode[i] === 'read') {
-          lstres[lstres.length] = {button: 'img/update.png', text: 'Change reading mode (follow updates)'};
+          lstres[lstres.length] = {button: '../img/update.png', text: 'Change reading mode (follow updates)'};
         }
         if (mg.updatemode[i] === 'display') {
-          lstres[lstres.length] = {button: 'img/update.png', text: 'Change display mode (right to left, left to right, on top)'};
+          lstres[lstres.length] = {button: '../img/update.png', text: 'Change display mode (right to left, left to right, on top)'};
         }
         if (mg.updatemode[i] === 'cats') {
-          lstres[lstres.length] = {button: 'img/update.png', text: 'Change categories'};
+          lstres[lstres.length] = {button: '../img/update.png', text: 'Change categories'};
         }
       }
     }
@@ -1203,7 +1203,7 @@ function onButtonClickAsync (button, call) {
 
   if (button.is('.button')) {
     button.addClass('disabled');
-    ancSrc = $('<img src=\'' + chrome.extension.getURL('img/ltload.gif') + '\'></img>')
+    ancSrc = $('<img src=\'' + chrome.extension.getURL('../img/ltload.gif') + '\'></img>')
     ancSrc.appendTo(button);
   }
 

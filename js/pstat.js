@@ -151,7 +151,7 @@ function renderTable() {
           stats[i].mgname + "</a></td><td><a class='link' onclick=\"openTab('" +
           stats[i].chaptext + "');\">" + stats[i].chapname + "</a></td><td>" +
           prettyDate(stats[i].added_on) + "</td><td class='times'>" +
-          getTimespent(stats[i].time_spent) + "</td><td class='buttontd'><img class='deleteline' src='img/delete10.png' /></td></tr>");
+          getTimespent(stats[i].time_spent) + "</td><td class='buttontd'><img class='deleteline' src='../img/delete10.png' /></td></tr>");
       tr.data("id", stats[i].id);
       tr.appendTo($(".stats tbody"));
     }

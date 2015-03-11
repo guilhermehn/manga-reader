@@ -16,7 +16,7 @@ var times = [];
 var debugTimes = false;
 var timeoutAMRbar = 0;
 
-var IMAGE_PATH = chrome.extension.getURL('img/');
+var IMAGE_PATH = chrome.extension.getURL('../img/');
 
 function getMirrorScript () {
   return currentMirror;
@@ -319,7 +319,7 @@ function createBar (isBarVisible) {
   var divInLtl = $('<div id="AMRBarInLtl"></div>');
   divInLtl.css('display', 'inline-block');
 
-  var imgLtl = $('<img src="' + chrome.extension.getURL('img/icon-32.png') + '" width="40px" title="Display AMR ToolBar"/>');
+  var imgLtl = $('<img src="' + chrome.extension.getURL('../img/icon-32.png') + '" width="40px" title="Display AMR ToolBar"/>');
 
   imgLtl.css({
     'margin-top': '-10px',
@@ -377,15 +377,15 @@ function sendExtRequest (request, button, callback, backsrc) {
   var ancSrc;
   if (button.is('img')) {
     ancSrc = button.attr('src');
-    button.attr('src', chrome.extension.getURL('img/load16.gif'));
+    button.attr('src', chrome.extension.getURL('../img/load16.gif'));
   }
   else {
     if (button.is('.button')) {
-      ancSrc = $('<img src="' + chrome.extension.getURL('img/ltload.gif') + '"></img>');
+      ancSrc = $('<img src="' + chrome.extension.getURL('../img/ltload.gif') + '"></img>');
       ancSrc.appendTo(button);
     }
     if (button.is('.category') || button.is('.mgcategory')) {
-      ancSrc = $('<img src="' + chrome.extension.getURL('img/load10.gif') + '"></img>');
+      ancSrc = $('<img src="' + chrome.extension.getURL('../img/load10.gif') + '"></img>');
       ancSrc.appendTo(button);
     }
   }
@@ -446,7 +446,7 @@ function addBookmarkButton () {
       $('.bookAMR').attr('title', 'Note : ' + $('#noteAMR').val());
     }
 
-    $('.bookAMR').attr('src', chrome.extension.getURL('img/bookmarkred.png'));
+    $('.bookAMR').attr('src', chrome.extension.getURL('../img/bookmarkred.png'));
     $data('chapbooked', true);
   }
 
@@ -501,7 +501,7 @@ function showDialog () {
 
 function addTrailingLastChap (where) {
   if ($('#nChapBtn0').length === 0) {
-    $(where).append('<div style="width:100%; background-color:white; border-radius:5px;margin-top:15px;margin-bottom:15px;\"><img src="' + chrome.extension.getURL('img/warn.png') + '" style="vertical-align:middle;margin-right:10px;"/><span style="font-weight:bold;font-size:12pt;color:black;vertical-align:middle;\">This is the latest published chapter !</span></div>');
+    $(where).append('<div style="width:100%; background-color:white; border-radius:5px;margin-top:15px;margin-bottom:15px;\"><img src="' + chrome.extension.getURL('../img/warn.png') + '" style="vertical-align:middle;margin-right:10px;"/><span style="font-weight:bold;font-size:12pt;color:black;vertical-align:middle;\">This is the latest published chapter !</span></div>');
   }
 }
 
@@ -610,7 +610,7 @@ function onLoadImage () {
       .data('finish', '1')
       .css('margin-right', '10px');
 
-    if (src !== chrome.extension.getURL('img/imgerror.png')) {
+    if (src !== chrome.extension.getURL('../img/imgerror.png')) {
       $this.css({
         border: '5px solid white',
         'margin-bottom': '50px'
@@ -792,7 +792,7 @@ function transformImagesInBook (where, mode, res) {
       var td = $('<td></td>');
 
       if (!divMode) {
-        if ($('img:first-child', this).attr('src') !== chrome.extension.getURL('img/imgerror.png')) {
+        if ($('img:first-child', this).attr('src') !== chrome.extension.getURL('../img/imgerror.png')) {
           $('img:first-child', this).css('margin-bottom', '50px');
           td.css('vertical-align', 'middle');
         }
@@ -933,7 +933,7 @@ function writeNavigation (where, select, res, params) {
   aBMPage.click(function () {
     chrome.runtime.sendMessage({
       action: 'opentab',
-      url: '/bookmarks.html'
+      url: '/views/bookmarks.html'
     }, $.noop);
   });
 
@@ -975,7 +975,7 @@ function writeNavigation (where, select, res, params) {
       }
 
       // Add bookmark functionality
-      var book = $('<img class="bookAMR" src="' + chrome.extension.getURL('img/bookmark.png') + '"/>');
+      var book = $('<img class="bookAMR" src="' + chrome.extension.getURL('../img/bookmark.png') + '"/>');
 
       book.on('click', function () {
         var $bookmarkData = $('#bookmarkData');
@@ -1073,7 +1073,7 @@ function writeNavigation (where, select, res, params) {
         // mode = 1 --> images are displayed on top of one another
         // mode = 2 --> images are displayed two by two occidental reading mode
         // mode = 3 --> images are displayed two by two japanese reading mode
-        var imgmode = $('<img src="' + chrome.extension.getURL('img/' + ((curmode === 1) ? 'ontop.png' : ((curmode === 2) ? 'righttoleft.png' : 'lefttoright.png'))) + '" title="' + ((curmode === 1) ? 'Scans displayed on top of each other (click to switch display mode for this manga only)' : ((curmode === 2) ? 'Scans displayed as a book in occidental mode (left to right) (click to switch display mode for this manga only)' : 'Scans displayed as a book in japanese mode (right to left) (click to switch display mode for this manga only)')) + '" />');
+        var imgmode = $('<img src="' + chrome.extension.getURL('../img/' + ((curmode === 1) ? 'ontop.png' : ((curmode === 2) ? 'righttoleft.png' : 'lefttoright.png'))) + '" title="' + ((curmode === 1) ? 'Scans displayed on top of each other (click to switch display mode for this manga only)' : ((curmode === 2) ? 'Scans displayed as a book in occidental mode (left to right) (click to switch display mode for this manga only)' : 'Scans displayed as a book in japanese mode (right to left) (click to switch display mode for this manga only)')) + '" />');
 
         $this.append(imgmode);
 
@@ -1150,7 +1150,7 @@ function writeNavigation (where, select, res, params) {
           });
 
         if (params.addauto === 0 && resp === null) {
-          var imgadd = $('<img src="' + chrome.extension.getURL('img/add.png') + '" title="Add this manga to your reading list" />');
+          var imgadd = $('<img src="' + chrome.extension.getURL('../img/add.png') + '" title="Add this manga to your reading list" />');
 
           $this.append(imgadd);
 
@@ -1551,7 +1551,7 @@ function onErrorImage () {
     //  Here, number of tries before considering image can not be loaded
     if ($this.data('number') === 2) {
       console.log('Image has not been recovered');
-      $this.attr('src', chrome.extension.getURL('img/imgerror.png'));
+      $this.attr('src', chrome.extension.getURL('../img/imgerror.png'));
 
       $this.css({
         border: 0,
@@ -1595,7 +1595,7 @@ function onErrorImage () {
         getMirrorScript().getImageFromPageAndWrite(url, img, document, window.location.href);
 
         var div = $('<div id="' + divLoadId + '" class="divLoading"></div>');
-        div.css('background', 'url(' + chrome.extension.getURL('img/loading.gif') + ') no-repeat center center');
+        div.css('background', 'url(' + chrome.extension.getURL('../img/loading.gif') + ') no-repeat center center');
 
         $img.data({
           idScan: idScan,

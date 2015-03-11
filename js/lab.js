@@ -13,7 +13,7 @@ function testNotif () {
   };
 
   var title = '... has new chapter(s) on ' + mangaData.mirror + '! Click anywhere to open the next unread chapter.';
-  var notif = window.webkitNotifications.createNotification(chrome.extension.getURL('img/icon-32.png'), mangaData.name, title);
+  var notif = window.webkitNotifications.createNotification(chrome.extension.getURL('../img/icon-32.png'), mangaData.name, title);
 
   notif.url = mangaData.url;
 
@@ -53,7 +53,7 @@ function displayNotification (wsData) {
   text += '\nYou can discuss this implementation by clicking on the notification (login required)';
 
   var notif = window.webkitNotifications.createNotification(
-    chrome.extension.getURL('img/icon-32.png'),
+    chrome.extension.getURL('../img/icon-32.png'),
     wsData.ws,
     text);
 
@@ -151,19 +151,19 @@ function addResult (idTest, statut, testTxt, res, comment) {
 
   var tdStat = $('<td class="statut"></td>');
   if (statut === 'L') {
-    $('<img src="img/lab_load.gif" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_load.gif" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'O') {
-    $('<img src="img/lab_ok.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_ok.png" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'K') {
-    $('<img src="img/lab_ko.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_ko.png" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'W') {
-    $('<img src="img/warn.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/warn.png" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'H') {
-    $('<img src="img/lab_hand.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_hand.png" width="24" height="24"/>').appendTo(tdStat);
   }
 
   tdStat.css('text-align', 'center');
@@ -186,19 +186,19 @@ function addResultAfter (idPrec, idTest, statut, testTxt, res, comment) {
 
   var tdStat = $('<td class="statut"></td>');
   if (statut === 'L') {
-    $('<img src="img/lab_load.gif" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_load.gif" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'O') {
-    $('<img src="img/lab_ok.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_ok.png" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'K') {
-    $('<img src="img/lab_ko.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_ko.png" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'W') {
-    $('<img src="img/warn.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/warn.png" width="24" height="24"/>').appendTo(tdStat);
   }
   else if (statut === 'H') {
-    $('<img src="img/lab_hand.png" width="24" height="24"/>').appendTo(tdStat);
+    $('<img src="../img/lab_hand.png" width="24" height="24"/>').appendTo(tdStat);
   }
 
   tdStat.css('text-align', 'center');
@@ -220,19 +220,19 @@ function modifyStatut (idTest, statut) {
   $('.statut', $('#' + idTest)).empty();
 
   if (statut === 'L') {
-    $('<img src="img/lab_load.gif" width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
+    $('<img src="../img/lab_load.gif" width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
   }
   else if (statut === 'O') {
-    $('<img src="img/lab_ok.png"   width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
+    $('<img src="../img/lab_ok.png"   width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
   }
   else if (statut === 'K') {
-    $('<img src="img/lab_ko.png"   width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
+    $('<img src="../img/lab_ko.png"   width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
   }
   else if (statut === 'W') {
-    $('<img src="img/warn.png"     width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
+    $('<img src="../img/warn.png"     width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
   }
   else if (statut === 'H') {
-    $('<img src="img/lab_hand.png" width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
+    $('<img src="../img/lab_hand.png" width="24" height="24"/>').appendTo($('.statut', $('#' + idTest)));
   }
 }
 

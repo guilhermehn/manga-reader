@@ -374,7 +374,7 @@ function createScan (obj, where) {
   divIcons.append(imgMirror);
 
   var imgModify = $('<div class=\'scanMirror\'></div>');
-  var aMod = $('<a href=\'#\'><img src=\'img/edit.png\' title=\'Modify\'/></a>');
+  var aMod = $('<a href=\'#\'><img src=\'../img/edit.png\' title=\'Modify\'/></a>');
 
   aMod.click(function () {
     modifyBookmark($(this).parent().parent().parent().parent());
@@ -385,7 +385,7 @@ function createScan (obj, where) {
   divIcons.append(imgModify);
 
   var imgDelete = $('<div class=\'scanMirror\'></div>');
-  var aDel = $('<a href=\'#\'><img src=\'img/cancel.png\' title=\'Delete Bookmark\'/></a>');
+  var aDel = $('<a href=\'#\'><img src=\'../img/cancel.png\' title=\'Delete Bookmark\'/></a>');
 
   aDel.click(function () {
     deleteBM($(this).parent().parent().parent().parent());
@@ -484,7 +484,7 @@ function renderManga (lstBms) {
       divIconsCont.appendTo(tdNote);
 
       var imgModify = $('<div class=\'scanMirror\'></div>');
-      var aMod = $('<a href=\'#\'><img src=\'img/edit.png\' title=\'Modify\'/></a>');
+      var aMod = $('<a href=\'#\'><img src=\'../img/edit.png\' title=\'Modify\'/></a>');
 
       aMod.click(function () {
         modifyBookmark($(this).parent().parent().parent().parent().parent());
@@ -494,7 +494,7 @@ function renderManga (lstBms) {
       aMod.appendTo(imgModify);
       imgModify.appendTo(divIcons);
       var imgDelete = $('<div class=\'scanMirror\'></div>');
-      var aDel = $('<a href=\'#\'><img src=\'img/cancel.png\' title=\'Delete Bookmark\'/></a>');
+      var aDel = $('<a href=\'#\'><img src=\'../img/cancel.png\' title=\'Delete Bookmark\'/></a>');
 
       aDel.click(function () {
         deleteBM($(this).parent().parent().parent().parent().parent());

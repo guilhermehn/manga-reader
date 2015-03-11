@@ -11,15 +11,15 @@ function sendExtRequest (request, button, callback, backsrc) {
   var ancSrc;
   if (button.is('img')) {
     ancSrc = button.attr('src');
-    button.attr('src', chrome.extension.getURL('img/load16.gif'));
+    button.attr('src', chrome.extension.getURL('../img/load16.gif'));
   }
   else {
     if (button.is('.button')) {
-      ancSrc = $('<img src=\'' + chrome.extension.getURL('img/ltload.gif') + '\'></img>');
+      ancSrc = $('<img src=\'' + chrome.extension.getURL('../img/ltload.gif') + '\'></img>');
       ancSrc.appendTo(button);
     }
     if (button.is('.category') || button.is('.mgcategory')) {
-      ancSrc = $('<img src=\'' + chrome.extension.getURL('img/load10.gif') + '\'></img>');
+      ancSrc = $('<img src=\'' + chrome.extension.getURL('../img/load10.gif') + '\'></img>');
       ancSrc.appendTo(button);
     }
   }
@@ -49,8 +49,8 @@ $(function () {
   $('.importamrhead').show();
   $('.importamr').show();
   $('.labamr').show();
-  $('<img class=\'importimplemamr\' width=\'16\' src=\'' + chrome.extension.getURL('img/amrlittle.png') + '\' title=\'Import this implementation in your AMR\' />').appendTo($('.importamr'));
-  $('<img class=\'labimplemamr\' src=\'' + chrome.extension.getURL('img/dev.png') + '\' title=\'Import this implementation in your AMR and view it in the lab\' />').appendTo($('.labamr'));
+  $('<img class=\'importimplemamr\' width=\'16\' src=\'' + chrome.extension.getURL('../img/amrlittle.png') + '\' title=\'Import this implementation in your AMR\' />').appendTo($('.importamr'));
+  $('<img class=\'labimplemamr\' src=\'' + chrome.extension.getURL('../img/dev.png') + '\' title=\'Import this implementation in your AMR and view it in the lab\' />').appendTo($('.labamr'));
 
   $('.importamr').click(function () {
     if ($(this).hasClass('disabled')) {

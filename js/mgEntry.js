@@ -23,7 +23,7 @@ function displayNotification (/*wsData, params*/) {
     text = 'Implementation updated for a temporary version. (developer : ' + wsData.developer + ').\nIf you want to come back to normal revision, go to option page, 'Supported websites' tab.';
   }
   text += '\nYou can discuss this implementation by clicking on the notification (login required)';
-  var notif = window.webkitNotifications.createNotification(chrome.extension.getURL('img/icon-32.png'), wsData.ws, text);
+  var notif = window.webkitNotifications.createNotification(chrome.extension.getURL('../img/icon-32.png'), wsData.ws, text);
   notif.url = 'http://community.allmangasreader.com/comments.php?type=1&id=' + wsData.idext;
   notif.onclick = function () {
     var myurl = this.url;

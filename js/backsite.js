@@ -15,7 +15,7 @@ function sendExtRequestS (request, button, callback, backsrc) {
   var ancSrc;
   if (button.is('img')) {
     ancSrc = button.attr('src');
-    button.attr('src', chrome.extension.getURL('img/load16.gif'));
+    button.attr('src', chrome.extension.getURL('../img/load16.gif'));
   }
   // Call the action
   chrome.runtime.sendMessage(request, function () {
@@ -99,7 +99,7 @@ function addResult (tdRes, obj, name) {
     img.data('mirrorname', obj.mirror);
     img.data('manganame', name);
 
-    var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'' + chrome.extension.getURL('img/addlt.png') + '\' title=\'Add this manga in your list on ' + obj.mirror + '\'/></div>');
+    var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'' + chrome.extension.getURL('../img/addlt.png') + '\' title=\'Add this manga in your list on ' + obj.mirror + '\'/></div>');
 
     divelt.prepend(img);
     divelt.appendTo(tdRes);
@@ -126,12 +126,12 @@ function loadSearch (td, toSearch) {
   var $find = $('.amrfind', td);
 
   $find
-    .attr('src', chrome.extension.getURL('img/load16.gif'))
+    .attr('src', chrome.extension.getURL('../img/load16.gif'))
     .unbind('click');
 
   var tr;
   var restd;
-  var returnImg = chrome.extension.getURL('img/return.png');
+  var returnImg = chrome.extension.getURL('../img/return.png');
 
   var $closestTr = td.closest('tr');
 
@@ -216,7 +216,7 @@ function waitForEndLoad (td) {
   }
   else {
     $('.amrfind', td)
-      .attr('src', chrome.extension.getURL('img/find.png'))
+      .attr('src', chrome.extension.getURL('../img/find.png'))
       .click(clickSearch);
   }
 }
@@ -226,7 +226,7 @@ function update () {
 
   if (tmpcn !== nbclasses) {
     $('.amrfind').remove();
-    $('<img class=\'amrfind\' src=\'' + chrome.extension.getURL('img/find.png') + '\'></img>').appendTo($('.manganameforamr'));
+    $('<img class=\'amrfind\' src=\'' + chrome.extension.getURL('../img/find.png') + '\'></img>').appendTo($('.manganameforamr'));
     $('.amrfind').css('float', 'right');
     $('.amrfind').click(clickSearch);
   }

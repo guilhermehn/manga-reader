@@ -1,37 +1,37 @@
 ﻿var menusAMR = [
   {
     name: 'options',
-    link: 'options.html',
+    link: '/views/options.html',
     title: 'Options',
     icon: 'options.png'
   },
   {
     name: 'search',
-    link: 'search.html',
+    link: '/views/search.html',
     title: 'Search',
     icon: 'find.png'
   },
   {
     name: 'bookmarks',
-    link: 'bookmarks.html',
+    link: '/views/bookmarks.html',
     title: 'Bookmarks',
     icon: 'bookmark.png'
   },
   {
     name: 'stats',
-    link: 'pstat.html',
+    link: '/views/pstat.html',
     title: 'My stats',
     icon: 'pstat.png'
   },
   {
     name: 'impexp',
-    link: 'importexport.html',
+    link: '/views/importexport.html',
     title: 'Import/Export',
     icon: 'importexport.png'
   },
   {
     name: 'faq',
-    link: 'faq.html',
+    link: '/views/faq.html',
     title: 'Help',
     icon: 'infos.png'
   },
@@ -43,13 +43,13 @@
   },
   {
     name: 'dev',
-    link: 'dev.html',
+    link: '/views/dev.html',
     title: 'Development',
     icon: 'code.png'
   },
   {
     name: 'lab',
-    link: 'lab.html',
+    link: '/views/lab.html',
     title: 'Lab',
     cond: 'lab',
     icon: 'dev.png'

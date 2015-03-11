@@ -5,7 +5,7 @@ var ancNbToLoad;
 var curSearch;
 var isOver;
 
-var IMAGE_PATH = chrome.extension.getURL('img/');
+var IMAGE_PATH = chrome.extension.getURL('../img/');
 
 function sendExtRequestS (request, button, callback, backsrc) {
   if (button.data('currentlyClicked')) {
@@ -17,7 +17,7 @@ function sendExtRequestS (request, button, callback, backsrc) {
   var ancSrc;
   if (button.is('img')) {
     ancSrc = button.attr('src');
-    button.attr('src', chrome.extension.getURL('img/load16.gif'));
+    button.attr('src', chrome.extension.getURL('../img/load16.gif'));
   }
 
   chrome.runtime.sendMessage(request, function () {
@@ -184,7 +184,7 @@ function fillCurrentListSingleManga (lstCur) {
   var trCur = $('<tr></tr>');
   var tdHead = $('<td class=\'mangaName\'></td>');
 
-  tdHead.append('<span>' + nameCur + '</span><div class=\'optmgsearch\'><img class=\'externsearch\' src=\'img/external.png\' title=\'Open all occurences of this manga on their respective websites\'/><img class=\'addsearch\' src=\'img/add.png\' title=\'Add all occurences of this manga in your manga list\'/></div>');
+  tdHead.append('<span>' + nameCur + '</span><div class=\'optmgsearch\'><img class=\'externsearch\' src=\'../img/external.png\' title=\'Open all occurences of this manga on their respective websites\'/><img class=\'addsearch\' src=\'../img/add.png\' title=\'Add all occurences of this manga in your manga list\'/></div>');
 
   trCur.append(tdHead);
   $('#allres').append(trCur);
@@ -204,7 +204,7 @@ function fillCurrentListSingleManga (lstCur) {
         manganame: nameCur
       });
 
-      var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'img/addlt.png\' title=\'Add this manga in your list on ' + lstCur[i].mirror + '\'/></div>');
+      var divelt = $('<div class=\'eltmirrorsearch\'><img class=\'addsinglemg\' src=\'../img/addlt.png\' title=\'Add this manga in your list on ' + lstCur[i].mirror + '\'/></div>');
 
       divelt.prepend(img);
       divelt.appendTo(tdMgs);
@@ -499,7 +499,7 @@ function refreshSearchAll (toSearch) {
           ancNbToLoad--;
         }
         else {
-          $('img', $this.closest('tr').next()).attr('src', chrome.extension.getURL('img/ltload.gif'));
+          $('img', $this.closest('tr').next()).attr('src', chrome.extension.getURL('../img/ltload.gif'));
         }
       }
     });

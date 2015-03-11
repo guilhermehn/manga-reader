@@ -22,7 +22,7 @@ window.addEventListener('load', function () {
   button2.addEventListener('click', function () {
     /*obj = {
       type: 'basic',
-      iconUrl: chrome.extension.getURL('img/icon-32.png'),
+      iconUrl: chrome.extension.getURL('../img/icon-32.png'),
       title: 'test',
       message: 'button pressed',
       buttons: [{title: 'read'}]
@@ -60,7 +60,7 @@ function notificationmessage (url) {
 function prepareNotifobj (title, url) {
   var obj = {
     type : 'basic',
-    iconUrl: chrome.extension.getURL('img/icon-32.png'),
+    iconUrl: chrome.extension.getURL('../img/icon-32.png'),
     title: 'We got updates of ' + title,
     message: notificationmessage(url)
   };

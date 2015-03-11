@@ -102,8 +102,8 @@ function switchOnglet (ong, tab) {
 }
 
 function loadSelectors () {
-  var selAll = $('<img src=\'' + chrome.extension.getURL('img/select_all.png') + '\' title=\'' + translate('options_act_all') + '\'/>');
-  var selNone = $('<img src=\'' + chrome.extension.getURL('img/select_none.png') + '\' title=\'' + translate('options_deact_all') + '\'/>');
+  var selAll = $('<img src=\'' + chrome.extension.getURL('../img/select_all.png') + '\' title=\'' + translate('options_act_all') + '\'/>');
+  var selNone = $('<img src=\'' + chrome.extension.getURL('../img/select_none.png') + '\' title=\'' + translate('options_deact_all') + '\'/>');
   var sel = MgUtil.getLanguageSelect(mirrors);
   var spansel = $('<span class=\'custom-select\'></span>');
 
@@ -180,15 +180,15 @@ function sendExtRequest (request, button, callback, backsrc) {
   var ancSrc;
   if (button.is('img')) {
     ancSrc = button.attr('src');
-    button.attr('src', chrome.extension.getURL('img/load16.gif'));
+    button.attr('src', chrome.extension.getURL('../img/load16.gif'));
   }
   else {
     if (button.is('.button')) {
-      ancSrc = $('<img src=\'' + chrome.extension.getURL('img/ltload.gif') + '\'></img>');
+      ancSrc = $('<img src=\'' + chrome.extension.getURL('../img/ltload.gif') + '\'></img>');
       ancSrc.appendTo(button);
     }
     if (button.is('.category') || button.is('.mgcategory')) {
-      ancSrc = $('<img src=\'' + chrome.extension.getURL('img/load10.gif') + '\'></img>');
+      ancSrc = $('<img src=\'' + chrome.extension.getURL('../img/load10.gif') + '\'></img>');
       ancSrc.appendTo(button);
     }
   }
@@ -259,7 +259,7 @@ function restoreMirrors () {
       img = $('<img src=\'' + mirrors[i].mirrorIcon + '\' title=\'' + mirrors[i].mirrorName + '\' />');
       langstr = '';
       tdMgs = $('<td class=\'mirrorOpt\'></td>');
-      discuss = $('<td class=\'discusstd\'><img class=\'discuss\' src=\'' + chrome.extension.getURL('img/comment.png') + '\' title=\'' + translate('options_ws_discuss_tit') + '\'/></td>');
+      discuss = $('<td class=\'discusstd\'><img class=\'discuss\' src=\'' + chrome.extension.getURL('../img/comment.png') + '\' title=\'' + translate('options_ws_discuss_tit') + '\'/></td>');
       lang = mirrors[i].languages ? mirrors[i].languages.split(',') : undefined;
       nb = 0;
       j = 0;

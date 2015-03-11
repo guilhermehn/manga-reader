@@ -171,7 +171,7 @@ MangaElt.prototype.refreshLast = function (doSave, callback) {
                 // Notification data added to variables to be used by the old or by the new notification API.
                 var description = '... has new chapter(s) on ' + mangaData.mirror + '! Click anywhere to open the next unread chapter.';
                 var title = mangaData.name;
-                var icon = chrome.extension.getURL('img/icon-32.png');
+                var icon = chrome.extension.getURL('../img/icon-32.png');
                 var url = mangaData.url;
                 if (chrome.notifications) {
                   // The new API have no notification object, so can't save data on it.

@@ -42,7 +42,7 @@ gulp.task('vendor', function () {
       'js/vendor/jquery-ui/jquery-ui.min.js',
       'js/vendor/react/react-with-addons.js'
     ])
-    .pipe(plugins.concat('vendor.js'))
+    .pipe(plugins.concat('js/vendor.js'))
     .pipe(gulp.dest('.'));
 });
 

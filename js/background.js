@@ -16,7 +16,7 @@ var animationFrames = 20;
 var animationSpeed = 30;
 var rotation = 0;
 var sharinganImage = document.createElement('img');
-sharinganImage.src = 'img/amrlittle.png';
+sharinganImage.src = '../img/amrlittle.png';
 var statusReady = true;
 var reason;
 var contentScripts = [
@@ -487,7 +487,7 @@ var sync = new BSync({
 });
 
 function sendSearch (selectedText) {
-  var serviceCall = chrome.extension.getURL('search.html') + '?s=' + selectedText;
+  var serviceCall = chrome.extension.getURL('/views/search.html') + '?s=' + selectedText;
 
   chrome.tabs.create({
     url : serviceCall
@@ -505,7 +505,7 @@ chrome.contextMenus.create({
 function isReady (statusReadyT, reasonT) {
   if (statusReadyT === false) {
     chrome.browserAction.setIcon({
-      path: 'img/blue-sharingan.png'
+      path: '../img/blue-sharingan.png'
     });
 
     statusReady = statusReadyT;
@@ -519,7 +519,7 @@ function isReady (statusReadyT, reasonT) {
 
   if (statusReadyT && !statusReady) {
     chrome.browserAction.setIcon({
-      path: 'img/amrlittle.png'
+      path: '../img/amrlittle.png'
     });
 
     statusReady = statusReadyT;
