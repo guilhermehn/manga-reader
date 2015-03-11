@@ -5,3 +5,4 @@ js/components/build
 npm-debug.log
 .module-cache
 js/dist
+vendor.js
