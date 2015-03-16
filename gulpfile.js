@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var paths = {
+  styl: 'css/src/*.styl',
   js: [
     'js/i18n.js',
     'js/MangaElt.js',
@@ -18,10 +19,13 @@ var paths = {
 
 gulp.task('jsx', function () {
   return gulp.src(paths.jsx)
-    .pipe(plugins.sourcemaps.init())
-    .pipe(plugins.react())
+    // .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.react({
+      harmony: true
+    }))
+    .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
     .pipe(plugins.concat('Components.js'))
-    .pipe(plugins.sourcemaps.write('.'))
+    // .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('js/components/build'));
 });
 
@@ -30,10 +34,20 @@ gulp.task('js', function () {
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.order(paths.js))
     .pipe(plugins.babel())
-    // .pipe(plugins.uglify())
     .pipe(plugins.concat('main.js'))
     .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('js/dist'));
+});
+
+gulp.task('stylus', function () {
+  return gulp.src(paths.styl)
+    .pipe(plugins.stylus())
+    // .pipe(plugins.csscomb())
+    .pipe(gulp.dest('css/dist'));
+});
+
+gulp.task('watch:stylus', function () {
+  gulp.watch(paths.styl, ['stylus']);
 });
 
 gulp.task('vendor', function () {
@@ -47,7 +61,7 @@ gulp.task('vendor', function () {
 });
 
 gulp.task('default', function () {
-  gulp.start(['vendor', 'js', 'jsx']);
+  gulp.start(['vendor', 'stylus', 'js', 'jsx']);
 });
 
 gulp.task('watch', function () {

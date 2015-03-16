@@ -1,3 +1,4 @@
+
 /*globals translate, wssql, MangaElt, BSync, getMangaMirror, getMirrors, updateWebsitesFromRepository, actionDipatcher, ACTIONS*/
 var MANGA_LIST;
 var mirrors;

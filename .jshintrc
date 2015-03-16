@@ -11,7 +11,7 @@
   "noempty"       : true,
   "nonew"         : false,
   "plusplus"      : false,
-  "quotmark"      : "single",
+  "quotmark"      : false,
   "undef"         : true,
   "unused"        : true,
   "maxdepth"      : false,
@@ -33,12 +33,14 @@
   "sub"           : false,
   "supernew"      : false,
   "validthis"     : false,
+  "esnext"        : true,
   "devel"         : true,
   "browser"       : true,
   "jquery"        : true,
   "mocha"         : true,
   "globals": {
     "chrome": true,
-    "React": true
+    "React": true,
+    "_": true
   }
 }

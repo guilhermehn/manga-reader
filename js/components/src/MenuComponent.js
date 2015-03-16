@@ -1,23 +1,33 @@
-var MenuItemComponent = React.createClass({
-  render: function () {
-    var data = this.props.data;
+class MenuItemComponent extends React.Component {
+  render () {
     var selected = this.props.selected;
-    var cx = selected ? 'selected' : '';
-    var url = selected ? '#' : data.link;
+    var url = selected ? '#' : this.props.link;
 
-    return <li className={cx}><a href={url}>{data.title}</a></li>;
+    return <li className={selected ? 'selected' : ''}>
+      <a href={url}>{this.props.title}</a>
+    </li>;
   }
-});
+}
 
-var MenuComponent = React.createClass({
-  render: function () {
-    var selected = this.props.selected;
-    var items = this.props.items.map(function (item) {
-      return <MenuItemComponent selected={item.name === selected} data={item} />;
+class MenuComponent extends React.Component {
+  render () {
+    var items = this.props.items.map((item, i) => {
+      var {selected, ...other} = item;
+      return <MenuItemComponent selected={item.name === selected} {...other} key={i} />;
     });
 
-    return <ul>{items}</ul>;
+    return <ul className='menu'>{items}</ul>;
   }
-});
+}
 
-window.Components.MenuComponent = MenuComponent;
+function createNavMenu (opts) {
+  var defaults = {
+    mountPointId: 'menunav'
+  };
+
+  var options = _.assign(defaults, typeof opts !== 'undefined' ? opts : {});
+
+  React.render(<MenuComponent {...options} />, document.getElementById(options.mountPointId));
+}
+
+window.createNavMenu = createNavMenu;
