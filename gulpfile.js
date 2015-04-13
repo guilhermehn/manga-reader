@@ -18,14 +18,11 @@ var paths = {
 };
 
 gulp.task('jsx', function () {
+  console.log(paths.jsx);
   return gulp.src(paths.jsx)
-    // .pipe(plugins.sourcemaps.init())
-    .pipe(plugins.react({
-      harmony: true
-    }))
+    .pipe(plugins.react({ harmony: true }))
     .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
     .pipe(plugins.concat('Components.js'))
-    // .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('js/components/build'));
 });
 
