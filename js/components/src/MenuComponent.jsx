@@ -22,12 +22,12 @@ class MenuComponent extends React.Component {
 
 function createNavMenu (opts) {
   var defaults = {
-    mountPointId: 'menunav'
+    mountPoint: 'nav'
   };
 
   var options = _.assign(defaults, typeof opts !== 'undefined' ? opts : {});
 
-  React.render(<MenuComponent {...options} />, document.getElementById(options.mountPointId));
+  React.render(<MenuComponent {...options} />, document.querySelector(options.mountPoint));
 }
 
 window.createNavMenu = createNavMenu;

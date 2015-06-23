@@ -366,7 +366,8 @@ function restoreMirrors () {
 
 // Restores select box state to saved value from localStorage.
 function restoreOptions () {
-  var response = chrome.extension.getBackgroundPage().getParameters();
+  var background = chrome.extension.getBackgroundPage();
+  var response = background.getParameters();
   var colPicks;
 
   document.getElementById('adsCk').checked = response.displayAds !== 1;
