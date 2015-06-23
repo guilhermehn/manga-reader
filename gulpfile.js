@@ -14,11 +14,10 @@ var paths = {
     'js/lib.js',
     'js/background.js'
   ],
-  jsx: 'js/components/src/*.js'
+  jsx: ['js/components/src/*.js', 'js/components/src/*.jsx']
 };
 
 gulp.task('jsx', function () {
-  console.log(paths.jsx);
   return gulp.src(paths.jsx)
     .pipe(plugins.react({ harmony: true }))
     .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
@@ -29,9 +28,10 @@ gulp.task('jsx', function () {
 gulp.task('js', function () {
   return gulp.src(paths.js)
     .pipe(plugins.sourcemaps.init())
-    .pipe(plugins.order(paths.js))
-    .pipe(plugins.jshint())
-    .pipe(plugins.jshint.reporter('jshint-stylish'))
+    // .pipe(plugins.jshint())
+    // .pipe(plugins.jshint.reporter('jshint-stylish'))
+    // .pipe(plugins.order(paths.js))
+    .pipe(plugins.babel())
     .pipe(plugins.concat('main.js'))
     .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('js/dist'));
