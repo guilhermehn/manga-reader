@@ -8,29 +8,29 @@ function eachSync (obj, fn, context) {
   }
 }
 
-function BSync (options) {
-  this.options = {};
-  this.initialize(options);
+class BSync {
+  constructor (options) {
+    this.options = {};
+    this.initialize(options);
 
-  return this;
-}
-
-BSync.prototype.initialize = function (options) {
-  var self = this;
-
-  this.setOptions(options);
-
-  if (!this.options.parent) {
-    // Get default bookmarks folders
-    chrome.bookmarks.getChildren('0', function (bookmarks) {
-      // Get the 'Other bookmarks' folder
-      // and store it's id
-      self.options.parent = bookmarks[1].id;
-    });
+    return this;
   }
 
-  return this;
-};
+  initialize (options) {
+    this.setOptions(options);
+
+    if (!this.options.parent) {
+      // Get default bookmarks folders
+      chrome.bookmarks.getChildren('0', function (bookmarks) {
+        // Get the 'Other bookmarks' folder
+        // and store it's id
+        this.options.parent = bookmarks[1].id;
+      }.bind(this));
+    }
+
+    return this;
+  }
+}
 
 BSync.prototype.attach = function () {
   var self = this;
