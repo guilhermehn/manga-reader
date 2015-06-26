@@ -12,8 +12,7 @@ class MenuItemComponent extends React.Component {
 class MenuComponent extends React.Component {
   render () {
     var items = this.props.items.map((item, i) => {
-      var {selected, ...other} = item;
-      return <MenuItemComponent selected={item.name === selected} {...other} key={i} />;
+      return <MenuItemComponent selected={item.name === item.selected} key={i} />;
     });
 
     return <ul className='menu'>{items}</ul>;
