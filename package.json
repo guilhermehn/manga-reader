@@ -4,6 +4,7 @@
   "description": "AllMangaReader Rebirth",
   "main": "index.js",
   "devDependencies": {
+    "bower": "^1.4.1",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-concat": "^2.6.0",
