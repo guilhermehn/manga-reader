@@ -1,0 +1,41 @@
+.menu
+  padding menu-padding
+
+  ul
+    padding 0
+    font-size 0
+
+  li
+    font-family menu-font-family
+    display inline-block
+    padding menu-item-padding
+    height menu-height
+    line-height menu-height
+    text-align center
+    font-size menu-font-size
+    cursor pointer
+    text-transform uppercase
+
+    &::first-letter
+      font-size menu-font-size + 3
+      font-weight 400
+
+  i
+    margin-right 5px
+
+  a
+    text-decoration none
+    color menu-item-color
+    transition all .1s ease-out
+
+    &:hover
+      color menu-item-color-hover
+
+  .active
+    background-color menu-active-bg
+    border-radius 5px
+    cursor default
+
+    a
+      color menu-active-color
+      cursor default
