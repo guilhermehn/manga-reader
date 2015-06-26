@@ -19,11 +19,18 @@
   "background" : {
     "persistent" : true,
     "scripts" : [
-      "js/vendor/jquery/dist/jquery.min.js",
-      "js/vendor/react/react-with-addons.min.js",
-      "js/components/build/Components.js",
+      "vendor/jquery/dist/jquery.js",
+      "vendor/react/react.js",
       "js/jQuery.loadScript.js",
-      "js/dist/main.js"
+      "build/i18n.js",
+      "build/MangaElt.js",
+      "build/mgEntry.js",
+      "build/BSync.js",
+      "build/personalstat.js",
+      "build/wssql.js",
+      "build/amrcsql.js",
+      "build/lib.js",
+      "build/background.js"
     ]
   },
 
@@ -56,7 +63,7 @@
       ],
       "js" : [
         "js/lib.js",
-        "js/vendor/jquery/dist/jquery.min.js",
+        "vendor/jquery/dist/jquery.min.js",
         "js/backsite.js"
       ]
     },
@@ -69,13 +76,13 @@
         "css/backamrc.css"
       ],
       "js" : [
-        "js/vendor/jquery/dist/jquery.min.js",
+        "vendor/jquery/dist/jquery.min.js",
         "js/backamrc.js"
       ]
     }
   ],
 
-  "content_security_policy" : "script-src 'self' https://ssl.google-analytics.com https://ssl10.ovh.net https://www.google.com/ https://platform.twitter.com/ https://www.facebook.com/ https://raw.github.com/ https://cdnjs.cloudflare.com/; object-src 'self'",
+  "content_security_policy" : "script-src 'self' https://ssl10.ovh.net https://www.google.com/ https://platform.twitter.com/ https://www.facebook.com/ https://raw.github.com/ https://cdnjs.cloudflare.com/; object-src 'self'",
   "homepage_url" : "http://www.allmangasreader.com/",
   "key" : "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFE73kwUiPfxcBtTkkkboktSCXCrDxMWvYSO72IabK3Q9pqvkEcViyFcuj6mpztx55kYhwFT+ntasZZiNgzhxkjc9zEuHopyrg+/S2tgGa7ueZ+P8s3IMOeEWj9Mqw2qyvPoZ508Q6FwrGjU6rZAhBtS5dzhibkFxRQc9Yej2ppQIDAQAB",
   "minimum_chrome_version" : "30.0",
