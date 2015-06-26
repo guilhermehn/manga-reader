@@ -1,9 +1,10 @@
 /* jshint node:true */
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
-var paths = {
-  styl: 'css/src/*.styl',
-  js: [
+var PATHS = {
+  STYL: 'styl/main.styl',
+  JS: [
+    'js/components/src/*.jsx',
     'js/i18n.js',
     'js/MangaElt.js',
     'js/mgEntry.js',
@@ -14,56 +15,40 @@ var paths = {
     'js/lib.js',
     'js/background.js'
   ],
-  jsx: ['js/components/src/*.js', 'js/components/src/*.jsx']
+  DEST: 'build/'
 };
 
-gulp.task('jsx', function () {
-  return gulp.src(paths.jsx)
-    .pipe(plugins.react({ harmony: true }))
-    .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
-    .pipe(plugins.concat('Components.js'))
-    .pipe(gulp.dest('js/components/build'));
-});
-
 gulp.task('js', function () {
-  return gulp.src(paths.js)
+  return gulp.src(PATHS.JS)
+    .pipe(plugins.plumber())
     .pipe(plugins.sourcemaps.init())
     // .pipe(plugins.jshint())
     // .pipe(plugins.jshint.reporter('jshint-stylish'))
-    // .pipe(plugins.order(paths.js))
     .pipe(plugins.babel())
-    .pipe(plugins.concat('main.js'))
+    // .pipe(plugins.order(PATHS.JS))
+    // .pipe(plugins.concat('main.js'))
+    // .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
     .pipe(plugins.sourcemaps.write('.'))
-    .pipe(gulp.dest('js/dist'));
+    .pipe(plugins.plumber.stop())
+    .pipe(gulp.dest(PATHS.DEST));
 });
 
 gulp.task('stylus', function () {
-  return gulp.src(paths.styl)
+  return gulp.src(PATHS.STYL)
+    .pipe(plugins.sourcemaps.init())
     .pipe(plugins.stylus())
     // .pipe(plugins.csscomb())
-    .pipe(gulp.dest('css/dist'));
-});
-
-gulp.task('watch:stylus', function () {
-  gulp.watch(paths.styl, ['stylus']);
-});
-
-gulp.task('vendor', function () {
-  return gulp.src([
-      'js/vendor/jquery/dist/jquery.min.js',
-      'js/vendor/jquery-ui/jquery-ui.min.js',
-      'js/vendor/react/react-with-addons.js'
-    ])
-    .pipe(plugins.concat('js/vendor.js'))
-    .pipe(gulp.dest('.'));
+    .pipe(plugins.concat('main.css'))
+    .pipe(plugins.sourcemaps.write('.'))
+    .pipe(gulp.dest(PATHS.DEST));
 });
 
 gulp.task('default', function () {
-  gulp.start(['vendor', 'stylus', 'js', 'jsx']);
+  gulp.start(['stylus', 'js']);
 });
 
 gulp.task('watch', function () {
   gulp.start(['default']);
-  gulp.watch(paths.jsx, ['jsx']);
-  gulp.watch(paths.js, ['js']);
+  gulp.watch(PATHS.JS, ['js']);
+  gulp.watch(PATHS.STYL, ['stylus']);
 });
