@@ -13,18 +13,7 @@
     <h1><i class="zmdi zmdi-book zmd-lg"></i> Manga Reader</h1>
   </header>
 
-  <nav class="menu">
-    <ul>
-      <li><a href="#"><i class="zmdi zmdi-search zmd-lg"></i> Search</a></li>
-      <li><a href="#"><i class="zmdi zmdi-bookmark zmd-lg"></i> Bookmarks</a></li>
-      <li><a href="#"><i class="zmdi zmdi-import-export zmd-lg"></i> Import / Export</a></li>
-      <li class="active"><a href="#"><i class="zmdi zmdi-settings zmd-lg"></i> Settings</a></li>
-      <!-- <li><a href="#"><i class="zmdi zmdi-code zmd-lg"></i> Development</a></li>
-      <li><a href="#"><i class="zmdi zmdi-developer-board zmd-lg"></i> Lab</a></li>
-      <li><a href="#"><i class="zmdi zmdi-info zmd-lg"></i> Changelog</a></li> -->
-      <li><a href="#"><i class="zmdi zmdi-help zmd-lg"></i> Help</a></li>
-    </ul>
-  </nav>
+  <nav class="menu"></nav>
 
   <section class="content">
     <h2>Settings</h2>
@@ -105,6 +94,7 @@
   <script src="../build/FormComponent.js"></script>
   <script src="../build/SettingsPage.js"></script>
   <script>
+    RenderMenu('.menu');
     RenderPage('.content');
   </script>
 </body>
