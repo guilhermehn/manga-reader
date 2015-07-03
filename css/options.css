@@ -1,4 +1,9 @@
-﻿.colorPicker {
+﻿body {
+  width: 900px;
+  height: 1000px;
+}
+
+.colorPicker {
   width: 24px;
   height: 24px;
   border-radius: 5px;

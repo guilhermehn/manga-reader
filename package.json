@@ -23,7 +23,7 @@
     "react-tools": "^0.12.2"
   },
   "scripts": {
-    "postinstall": "bower install; gulp",
+    "postinstall": "bower install && gulp",
     "watch": "gulp watch",
     "test": "jsonlint manifest.json _locales/*/*.json"
   },

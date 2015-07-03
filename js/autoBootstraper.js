@@ -1,7 +1,7 @@
 /* globals createNavMenu */
 $(function () {
   if ($('#menunav').length) {
-    createNavMenu({
+    /*createNavMenu({
       items: [
         {
           name: 'options',
@@ -65,6 +65,6 @@ $(function () {
           icon: 'home.png'
         }
       ]
-    });
+    });*/
   }
 });

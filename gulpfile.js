@@ -4,7 +4,8 @@ var plugins = require('gulp-load-plugins')();
 var PATHS = {
   STYL: 'styl/main.styl',
   JS: [
-    'js/components/src/*.jsx',
+    'js/components/*.js',
+    'js/components/*.jsx',
     'js/i18n.js',
     'js/MangaElt.js',
     'js/mgEntry.js',

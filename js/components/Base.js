@@ -1,6 +1,8 @@
 // Components global namespace
 window.Components = {};
 
+let __uniqueIdSet = {};
+
 window._ = {
   copy (source, object, props) {
     if (!props) {
@@ -36,5 +38,15 @@ window._ = {
       }
     }
     return object;
+  },
+
+  uniqueId () {
+    let idsCount = Object.keys(__uniqueIdSet).length.toString();
+    __uniqueIdSet[idsCount] = Symbol();
+    return idsCount;
+  },
+
+  slice (object) {
+    return [].slice.call(object);
   }
 };
