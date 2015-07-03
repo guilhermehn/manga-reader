@@ -4,8 +4,7 @@ var plugins = require('gulp-load-plugins')();
 var PATHS = {
   STYL: 'styl/main.styl',
   JS: [
-    'js/components/*.js',
-    'js/components/*.jsx',
+    'js/components/*.js*',
     'js/i18n.js',
     'js/MangaElt.js',
     'js/mgEntry.js',
@@ -16,22 +15,35 @@ var PATHS = {
     'js/lib.js',
     'js/background.js'
   ],
+  JSX: 'js/components/*.js*',
   DEST: 'build/'
 };
 
-gulp.task('js', function () {
-  return gulp.src(PATHS.JS)
-    .pipe(plugins.plumber())
-    .pipe(plugins.sourcemaps.init())
-    // .pipe(plugins.jshint())
-    // .pipe(plugins.jshint.reporter('jshint-stylish'))
-    .pipe(plugins.babel())
-    // .pipe(plugins.order(PATHS.JS))
-    // .pipe(plugins.concat('main.js'))
-    // .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
-    .pipe(plugins.sourcemaps.write('.'))
-    .pipe(plugins.plumber.stop())
-    .pipe(gulp.dest(PATHS.DEST));
+function createJsTask (path) {
+  return function () {
+    return gulp.src(path)
+      .pipe(plugins.plumber())
+      .pipe(plugins.sourcemaps.init())
+      // .pipe(plugins.jshint())
+      // .pipe(plugins.jshint.reporter('jshint-stylish'))
+      .pipe(plugins.babel())
+      // .pipe(plugins.concat('main.js'))
+      // .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
+      .pipe(plugins.sourcemaps.write('.'))
+      .pipe(plugins.plumber.stop())
+      .pipe(gulp.dest(PATHS.DEST));
+  }
+}
+
+function createJsWatcher (taskName) {
+  return function () {
+    gulp.watch(PATHS[taskName.toUpperCase()], [taskName]);
+  }
+}
+
+['jsx', 'js'].forEach(function (taskName) {
+  gulp.task(taskName, createJsTask(PATHS[taskName.toUpperCase()]));
+  gulp.task(taskName + ':watch', createJsWatcher(taskName));
 });
 
 gulp.task('stylus', function () {
