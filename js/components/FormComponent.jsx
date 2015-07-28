@@ -1,53 +1,53 @@
-window.UserSettings = (() => {
-  let savedData = localStorage.getItem('UserSettings');
+var loadUserSettingsMixin = {
+  getUserSettingsForOption (option) {
+    if (UserSettings.hasOwnProperty(option)) {
+      return UserSettings[option];
+    }
+    else {
+      return DEFAULT_SETTINGS[option];
+    }
+  },
 
-  if (savedData) {
-    return JSON.parse(savedData);
-  }
-  else {
-    return {};
-  }
-})();
+  getValueFromRadio (elem) {
+    let radios = elem.parentElement.querySelectorAll(`input[name='${elem.name}']`);
+    let checked = _.slice(radios).filter((radio) => {
+      return radio.checked;
+    });
 
-function updateStoredData (key, value) {
-  window.UserSettings[key] = value;
+    return checked.length === 1 ? checked[0].value : null;
+  },
 
-  localStorage.setItem('UserSettings', JSON.stringify(UserSettings));
-}
+  getValue (elem) {
+    let value;
 
-function getValue (elem) {
-  let value;
+    switch (elem.type) {
+      case 'checkbox':
+        value = elem.checked;
+        break;
 
-  switch (elem.type) {
-    case 'checkbox':
-      value = elem.checked;
-      break;
+      case 'radio': {
+        value = this.getValueFromRadio(elem);
 
-    case 'radio': {
-      value = getValueFromRadio(elem);
+        break;
+      }
 
-      break;
+      default:
+        value = elem.value;
     }
 
-    default:
-      value = elem.value;
-  }
+    return value;
+  },
 
-  return value;
-}
+  getInitialState () {
+    return {
+      value: this.getUserSettingsForOption(this.props.name ? this.props.name : this.props.id)
+    };
+  },
 
-function getValueFromRadio (elem) {
-  let radios = elem.parentElement.querySelectorAll(`input[name='${elem.name}']`);
-  let checked = _.slice(radios).filter((radio) => {
-    return radio.checked;
-  });
-
-  return checked.length === 1 ? checked[0].value : null;
-}
-
-var loadUserSettings = {
-  getUserSettingsForOption () {
-    return UserSettings[this.props.id];
+  onChange (e) {
+    let newValue = this.getValue(e.target);
+    updateStoredData(this.props.id, newValue);
+    this.forceUpdate();
   }
 };
 
@@ -62,18 +62,16 @@ var SettingComponent = React.createClass({
 });
 
 var InputComponent = React.createClass({
-  mixins: [loadUserSettings],
-
-  onChange (e) {
-    let newValue = getValue(e.target);
-    updateStoredData(this.props.id, newValue);
-  },
+  mixins: [loadUserSettingsMixin],
 
   render () {
+    let name = this.props.name ? this.props.name : this.props.id;
+    let {type, id, label} = this.props;
+
     return (
       <SettingComponent>
         <label htmlFor={this.props.id}>
-          <input type={this.props.type} name={this.props.name ? this.props.name : this.props.id} id={this.props.id} onChange={this.onChange} value={this.state.value} /> {this.props.label}
+          <input type={type} name={name} id={id} onChange={this.onChange} value={this.state.value} /> {label}
         </label>
       </SettingComponent>
     );
@@ -81,22 +79,40 @@ var InputComponent = React.createClass({
 });
 
 var CheckboxComponent = React.createClass({
-  mixins: [loadUserSettings],
+  mixins: [loadUserSettingsMixin],
 
   render () {
+    let {id, label} = this.props;
+    let checked = this.getUserSettingsForOption(id);
+
     return (
-      <InputComponent type='checkbox' id={this.props.id} label={this.props.label} />
+      <SettingComponent>
+        <label htmlFor={id}>
+          <input type='checkbox' name={id} id={id} onChange={this.onChange} checked={checked} /> {label}
+        </label>
+      </SettingComponent>
     );
   }
 });
 
 var RadioGroupComponent = React.createClass({
+  mixins: [loadUserSettingsMixin],
+
   render () {
     return (
       <SettingComponent>
         {
           this.props.options.map((option) => {
-            return <InputComponent type='radio' name={this.props.id} value={option.value} key={option.value} id={`${this.props.id}_${option.value}`} label={option.label} />;
+            let {value, label} = option;
+            let id = this.props.id;
+            let key = `${id}_${value}`;
+            let checked = this.getUserSettingsForOption(id) === value;
+
+            return (
+              <label htmlFor={key} key={key}>
+                <input type='radio' name={id} checked={checked} onChange={this.onChange} value={value} id={key} /> {label}
+              </label>
+            );
           })
         }
       </SettingComponent>

@@ -1,4 +1,4 @@
-class SettingsSectionComponent extends React.Component {
+var SettingsSectionComponent = React.createClass({
   render () {
     return (
       <section className='settings-section'>
@@ -7,9 +7,9 @@ class SettingsSectionComponent extends React.Component {
       </section>
     );
   }
-}
+});
 
-class SettingsPage extends React.Component {
+var SettingsPage = React.createClass({
   render () {
     return (
       <section className='page-content'>
@@ -43,9 +43,9 @@ class SettingsPage extends React.Component {
         </SettingsSectionComponent>
 
         <SettingsSectionComponent title='Miscellaneous'>
-          <CheckboxComponent label='Remove advertising from the pages' id='removeAds' />
+          <CheckboxComponent label='Show ads' id='showAds' />
           <CheckboxComponent label='Show navigation bar' id='showNavigationBar' />
-          <CheckboxComponent label='Add manga to the reading list when I first read some chapter' id='autoAddMangaToList' />
+          <CheckboxComponent label='Add manga to the reading list when I first read a chapter' id='autoAddMangaToList' />
           <CheckboxComponent label='Use the left and right arrow keys to navigate between the pages' id='useArrowsToNavigate' />
           <CheckboxComponent label='Add page to bookmarks on double click' id='bookmarkOnDoubleClick' />
           <CheckboxComponent label='Open next chapter when pressing right arrow on the last page' id='nextChapterAfterLastPage' />
@@ -55,8 +55,8 @@ class SettingsPage extends React.Component {
       </section>
     );
   }
-}
+});
 
 function RenderPage (mountPoint) {
-  React.render(<SettingsPage settings={window.UserSettings} />, document.querySelector(mountPoint));
+  React.render(<SettingsPage settings={UserSettings} />, document.querySelector(mountPoint));
 }
