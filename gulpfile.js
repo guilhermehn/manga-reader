@@ -35,7 +35,7 @@ function createJsTask (path) {
   }
 }
 
-function createJsWatcher (taskName) {
+function createWatchTask (taskName) {
   return function () {
     gulp.watch(PATHS[taskName.toUpperCase()], [taskName]);
   }
@@ -43,25 +43,31 @@ function createJsWatcher (taskName) {
 
 ['jsx', 'js'].forEach(function (taskName) {
   gulp.task(taskName, createJsTask(PATHS[taskName.toUpperCase()]));
-  gulp.task(taskName + ':watch', createJsWatcher(taskName));
+  gulp.task(taskName + ':watch', createWatchTask(taskName));
 });
 
-gulp.task('stylus', function () {
+gulp.task('styl', function () {
   return gulp.src(PATHS.STYL)
     .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.plumber())
     .pipe(plugins.stylus())
     // .pipe(plugins.csscomb())
     .pipe(plugins.concat('main.css'))
+    .pipe(plugins.plumber.stop())
     .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest(PATHS.DEST));
 });
 
+gulp.task('styl:watch', function () {
+  return gulp.watch('styl/*.styl', ['styl']);
+});
+
 gulp.task('default', function () {
-  gulp.start(['stylus', 'js']);
+  gulp.start(['styl', 'js']);
 });
 
 gulp.task('watch', function () {
   gulp.start(['default']);
   gulp.watch(PATHS.JS, ['js']);
-  gulp.watch(PATHS.STYL, ['stylus']);
+  gulp.watch(PATHS.STYL, ['styl']);
 });
