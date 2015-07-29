@@ -1,86 +1,80 @@
 class MenuItemComponent extends React.Component {
   render () {
-    var selected = this.props.selected;
-    var url = selected ? '#' : this.props.link;
-
-    console.log(this.props);
+    let {selected, route, iconClassname, title} = this.props;
+    let url = selected ? '#' : `#/${route}`;
 
     return (
       <li className={selected ? 'selected' : ''}>
-        <a href='#'><i className={`zmdi zmd-lg ${this.props.iconClassname}`}></i>{this.props.title}</a>
+        <a href={url}><i className={`zmdi zmd-lg ${iconClassname}`}></i>{title}</a>
       </li>
     );
   }
 }
 
 class MenuComponent extends React.Component {
-  render () {
-    var items = this.props.items.map((item, i) => {
-      return <MenuItemComponent selected={item.name === item.selected} key={i} {...item} />;
-    });
-
-    return <ul>{items}</ul>;
+  state: {
+    actualRoute: 'search'
   }
-}
 
-function RenderMenu (mountPoint, options) {
-  let defaults = {
-    showDevOptions: false
-  };
-
-  let settings = Object.assign({}, defaults, options);
-
-  let items = [
-    {
-      route: '/views/search.html',
-      title: 'Search',
-      iconClassname: 'zmdi-search'
-    },
-    {
-      route: '/views/bookmarks.html',
-      title: 'Bookmarks',
-      iconClassname: 'zmdi-bookmark'
-    },
-    {
-      route: '/views/importexport.html',
-      title: 'Import/Export',
-      iconClassname: 'zmdi-import-export'
-    },
-    {
-      link: '/views/options.html',
-      title: 'Options',
-      iconClassname: 'zmdi-settings'
-    },
-    {
-      route: '/views/importexport.html',
-      title: 'Help',
-      iconClassname: 'zmdi-help'
-    }
-  ];
-
-  if (settings.showDevOptions) {
-    let devItems = [
+  render () {
+    let items = [
       {
-        route: '/views/lab.html',
-        title: 'Lab',
-        iconClassname: 'zmdi-developer-board'
+        route: 'search',
+        title: 'Search',
+        iconClassname: 'zmdi-search'
       },
       {
-        route: '/views/dev.html',
-        title: 'Development',
-        iconClassname: 'zmdi-code'
+        route: '/views/bookmarks.html',
+        title: 'Bookmarks',
+        iconClassname: 'zmdi-bookmark'
       },
       {
-        route: 'http://wiki.allmangasreader.com/changelog',
-        title: 'Changelog',
-        iconClassname: 'zmdi-info'
+        route: '/views/importexport.html',
+        title: 'Import/Export',
+        iconClassname: 'zmdi-import-export'
+      },
+      {
+        route: 'settings',
+        title: 'Settings',
+        iconClassname: 'zmdi-settings'
+      },
+      {
+        route: '/views/importexport.html',
+        title: 'Help',
+        iconClassname: 'zmdi-help'
       }
     ];
 
-    devItems.forEach((item) => {
-      items.push(item);
-    });
-  }
+    if (MR.settings.showDevOptions) {
+      let devItems = [
+        {
+          route: '/views/lab.html',
+          title: 'Lab',
+          iconClassname: 'zmdi-developer-board'
+        },
+        {
+          route: '/views/dev.html',
+          title: 'Development',
+          iconClassname: 'zmdi-code'
+        },
+        {
+          route: 'http://wiki.allmangasreader.com/changelog',
+          title: 'Changelog',
+          iconClassname: 'zmdi-info'
+        }
+      ];
 
-  React.render(<MenuComponent items={items} />, document.querySelector(mountPoint));
+      devItems.forEach((item) => {
+        items.push(item);
+      });
+    }
+
+    let menuItems = items.map((item, i) => {
+      return <MenuItemComponent selected={item.route === item.actualRoute} key={i} {...item} />;
+    });
+
+    return <ul>{menuItems}</ul>;
+  }
 }
+
+MR.Components.register('MenuComponent', <MenuComponent />);

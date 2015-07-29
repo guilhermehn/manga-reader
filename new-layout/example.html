@@ -9,94 +9,22 @@
   <link rel="stylesheet" href="../build/main.css">
 </head>
 <body>
-  <header>
-    <h1><i class="zmdi zmdi-book zmd-lg"></i> Manga Reader</h1>
-  </header>
+  <header></header>
 
   <nav class="menu"></nav>
 
-  <section class="content">
-    <h2>Settings</h2>
+  <section class="content"></section>
 
-    <section class="settings-section">
-      <h3>Sync</h3>
-      <div class="settings-option">
-        <label for="syncData"><input type="checkbox" id="syncData"> Use Chrome Sync to synchronize my reading data</label>
-      </div>
-    </section>
-
-    <section class="settings-section">
-      <h3>Display mode</h3>
-      <div class="settings-option">
-        <label for="showWholeChapter"><input type="checkbox" id="showWholeChapter"> Show the whole chapter in one page</label>
-      </div>
-    </section>
-
-    <section class="settings-section">
-      <h3>Chapter reading</h3>
-      <div class="settings-option">
-        <label for="chapter_singlePage"><input type="radio" name="chapterDisplayMode" id="chapter_singlePage"> One page</label>
-        <label for="chapter_doublePage"><input type="radio" name="chapterDisplayMode" id="chapter_doublePage"> Double page</label>
-      </div>
-    </section>
-
-    <section class="settings-section">
-      <h3>Chapter loading</h3>
-      <div class="settings-option">
-        <label for="showTitleProgress"><input type="checkbox" id="showTitleProgress"> Show the loading progress on the tab title</label>
-      </div>
-      <div class="settings-option">
-        <label for="pageLoadOrder"><input type="checkbox" id="pageLoadOrder"> Load pages in order</label>
-      </div>
-      <div class="settings-option">
-        <label for="loadNextChapter"><input type="checkbox" id="loadNextChapter"> Load the next chapter right after the actual chapter loading is done</label>
-      </div>
-      <div class="settings-option">
-        <label for="markAsReadOnLoad"><input type="checkbox" id="markAsReadOnLoad"> Mark the chapter as read when it's done loading</label>
-      </div>
-    </section>
-
-    <section class="settings-section">
-      <h3>Miscellaneous</h3>
-      <div class="settings-option">
-        <label for="removeAds"><input type="checkbox" id="removeAds"> Remove advertising from the pages</label>
-      </div>
-      <div class="settings-option">
-        <label for="showNavigationBar"><input type="checkbox" id="showNavigationBar"> Show navigation bar</label>
-      </div>
-      <div class="settings-option">
-        <label for="autoAddMangaToList"><input type="checkbox" id="autoAddMangaToList"> Add manga to the reading list when I first read some chapter</label>
-      </div>
-      <div class="settings-option">
-        <label for="useArrowsToNavigate"><input type="checkbox" id="useArrowsToNavigate"> Use the left and right arrow keys to navigate between the pages</label>
-      </div>
-      <div class="settings-option">
-        <label for="bookmarkOnDoubleClick"><input type="checkbox" id="bookmarkOnDoubleClick"> Add page to bookmarks on double click</label>
-      </div>
-      <div class="settings-option">
-        <label for="nextChapterAfterLastPage"><input type="checkbox" id="nextChapterAfterLastPage"> Open next chapter when pressing right arrow on the last page</label>
-      </div>
-      <div class="settings-option">
-        <label for="feedbackLink"><input type="checkbox" id="feedbackLink"> Show link to send feedback</label>
-      </div>
-      <div class="settings-option">
-        <label for="showDevOptions"><input type="checkbox" id="showDevOptions"> Show developer options</label>
-      </div>
-    </section>
-  </section>
-
-  <footer>
-  </footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.32.2/es6-shim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
   <script src="../build/Base.js"></script>
+  <script src="../build/Router.js"></script>
   <script src="../build/HeaderComponent.js"></script>
   <script src="../build/MenuComponent.js"></script>
-  <script src="../build/FormComponent.js"></script>
+  <script src="../build/SearchPage.js"></script>
   <script src="../build/SettingsPage.js"></script>
   <script>
-    RenderMenu('.menu');
-    RenderPage('.content');
+    MR.initPages();
   </script>
 </body>
 </html>

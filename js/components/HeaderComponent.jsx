@@ -1,20 +1,7 @@
 class HeaderComponent extends React.Component {
   render () {
-    return <header>
-      <div className='logo'></div>
-      <h1>All Mangas Reader</h1>
-    </header>;
+    return <h1><i className='zmdi zmdi-book zmd-lg'></i> Manga Reader</h1>;
   }
 }
 
-function createHeader (opts) {
-  var defaults = {
-    mountPointId: 'menunav'
-  };
-
-  var options = _.assign(defaults, typeof opts !== 'undefined' ? opts : {});
-
-  React.render(<HeaderComponent options={options} />, document.getElementById(options.mountPointId));
-}
-
-window.createHeader = createHeader;
+MR.Components.register('HeaderComponent', <HeaderComponent />);
