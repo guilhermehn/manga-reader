@@ -2,16 +2,31 @@ var searchResultsHeaders = ['Title', 'Mirrors'].map((item) => {
   return <th key={`th-${item}`}>{item}</th>;
 });
 
-var SearchFieldComponent = React.createClass({
+var RESULTS = [
+  {
+    title: 'Berserk',
+    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
+  },
+  {
+    title: 'Bleach',
+    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
+  },
+  {
+    title: 'Gantz',
+    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
+  }
+];
+
+class SearchFieldComponent extends React.Component {
   performAction () {
     this.props.action(this.refs.searchTerm.getDOMNode().value);
-  },
+  }
 
   searchKeyPress (e) {
     if (e.which === 13) {
       this.performAction();
     }
-  },
+  }
 
   render () {
     return (
@@ -21,9 +36,9 @@ var SearchFieldComponent = React.createClass({
       </div>
     );
   }
-});
+}
 
-var SearchResultsComponent = React.createClass({
+class SearchResultsComponent extends React.Component {
   render () {
     let results = this.props.results;
 
@@ -50,48 +65,29 @@ var SearchResultsComponent = React.createClass({
       </table>
     );
   }
-});
+}
 
-var EmptyResultSearchComponent = React.createClass({
+class EmptyResultSearchComponent extends React.Component {
   render () {
     return (
       <strong>No manga contains the search term '{this.props.searchTerm}'</strong>
     );
   }
-});
+}
 
-var RESULTS = [
-  {
-    title: 'Berserk',
-    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
-  },
-  {
-    title: 'Bleach',
-    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
-  },
-  {
-    title: 'Gantz',
-    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
+class SearchPage extends React.Component {
+  state: {
+    searchTerm: '',
+    results: []
   }
-];
-
-var SearchPage = React.createClass({
-  getInitialState () {
-    return {
-      searchTerm: '',
-      results: []
-    };
-  },
 
   search (term) {
     if (term.length) {
       console.log(term);
     }
-  },
+  }
 
   render () {
-    let {results, searchTerm} = this.state;
-
     return (
       <div>
         <h2>Search mangas</h2>
@@ -99,17 +95,17 @@ var SearchPage = React.createClass({
         <SearchFieldComponent action={this.search} />
 
         {() => {
-          if (results.length) {
-            return <SearchResultsComponent results={results} />;
+          if (this.state.results.length) {
+            return <SearchResultsComponent results={this.state.results} />;
           }
-          else if (searchTerm !== '') {
-            return <EmptyResultSearchComponent searchTerm={searchTerm} />;
+          else if (this.state.searchTerm !== '') {
+            return <EmptyResultSearchComponent searchTerm={this.state.searchTerm} />;
           }
         }}
       </div>
     );
   }
-});
+}
 
 MR.Router.register('search', () => {
   MR.renderPage(<SearchPage />);

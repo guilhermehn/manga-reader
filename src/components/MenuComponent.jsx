@@ -1,3 +1,5 @@
+var firstRoute = MR.Router.getActualRoute();
+
 class MenuItemComponent extends React.Component {
   render () {
     let {selected, route, iconClassname, title} = this.props;
@@ -13,7 +15,7 @@ class MenuItemComponent extends React.Component {
 
 class MenuComponent extends React.Component {
   state: {
-    actualRoute: 'search'
+    actualRoute: firstRoute
   }
 
   render () {
@@ -24,12 +26,12 @@ class MenuComponent extends React.Component {
         iconClassname: 'zmdi-search'
       },
       {
-        route: '/views/bookmarks.html',
+        route: 'bookmarks',
         title: 'Bookmarks',
         iconClassname: 'zmdi-bookmark'
       },
       {
-        route: '/views/importexport.html',
+        route: 'import-export',
         title: 'Import/Export',
         iconClassname: 'zmdi-import-export'
       },
@@ -39,7 +41,7 @@ class MenuComponent extends React.Component {
         iconClassname: 'zmdi-settings'
       },
       {
-        route: '/views/importexport.html',
+        route: 'help',
         title: 'Help',
         iconClassname: 'zmdi-help'
       }
@@ -48,12 +50,12 @@ class MenuComponent extends React.Component {
     if (MR.settings.showDevOptions) {
       let devItems = [
         {
-          route: '/views/lab.html',
+          route: 'lab',
           title: 'Lab',
           iconClassname: 'zmdi-developer-board'
         },
         {
-          route: '/views/dev.html',
+          route: 'dev',
           title: 'Development',
           iconClassname: 'zmdi-code'
         },

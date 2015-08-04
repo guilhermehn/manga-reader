@@ -4,7 +4,6 @@ var plugins = require('gulp-load-plugins')();
 var PATHS = {
   STYL: 'styl/main.styl',
   JS: [
-    'js/components/*.js*',
     'js/i18n.js',
     'js/MangaElt.js',
     'js/mgEntry.js',
@@ -15,7 +14,7 @@ var PATHS = {
     'js/lib.js',
     'js/background.js'
   ],
-  JSX: 'js/components/*.js*',
+  JSX: 'src/**',
   DEST: 'build/'
 };
 
@@ -63,11 +62,12 @@ gulp.task('styl:watch', function () {
 });
 
 gulp.task('default', function () {
-  gulp.start(['styl', 'js']);
+  gulp.start(['styl', 'js', 'jsx']);
 });
 
 gulp.task('watch', function () {
   gulp.start(['default']);
   gulp.watch(PATHS.JS, ['js']);
+  gulp.watch(PATHS.JSX, ['jsx']);
   gulp.watch(PATHS.STYL, ['styl']);
 });

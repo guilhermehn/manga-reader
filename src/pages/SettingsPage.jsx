@@ -30,8 +30,10 @@ var loadUserSettingsMixin = {
   },
 
   getInitialState () {
+    let {name, id} = this.props;
+
     return {
-      value: MR.settings[this.props.name ? this.props.name : this.props.id]
+      value: MR.settings[name ? name : id]
     };
   },
 
@@ -39,10 +41,26 @@ var loadUserSettingsMixin = {
     let newValue = this.getValue(e.target);
     MR.Storage.updateSettings(this.props.id, newValue);
     this.forceUpdate();
+
+    if (this.props.onChange) {
+      this.props.onChange();
+    }
   }
 };
 
-var SettingComponent = React.createClass({
+class MigrationNotice extends React.Component {
+  render () {
+    return (
+      <div className='migration-notice'>
+        <p><strong>'All Mangas Reader' data was found. Import to the new format?</strong></p>
+        <button className='btn-confirm' onClick={MR.Migration.Start}>Import</button>
+        <button onClick={this.props.onDismiss}>No</button>
+      </div>
+    );
+  }
+}
+
+class SettingComponent extends React.Component {
   render () {
     return (
       <div className='settings-option'>
@@ -50,7 +68,7 @@ var SettingComponent = React.createClass({
       </div>
     );
   }
-});
+}
 
 var InputComponent = React.createClass({
   mixins: [loadUserSettingsMixin],
@@ -79,7 +97,7 @@ var CheckboxComponent = React.createClass({
     return (
       <SettingComponent>
         <label htmlFor={id}>
-          <input type='checkbox' name={id} id={id} onChange={this.onChange} checked={checked} /> {label}
+          <input type='checkbox' name={id} id={id} defaultChecked={checked} onChange={this.onChange} /> {label}
         </label>
       </SettingComponent>
     );
@@ -101,7 +119,7 @@ var RadioGroupComponent = React.createClass({
 
             return (
               <label htmlFor={key} key={key}>
-                <input type='radio' name={id} checked={checked} onChange={this.onChange} value={value} id={key} /> {label}
+                <input type='radio' name={id} defaultChecked={checked} onChange={this.onChange} value={value} id={key} /> {label}
               </label>
             );
           })
@@ -111,7 +129,7 @@ var RadioGroupComponent = React.createClass({
   }
 });
 
-var SettingsSectionComponent = React.createClass({
+class SettingsSectionComponent extends React.Component {
   render () {
     return (
       <section className='settings-section'>
@@ -120,15 +138,29 @@ var SettingsSectionComponent = React.createClass({
       </section>
     );
   }
-});
+}
 
-var SettingsPage = React.createClass({
+class SettingsPage extends React.Component {
+  changedSync () {
+    this.forceUpdate();
+  }
+
+  dismissMigration () {
+    MR.Migration.dismiss();
+    this.forceUpdate();
+  }
+
   render () {
+    let shouldShowMigrationNotice = MR.settings.syncData && !MR.settings.dismissMigration;
+
     return (
       <section className='page-content'>
         <h2>Settings</h2>
+
+        {shouldShowMigrationNotice && <MigrationNotice onDismiss={this.dismissMigration.bind(this)} />}
+
         <SettingsSectionComponent title='Sync'>
-          <CheckboxComponent label='Use Chrome Sync to synchronize my reading data' id='syncData' />
+          <CheckboxComponent label='Use Chrome Sync to synchronize my reading data' id='syncData' onChange={this.changedSync.bind(this)} />
         </SettingsSectionComponent>
 
         <SettingsSectionComponent title='Display mode'>
@@ -168,7 +200,7 @@ var SettingsPage = React.createClass({
       </section>
     );
   }
-});
+}
 
 MR.Router.register('settings', () => {
   MR.renderPage(<SettingsPage />);

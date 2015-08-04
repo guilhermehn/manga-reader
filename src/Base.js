@@ -1,18 +1,18 @@
-var AMRUtils = {
-  __uniqueIdSet: {},
-
-  uniqueId () {
-    let idsCount = Object.keys(this.__uniqueIdSet).length.toString();
-    this.__uniqueIdSet[idsCount] = Symbol();
-    return idsCount;
-  },
-
-  slice (object) {
-    return [].slice.call(object);
-  }
-};
-
 (() => {
+  let MRUtils = {
+    __uniqueIdSet: {},
+
+    uniqueId () {
+      let idsCount = Object.keys(this.__uniqueIdSet).length.toString();
+      this.__uniqueIdSet[idsCount] = Symbol();
+      return idsCount;
+    },
+
+    slice (object) {
+      return [].slice.call(object);
+    }
+  };
+
   let DEFAULT_SETTINGS = {
     syncData: false,
     showWholeChapter: true,
@@ -28,12 +28,14 @@ var AMRUtils = {
     bookmarkOnDoubleClick: true,
     nextChapterAfterLastPage: true,
     feedbackLink: true,
-    showDevOptions: false
+    showDevOptions: false,
+    dismissMigration: false
   };
 
   let MR = {
     Pages: {},
     Routes: {},
+    DEFAULT_ROUTE: 'search',
     DEFAULT_SETTINGS: DEFAULT_SETTINGS,
     PAGE_MOUNT_POINT: document.querySelector('.content'),
     LOCALSTORAGE_KEY: 'UserSettings',
@@ -52,6 +54,7 @@ var AMRUtils = {
     initPages () {
       this.init();
       this.Router.init();
+      MR.Migration.init();
 
       MR.Components.render('HeaderComponent', 'header');
       MR.Components.render('MenuComponent', '.menu');
@@ -99,7 +102,7 @@ var AMRUtils = {
       let route = window.location.hash.replace(/^\#\//, '');
 
       if (route === '') {
-        return 'search';
+        return MR.DEFAULT_ROUTE;
       }
 
       return route;
@@ -109,7 +112,7 @@ var AMRUtils = {
       var route = this.getActualRoute();
 
       if (!MR.Routes.hasOwnProperty(route)) {
-        route = 'search';
+        route = MR.DEFAULT_ROUTE;
       }
 
       MR.Routes[route]();
@@ -148,9 +151,81 @@ var AMRUtils = {
     },
   };
 
+  let Migration = {
+    bookmarkId: null,
+
+    canMigrate: false,
+
+    hasLegacyData (callback) {
+      chrome.bookmarks.getChildren('2', (bookmarks) => {
+        let legacySyncBookmark = bookmarks.filter(bookmark => bookmark.title === 'BSync');
+
+        if (legacySyncBookmark.length) {
+          let id = legacySyncBookmark[0].id;
+
+          this.bookmarkId = id;
+          callback(true);
+        }
+        else {
+          callback(false);
+        }
+      });
+    },
+
+    getDataFromBookmark (bookmark) {
+      let url = bookmark.url.replace(/^.+?void\(("|')(.*?)\1\);void.*?$/, '$2');
+      let syncData;
+
+      if (url) {
+        try {
+          syncData = JSON.parse(url);
+        }
+        catch (ex) {
+          console.error('Error loading the sync json:', ex.getStack());
+          syncData = null;
+        }
+      }
+
+      return JSON.parse(syncData.mangas);
+    },
+
+    getBookmarkForId (id, callback) {
+      chrome.bookmarks.getChildren(id, (bookmarks) => {
+        let oldSyncData = bookmarks.filter(bookmark => /^All Mangas Reader\./.test(bookmark.title));
+
+        if (oldSyncData.length) {
+          callback(oldSyncData[0]);
+        }
+        else {
+          callback(null);
+        }
+      });
+    },
+
+    dismiss () {
+      MR.Storage.updateSettings('dismissMigration', true);
+    },
+
+    init (callback) {
+      this.hasLegacyData((yes) => {
+        this.canMigrate = yes;
+
+        if (yes) {
+          this.getBookmarkForId(this.bookmarkId, (bookmark) => {
+            let mangas = this.getDataFromBookmark(bookmark);
+
+            console.log(mangas);
+          });
+        }
+      });
+    }
+  }
+
   MR.Storage = Storage;
   MR.Router = Router;
   MR.Components = Components;
+  MR.Migration = Migration;
 
   window.MR = MR;
+  window.MRUtils = MRUtils;
 })();
