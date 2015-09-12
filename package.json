@@ -20,6 +20,7 @@
     "gulp-wrap": "^0.11.0",
     "jshint-stylish": "^2.0.1",
     "jsonlint": "1.6.x",
+    "node-notifier": "^4.2.3",
     "react-tools": "^0.12.2"
   },
   "scripts": {

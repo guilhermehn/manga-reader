@@ -1,6 +1,11 @@
 /* jshint node:true */
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
+
+var WindowsBalloon = require('node-notifier').WindowsBalloon;
+var balloon = new WindowsBalloon();
+var notifier = balloon.notify.bind(balloon);
+
 var PATHS = {
   STYL: 'styl/main.styl',
   JS: [
@@ -30,7 +35,19 @@ function createJsTask (path) {
       // .pipe(plugins.wrap(';(function () {\n\'use strict\';\n<%= contents %>\n}).call(this);'))
       .pipe(plugins.sourcemaps.write('.'))
       .pipe(plugins.plumber.stop())
-      .pipe(gulp.dest(PATHS.DEST));
+      .pipe(gulp.dest(PATHS.DEST))
+      .on('error', function (err) {
+        notifier({
+          title: 'Gulp error',
+          message: err
+        });
+      })
+      .on('end', function () {
+        notifier({
+          title: 'Gulp',
+          message: 'Build complete'
+        });
+      });
   }
 }
 
