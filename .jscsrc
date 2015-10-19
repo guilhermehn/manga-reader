@@ -21,9 +21,10 @@
     "beforeOpeningCurlyBrace": true
   },
   "requireSpacesInFunction": {
-    "beforeOpeningRoundBrace": true,
+    "beforeOpeningRoundBrace": false,
     "beforeOpeningCurlyBrace": true
   },
+  "disallowSpacesInFunctionExpression": true,
   "disallowSpacesInCallExpression": true,
   "disallowMultipleVarDecl": true,
   "requireBlocksOnNewline": true,

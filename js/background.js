@@ -71,7 +71,7 @@ function initParam (object, paramName, defaultVal) {
 }
 
 function defaultParams () {
-  var obj = {
+  return {
     displayAds: 1,
     displayChapters: 1,
     displayMode: 1,
@@ -108,13 +108,12 @@ function defaultParams () {
     sendstats: 1,
     shownotifws: 1
   };
-
-  return obj;
 }
 
 function getParameters () {
   var params = localStorage.getItem('parameters');
   var res;
+
   if (typeof params === 'undefined' || params === null || params === 'null') {
     res = defaultParams();
     localStorage.setItem('parameters', JSON.stringify(res));
@@ -152,8 +151,10 @@ function getParameters () {
     initParam(res, 'markwhendownload', 0);
     initParam(res, 'sendstats', 1);
     initParam(res, 'shownotifws', 1);
+
     localStorage.setItem('parameters', JSON.stringify(res));
   }
+
   return res;
 }
 
@@ -163,6 +164,7 @@ function isInMangaList (url) {
       return MANGA_LIST[i];
     }
   }
+
   return null;
 }
 
@@ -172,6 +174,7 @@ function isInMangaListId (url) {
       return i;
     }
   }
+
   return -1;
 }
 
@@ -192,6 +195,7 @@ function isMirrorActivated (mirrorName) {
 
 function mangaListLoaded (mirror, lst) {
   console.log('mirror manga list loaded for ' + mirror + ' list size : ' + lst.length);
+
   wssql.webdb.empty(mirror, function () {
     wssql.webdb.storeMangaList(mirror, lst);
   });
@@ -232,7 +236,7 @@ function activateMirror (mirrorName) {
 }
 
 function getJsonFromElement (element) {
-  var obj = {
+  return JSON.stringify({
     mirror: element.mirror,
     name: element.name,
     url: element.url,
@@ -245,9 +249,7 @@ function getJsonFromElement (element) {
     upts: element.upts,
     listChaps: JSON.stringify(element.listChaps),
     cats: JSON.stringify(element.cats)
-  };
-
-  return JSON.stringify(obj);
+  });
 }
 
 function getJSONList () {
@@ -386,7 +388,7 @@ function refreshSync () {
 }
 
 function jsonmangaelttosync (mangaelt) {
-  var obj = {
+  return JSON.stringify({
     mirror: mangaelt.mirror,
     name: mangaelt.name,
     url: mangaelt.url,
@@ -397,9 +399,7 @@ function jsonmangaelttosync (mangaelt) {
     ts: mangaelt.ts,
     display: mangaelt.display,
     cats: JSON.stringify(mangaelt.cats)
-  };
-
-  return JSON.stringify(obj);
+  });
 }
 
 function getJSONListToSync () {
@@ -412,11 +412,11 @@ function getJSONListToSync () {
 
 // Here we shouldn't be using this...
 var sync = new BSync({
-  getUpdate : function () {
+  getUpdate () {
     return getParameters().updated;
   },
 
-  onRead : function (json) {
+  onRead (json) {
     console.log('Reading incoming synchronisation');
 
     if (!(typeof json === 'undefined' || json === null || json === 'null')) {
@@ -474,7 +474,7 @@ var sync = new BSync({
     refreshSync();
   },
 
-  onWrite : function () {
+  onWrite () {
     console.log('Writing current configuration to synchronise');
     var params = getParameters();
 
@@ -498,7 +498,7 @@ function sendSearch (selectedText) {
 chrome.contextMenus.create({
   title : 'Search %s on AllMangasReader',
   contexts : ['selection'],
-  onclick : function (info) {
+  onclick (info) {
     sendSearch(info.selectionText);
   }
 });
@@ -591,15 +591,6 @@ function initMirrorState () {
       instantiateMirrors();
     }
   }
-}
-
-function WaitForAllLists (sizeAll, onFinish, doSpin) {
-  this.nbMade = 0;
-  this.sizeAll = sizeAll;
-  this.onFinish = onFinish;
-  this.doSpin = doSpin;
-  this.started = false;
-  this.doEase = true;
 }
 
 function refreshManga (mg, waiter, pos) {
@@ -889,7 +880,7 @@ function init () {
 
     mirrors = mirrorsT;
 
-    mirrors.forEach(function (mirror) {
+    mirrors.forEach((mirror) => {
       var mirrorName = mirror.mirrorName;
 
       if (localStorage.getItem(mirrorName)) {
@@ -2154,48 +2145,59 @@ function drawIconAtRotation (doEase) {
   });
 }
 
-WaitForAllLists.prototype.incMade = function () {
-  this.nbMade++;
-};
-
-WaitForAllLists.prototype.wait = function () {
-  if (!this.started) {
-    this.started = true;
+class WaitForAllLists {
+  constructor (sizeAll, onFinish, doSpin) {
+    this.nbMade = 0;
+    this.sizeAll = sizeAll;
+    this.onFinish = onFinish;
+    this.doSpin = doSpin;
+    this.started = false;
+    this.doEase = true;
   }
 
-  if (this.sizeAll <= this.nbMade) {
-    if (this.doSpin) {
-      rotation += 1 / animationFrames;
+  incMade () {
+    this.nbMade++;
+  }
 
-      if (rotation > 1) {
-        rotation = 0;
-        drawIconAtRotation(true);
-        this.onFinish();
+  wait () {
+    if (!this.started) {
+      this.started = true;
+    }
+
+    if (this.sizeAll <= this.nbMade) {
+      if (this.doSpin) {
+        rotation += 1 / animationFrames;
+
+        if (rotation > 1) {
+          rotation = 0;
+          drawIconAtRotation(true);
+          this.onFinish();
+        }
+        else {
+          drawIconAtRotation();
+          setTimeout(this.wait.bind(this), animationSpeed);
+        }
       }
       else {
-        drawIconAtRotation();
-        setTimeout(this.wait.bind(this), animationSpeed);
+        this.onFinish();
       }
     }
     else {
-      this.onFinish();
-    }
-  }
-  else {
-    if (this.doSpin) {
-      rotation += 1 / animationFrames;
+      if (this.doSpin) {
+        rotation += 1 / animationFrames;
 
-      if (rotation > 1) {
-        rotation = rotation - 1;
-        this.doEase = false;
+        if (rotation > 1) {
+          rotation = rotation - 1;
+          this.doEase = false;
+        }
+
+        drawIconAtRotation(this.doEase);
       }
 
-      drawIconAtRotation(this.doEase);
+      setTimeout(this.wait.bind(this), animationSpeed);
     }
-
-    setTimeout(this.wait.bind(this), animationSpeed);
   }
-};
+}
 
 function refreshUpdateSyncSite (update) {
   try {
@@ -2454,7 +2456,7 @@ function importBookmarks (bms, merge) {
 }
 
 $(function () {
-  pstat.init();
+  // pstat.init();
   wssql.init();
   amrcsql.init();
   init();

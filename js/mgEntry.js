@@ -55,19 +55,20 @@ function validURL (str) {
 
 function getMirrorsDescription (callback) {
   amrcsql.webdb.getWebsites(function (list) {
-    var websites = list;
-    var mustUpdate = false;
-    var i;
+    let websites = list;
+    let mustUpdate = false;
 
-    if (websites !== undefined && websites !== null && websites.length > 0) {
+    if (!!websites && websites.length > 0) {
       // For compatibility, check if websites jsCode is a url and not an implementation
-      for (i = 0; i < websites.length; i += 1) {
+      for (let i = 0; i < websites.length; i += 1) {
         if (!validURL(websites[i].jsCode)) {
           mustUpdate = true;
-          updateWebsitesFromRepository(function () {
-            amrcsql.webdb.getWebsites(function (list) {
-              var websites = list;
-              if (websites !== undefined && websites !== null && websites.length > 0) {
+
+          updateWebsitesFromRepository(() => {
+            amrcsql.webdb.getWebsites((list) => {
+              let websites = list;
+
+              if (!!websites && websites.length > 0) {
                 callback(websites);
               }
               else {
@@ -79,6 +80,7 @@ function getMirrorsDescription (callback) {
           break;
         }
       }
+
       if (!mustUpdate) {
         callback(websites);
       }
@@ -86,20 +88,16 @@ function getMirrorsDescription (callback) {
     else {
       // First load of websites
       $.ajax({
-        url : AMRC_REPOSITORY + 'websites.json',
-        success : function (resp) {
-          var ws = resp;
-          var i;
+        url: `${AMRC_REPOSITORY}websites.json`,
+        success : function (mirrors) {
+          mirrors.forEach((mirror) => {
+            console.log(`Load JS from repository for ${mirror.mirrorName}`);
+            loadJSFromRepository(mirror);
+          });
 
-          for (i = 0; i < ws.length; i += 1) {
-            console.log('Load JS from repository for ' + ws[i].mirrorName);
-            loadJSFromRepository(ws[i]);
-          }
-          waitForFinishRepository(ws, callback);
+          waitForFinishRepository(mirrors, callback);
         },
-        error : function () {
-          callback([]);
-        }
+        error: callback.bind(null, [])
       });
     }
   });
@@ -117,15 +115,8 @@ function loadJSFromRepository (description) {
 
 function waitForFinishRepository (websites, callback) {
   chrome.extension.getBackgroundPage().isReady(false, 'Waiting for mirrors to be loaded');
-  var done = true;
-  var i;
 
-  for (i = 0; i < websites.length; i += 1) {
-    if (!websites[i].loaded || websites[i].loaded === false) {
-      done = false;
-      break;
-    }
-  }
+  let done = websites.every(website => !!website.loaded);;
 
   if (done) {
     console.log('All websites loaded');
@@ -133,7 +124,7 @@ function waitForFinishRepository (websites, callback) {
     chrome.extension.getBackgroundPage().isReady(true);
   }
   else {
-    setTimeout(function () {
+    setTimeout(() => {
       waitForFinishRepository(websites, callback);
     }, 100);
   }
@@ -144,15 +135,7 @@ function waitForFinishRepository (websites, callback) {
 // ##############################################################################
 
 function waitForFinishUpdatingRepository (changes, callback) {
-  var done = true;
-  var i;
-
-  for (i = 0; i < changes.length; i += 1) {
-    if (!changes[i].loaded || changes[i].loaded === false) {
-      done = false;
-      break;
-    }
-  }
+  let done = changes.every(item => !!item.loaded);;
 
   if (done) {
     console.log('All websites updated successfully');
@@ -176,12 +159,12 @@ function updateWebsitesFromRepository (callback) {
   $.ajax({
     url : AMRC_REPOSITORY + 'websites.json?1',
 
-    beforeSend : function (xhr) {
+    beforeSend (xhr) {
       xhr.setRequestHeader('Cache-Control', 'no-cache');
       xhr.setRequestHeader('Pragma', 'no-cache');
     },
 
-    success : function (resp) {
+    success (resp) {
       // distant descriptions
       var wsdist = resp;
       // local description
@@ -192,19 +175,17 @@ function updateWebsitesFromRepository (callback) {
           // Compare loc and dist...
           // Check revision
           var changes = [];
-          var i;
-          var j;
           var found;
           var change;
 
-          for (i = 0; i < wsdist.length; i += 1) {
+          for (let i = 0; i < wsdist.length; i += 1) {
             found = false;
 
-            for (j = 0; j < wsloc.length; j += 1) {
+            for (let j = 0; j < wsloc.length; j += 1) {
               if (wsdist[i].mirrorName === wsloc[j].mirrorName) {
                 change = {
-                  description : wsdist[i],
-                  type : 'update'
+                  description: wsdist[i],
+                  type: 'update'
                 };
 
                 if (!validURL(wsloc[j].jsCode)) {
@@ -232,13 +213,14 @@ function updateWebsitesFromRepository (callback) {
                 found = true;
               }
             }
+
             if (!found) {
               // Check for new ones
               // Website is new...
               console.log('Website has been created ' + wsdist[i].mirrorName);
               change = {
-                description : wsdist[i],
-                type : 'create'
+                description: wsdist[i],
+                type: 'create'
               };
               updateJSFromRepository(wsdist[i], change);
               changes[changes.length] = change;
@@ -264,7 +246,7 @@ function updateWebsitesFromRepository (callback) {
       });
     },
 
-    error : function () {
+    error () {
       console.log('Error while updating websites repository. --> Repository not reachable...');
       callback();
     }
@@ -482,16 +464,13 @@ function releaseImplentationFromId (id, callback) {
 // Returns mirror descriptions...
 
 function getFilledMirrorsDesc (activatedMirrors, callback) {
-  getMirrorsDescription(function (list) {
-    var wsloc = list;
+  getMirrorsDescription((list) => {
     var filledMD = [];
-    var i;
-    var j;
 
-    for (i = 0; i < wsloc.length; i += 1) {
-      for (j = 0; j < activatedMirrors.length; j += 1) {
-        if (activatedMirrors[j].mirror === wsloc[i].mirrorName) {
-          filledMD[filledMD.length] = wsloc[i];
+    for (let i = 0; i < list.length; i += 1) {
+      for (let j = 0; j < activatedMirrors.length; j += 1) {
+        if (activatedMirrors[j].mirror === list[i].mirrorName) {
+          filledMD.push(list[i]);
           break;
         }
       }
@@ -511,23 +490,20 @@ function registerMangaObject (mirrorName, object) {
 
 // Instantiate a returned mirror and load the script...
 function loadJSFromRepositoryForMirrors (list, pos, input) {
-  var docache = true;
+  let shouldCache = input.jsCode.indexOf('.php') === -1;
 
-  if (input.jsCode.indexOf('.php') !== -1) {
-    docache = false;
-  }
-
-  $.loadScript(input.jsCode, docache, function () {
+  $.loadScript(input.jsCode, shouldCache, () => {
     list[pos] = loadedImplementations[input.mirrorName];
 
     if (typeof list[pos] === 'undefined') {
-      list[pos] = {};
-      list[pos].error = 'Script ' + input.mirrorName + ' failed to be loaded... Error compiling JS code... Link : ' + input.jsCode;
+      list[pos] = {
+        error: `Script ${input.mirrorName} failed to be loaded... Error compiling JS code... Link : ${input.jsCode}`
+      };
 
       console.log('Error compiling JS code: ' + input.jsCode);
     }
     else {
-      console.log('Script ' + list[pos].mirrorName + ' loaded and executed.');
+      console.log(`Script ${list[pos].mirrorName} loaded and executed.`);
     }
 
     list[pos].mirrorName = input.mirrorName;
@@ -538,27 +514,20 @@ function loadJSFromRepositoryForMirrors (list, pos, input) {
     list[pos].loadedscript = true;
   }, function () {
     // error managing
-    console.log('Script ' + input.mirrorName + ' failed to be loaded...');
+    let errorMessage = `Script ${input.mirrorName} failed to be loaded...`;
+    console.log(errorMessage);
     console.log(input);
 
     list[pos] = {
-      loadedscript : true,
-      error : 'Script ' + input.mirrorName + ' failed to be loaded...'
+      loadedscript: true,
+      error: errorMessage
     };
   });
 }
 
 // Wait for all mirrors to be loaded
 function waitForFinishgetMirrors (mirrors, callback) {
-  var done = true;
-  var i;
-
-  for (i = 0; i < mirrors.length; i += 1) {
-    if (!mirrors[i].loadedscript || mirrors[i].loadedscript === false) {
-      done = false;
-      break;
-    }
-  }
+  let done = mirrors.every(mirror => !!mirror.loadedscript);;
 
   if (done) {
     callback(mirrors);
@@ -571,58 +540,49 @@ function waitForFinishgetMirrors (mirrors, callback) {
 
 // Returns mirror with implementation
 function getMirrors (callback) {
-  chrome.extension.getBackgroundPage().isReady(false, 'Downloading mirrors from repository');
+  let backgroundPage = chrome.extension.getBackgroundPage();
 
-  getMirrorsDescription(function (list) {
-    var wsloc = list;
-    var mirrorsTmp = [];
+  backgroundPage.isReady(false, 'Downloading mirrors from repository');
 
-    wsloc.forEach(function (ws) {
-      var cur = mirrorsTmp.length;
+  getMirrorsDescription((list) => {
+    let mirrorsTmp = [];
 
-      mirrorsTmp[cur] = {}; // Keep this place for the object...
-      loadJSFromRepositoryForMirrors(mirrorsTmp, cur, ws);
+    list.forEach((ws) => {
+      let length = mirrorsTmp.length;
+
+      mirrorsTmp[length] = {}; // Keep this place for the object...
+      loadJSFromRepositoryForMirrors(mirrorsTmp, length, ws);
     });
 
-    chrome.extension.getBackgroundPage().isReady(true);
+    backgroundPage.isReady(true);
 
-    waitForFinishgetMirrors(mirrorsTmp, function () {
+    waitForFinishgetMirrors(mirrorsTmp, () => {
       callback(mirrorsTmp);
     });
   });
 }
 
 function doesCurrentPageMatchManga (url, activatedMirrors, callback) {
-  getMirrorsDescription(function (list) {
-    var wsloc = list;
+  getMirrorsDescription((wsloc) => {
     var isok = false;
-    var i;
 
-    for (i = 0; i < wsloc.length; i += 1) {
-      var isFound = false;
-      var j;
-
-      for (j = 0; j < activatedMirrors.length; j += 1) {
-        if (activatedMirrors[j].mirror === wsloc[i].mirrorName) {
-          isFound = true;
-          break;
-        }
-      }
+    wsloc.forEach((item) => {
+      let isFound = activatedMirrors.some((mirror, i) => {
+        return mirror.mirror === item.mirrorName;
+      });
 
       if (isFound) {
-        var wss = (typeof wsloc[i].webSites === 'object') ? wsloc[i].webSites : JSON.parse(wsloc[i].webSites);
+        let wss = typeof item.webSites === 'object' ? item.webSites : JSON.parse(item.webSites);
 
-        for (j = 0; j < wss.length; j += 1) {
-          // console.log(wss[j] + ' --> ' + url);
-
+        for (let j = 0; j < wss.length; j += 1) {
           if (url.match(wss[j].replace(/\./g, '\\.').replace(/\*/g, '.*'))) {
-            callback(true, wsloc[i].mirrorName, wsloc[i].jsCode);
+            callback(true, item.mirrorName, item.jsCode);
             isok = true;
             return;
           }
         }
       }
-    }
+    });
 
     if (!isok) {
       callback(false, '', null);
@@ -634,16 +594,12 @@ function doesCurrentPageMatchManga (url, activatedMirrors, callback) {
 function loadJSFromRepositoryForActivatedMirrors (list, pos, input) {
   chrome.extension.getBackgroundPage().isReady(false, 'Downloading activated mirrors from repository');
 
-  var docache = true;
+  let shouldCache = input.jsCode.indexOf('.php') === -1;
 
-  if (input.jsCode.indexOf('.php') !== -1) {
-    docache = false;
-  }
-
-  $.loadScript(input.jsCode, docache, function () {
+  $.loadScript(input.jsCode, shouldCache, function () {
     list[pos] = loadedImplementations[input.mirrorName];
 
-    if (list[pos] !== undefined) {
+    if (list[pos]) {
       list[pos].mirrorName = input.mirrorName;
       list[pos].mirrorIcon = input.mirrorIcon;
       list[pos].revision = input.revision;
@@ -652,7 +608,7 @@ function loadJSFromRepositoryForActivatedMirrors (list, pos, input) {
       list[pos].listLoaded = false;
 
       if (list[pos].canListFullMangas) {
-        wssql.webdb.getMangaList(list[pos].mirrorName, function (listMgs) {
+        wssql.webdb.getMangaList(list[pos].mirrorName, (listMgs) => {
           list[pos].listmgs = listMgs;
           list[pos].listLoaded = true;
         });
@@ -661,43 +617,41 @@ function loadJSFromRepositoryForActivatedMirrors (list, pos, input) {
         list[pos].listLoaded = true;
       }
 
-      console.log('Script ' + list[pos].mirrorName + ' loaded and executed.');
+      console.log(`Script ${list[pos].mirrorName} loaded and executed.`);
 
       list[pos].loadedscript = true;
     }
     else {
-      console.log('Script ' + input.mirrorName + ' failed to be loaded... Error while compiling JS code... Link : ' + input.jsCode);
+      let errorMessage = `Script ${input.mirrorName} failed to be loaded. Error while compiling JS code. Link : ${input.jsCode}`;
+      console.log(errorMessage);
 
       list[pos] = {
-        loadedscript : true,
-        listLoaded : true,
-        error : 'Script ' + input.mirrorName + ' failed to be loaded... Error while compiling JS code... Link : ' + input.jsCode
+        loadedscript: true,
+        listLoaded: true,
+        error: errorMessage
       };
     }
   }, function () {
     // error managing
-    console.log('Script ' + input.mirrorName + ' failed to be loaded...');
+    let errorMessage = `Script ${input.mirrorName} failed to be loaded.`;
+
+    console.log(errorMessage);
     console.log(input);
+
     list[pos] = {
-      loadedscript : true,
-      listLoaded : true,
-      error : 'Script ' + input.mirrorName + ' failed to be loaded...'
+      loadedscript: true,
+      listLoaded: true,
+      error: errorMessage
     };
   });
+
   chrome.extension.getBackgroundPage().isReady(true);
 }
 
-function waitForActivatedAndListFinish (mirrorsT, callback) {
-  var fin = true;
-  var i;
+function waitForActivatedAndListFinish (mirrors, callback) {
+  let done = mirrors.every(mirror => !!mirror.listLoaded && !!mirror.loadedscript);
 
-  for (i = 0; i < mirrorsT.length; i += 1) {
-    if (!mirrorsT[i].listLoaded || mirrorsT[i].loadedscript === null || !mirrorsT[i].loadedscript) {
-      fin = false;
-    }
-  }
-
-  if (fin) {
+  if (done) {
     callback(mirrorsT);
   }
   else {
@@ -706,17 +660,15 @@ function waitForActivatedAndListFinish (mirrorsT, callback) {
 }
 
 function getActivatedMirrorsWithList (res, callback) {
-  getMirrorsDescription(function (listws) {
-    var wsloc = listws;
-    var mirrorsTmp = [];
-    var lstAc = res.list;
-    var i;
-    var j;
+  getMirrorsDescription((listws) => {
+    let wsloc = listws;
+    let mirrorsTmp = [];
+    let lstAc = res.list;
 
-    for (i = 0; i < wsloc.length; i += 1) {
-      for (j = 0; j < lstAc.length; j += 1) {
+    for (let i = 0; i < wsloc.length; i += 1) {
+      for (let j = 0; j < lstAc.length; j += 1) {
         if (lstAc[j].mirror === wsloc[i].mirrorName) {
-          var cur = mirrorsTmp.length;
+          let cur = mirrorsTmp.length;
 
           mirrorsTmp[cur] = {}; // Keep the place for the object...
           loadJSFromRepositoryForActivatedMirrors(mirrorsTmp, cur, wsloc[i]);
@@ -733,7 +685,5 @@ function getActivatedMirrorsWithList (res, callback) {
 function getActivatedMirrors (callback) {
   chrome.runtime.sendMessage({
     action : 'activatedMirrors'
-  }, function (res) {
-    getActivatedMirrorsWithList(res, callback);
-  });
+  }, (res) => getActivatedMirrorsWithList(res, callback));
 }

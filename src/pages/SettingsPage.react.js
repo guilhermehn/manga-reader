@@ -1,5 +1,15 @@
+var React = require('react');
+
 var loadUserSettingsMixin = {
-  getValueFromRadio (elem) {
+  getInitialState() {
+    let {name, id} = this.props;
+
+    return {
+      value: MR.settings[name ? name : id]
+    };
+  },
+
+  getValueFromRadio(elem) {
     let radios = elem.parentElement.querySelectorAll(`input[name='${elem.name}']`);
     let checked = AMRUtils.slice(radios).filter((radio) => {
       return radio.checked;
@@ -8,36 +18,28 @@ var loadUserSettingsMixin = {
     return checked.length === 1 ? checked[0].value : null;
   },
 
-  getValue (elem) {
+  getValue(elem) {
     let value;
 
     switch (elem.type) {
-      case 'checkbox':
-        value = elem.checked;
-        break;
+    case 'checkbox':
+      value = elem.checked;
+      break;
 
-      case 'radio': {
-        value = this.getValueFromRadio(elem);
+    case 'radio': {
+      value = this.getValueFromRadio(elem);
 
-        break;
-      }
+      break;
+    }
 
-      default:
-        value = elem.value;
+    default:
+      value = elem.value;
     }
 
     return value;
   },
 
-  getInitialState () {
-    let {name, id} = this.props;
-
-    return {
-      value: MR.settings[name ? name : id]
-    };
-  },
-
-  onChange (e) {
+  onChange(e) {
     let newValue = this.getValue(e.target);
     MR.Storage.updateSettings(this.props.id, newValue);
     this.forceUpdate();
@@ -48,8 +50,8 @@ var loadUserSettingsMixin = {
   }
 };
 
-class MigrationNotice extends React.Component {
-  render () {
+var MigrationNotice = React.createClass({
+  render() {
     return (
       <div className='migration-notice'>
         <p><strong>'All Mangas Reader' data was found. Import to the new format?</strong></p>
@@ -58,22 +60,22 @@ class MigrationNotice extends React.Component {
       </div>
     );
   }
-}
+});
 
-class SettingComponent extends React.Component {
-  render () {
+var SettingComponent = React.createClass({
+  render() {
     return (
       <div className='settings-option'>
         {this.props.children}
       </div>
     );
   }
-}
+});
 
 var InputComponent = React.createClass({
   mixins: [loadUserSettingsMixin],
 
-  render () {
+  render() {
     let name = this.props.name ? this.props.name : this.props.id;
     let {type, id, label} = this.props;
 
@@ -90,7 +92,7 @@ var InputComponent = React.createClass({
 var CheckboxComponent = React.createClass({
   mixins: [loadUserSettingsMixin],
 
-  render () {
+  render() {
     let {id, label} = this.props;
     let checked = MR.settings[id];
 
@@ -107,7 +109,7 @@ var CheckboxComponent = React.createClass({
 var RadioGroupComponent = React.createClass({
   mixins: [loadUserSettingsMixin],
 
-  render () {
+  render() {
     return (
       <SettingComponent>
         {
@@ -129,8 +131,8 @@ var RadioGroupComponent = React.createClass({
   }
 });
 
-class SettingsSectionComponent extends React.Component {
-  render () {
+var SettingsSectionComponent = React.createClass({
+  render() {
     return (
       <section className='settings-section'>
         <h3>{this.props.title}</h3>
@@ -138,29 +140,29 @@ class SettingsSectionComponent extends React.Component {
       </section>
     );
   }
-}
+});
 
-class SettingsPage extends React.Component {
-  changedSync () {
+var SettingsPage = React.createClass({
+  changedSync() {
     this.forceUpdate();
-  }
+  },
 
-  dismissMigration () {
-    MR.Migration.dismiss();
+  dismissMigration() {
+    Migration.dismiss();
     this.forceUpdate();
-  }
+  },
 
-  render () {
+  render() {
     let shouldShowMigrationNotice = MR.settings.syncData && !MR.settings.dismissMigration;
 
     return (
       <section className='page-content'>
         <h2>Settings</h2>
 
-        {shouldShowMigrationNotice && <MigrationNotice onDismiss={this.dismissMigration.bind(this)} />}
+        {shouldShowMigrationNotice && <MigrationNotice onDismiss={this.dismissMigration} />}
 
         <SettingsSectionComponent title='Sync'>
-          <CheckboxComponent label='Use Chrome Sync to synchronize my reading data' id='syncData' onChange={this.changedSync.bind(this)} />
+          <CheckboxComponent label='Use Chrome Sync to synchronize my reading data' id='syncData' onChange={this.changedSync} />
         </SettingsSectionComponent>
 
         <SettingsSectionComponent title='Display mode'>
@@ -200,8 +202,10 @@ class SettingsPage extends React.Component {
       </section>
     );
   }
-}
-
-MR.Router.register('settings', () => {
-  MR.renderPage(<SettingsPage />);
 });
+
+module.exports = SettingsPage;
+
+// MR.Router.register('settings', () => {
+//   MR.renderPage(<SettingsPage />);
+// });

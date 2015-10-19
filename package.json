@@ -1,41 +1,62 @@
 {
-  "name": "AMR",
-  "version": "1.5.6",
+  "name": "manga-reader",
+  "version": "0.0.0",
   "description": "AllMangaReader Rebirth",
   "main": "index.js",
-  "devDependencies": {
-    "bower": "^1.4.1",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^5.1.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-csscomb": "^3.0.4",
-    "gulp-jshint": "^1.11.0",
-    "gulp-load-plugins": "^1.0.0-rc.1",
-    "gulp-order": "^1.1.1",
-    "gulp-plumber": "^1.0.1",
-    "gulp-react": "^3.0.0",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-stylus": "^2.0.5",
-    "gulp-uglify": "^1.2.0",
-    "gulp-wrap": "^0.11.0",
-    "jshint-stylish": "^2.0.1",
-    "jsonlint": "1.6.x",
-    "node-notifier": "^4.2.3",
-    "react-tools": "^0.12.2"
-  },
   "scripts": {
-    "postinstall": "bower install && gulp",
-    "watch": "gulp watch",
-    "test": "jsonlint manifest.json _locales/*/*.json"
+    "js": "browserify . | uglifyjs -cm > ./build/main.js",
+    "js:watch": "watchify -v -d ./src/App.js -o ./build/main.js",
+    "css": "stylus ./styl/main.styl -p | myth -c > ./build/main.css",
+    "css:watch": "gulp styl:watch",
+    "build": "npm run css && npm run js",
+    "postinstall": "npm run build"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "devDependencies": {
+    "babelify": "^6.3.0",
+    "eslint": "^1.6.0",
+    "eslint-plugin-react": "^3.5.1",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.0.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-myth": "^1.0.3",
+    "gulp-plumber": "^1.0.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-stylus": "^2.1.0",
+    "myth": "^1.5.0",
+    "node-notifier": "^4.3.1",
+    "stylus": "^0.52.4",
+    "uglifyjs": "^2.4.10"
+  },
+  "dependencies": {
+    "classnames": "^2.1.5",
+    "font-awesome": "^4.4.0",
+    "keymirror": "^0.1.1",
+    "normalize.css": "^3.0.3",
+    "object-assign": "^4.0.1",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
+    "superagent": "^1.4.0"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/AllMangasReader-dev/AMR.git"
   },
-  "author": "",
-  "license": "GLP v3",
+  "author": "Guilherme Nagatomo",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/AllMangasReader-dev/AMR/issues"
   },
-  "homepage": "https://github.com/AllMangasReader-dev/AMR"
+  "homepage": "https://github.com/AllMangasReader-dev/AMR",
+  "keywords": [
+    "manga",
+    "reader",
+    "chrome",
+    "extension"
+  ]
 }

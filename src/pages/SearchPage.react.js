@@ -1,6 +1,6 @@
-var searchResultsHeaders = ['Title', 'Mirrors'].map((item) => {
-  return <th key={`th-${item}`}>{item}</th>;
-});
+var React = require('react');
+
+var searchResultsHeaders = ['Title', 'Mirrors'].map(item => <th key={`th-${item}`}>{item}</th>);
 
 var RESULTS = [
   {
@@ -17,18 +17,18 @@ var RESULTS = [
   }
 ];
 
-class SearchFieldComponent extends React.Component {
-  performAction () {
+let SearchFieldComponent = React.createClass({
+  performAction() {
     this.props.action(this.refs.searchTerm.getDOMNode().value);
-  }
+  },
 
-  searchKeyPress (e) {
+  searchKeyPress(e) {
     if (e.which === 13) {
       this.performAction();
     }
-  }
+  },
 
-  render () {
+  render() {
     return (
       <div className='search-field'>
         <input type='text' onKeyPress={this.searchKeyPress} className='search-input' ref='searchTerm' />
@@ -36,10 +36,10 @@ class SearchFieldComponent extends React.Component {
       </div>
     );
   }
-}
+});
 
-class SearchResultsComponent extends React.Component {
-  render () {
+let SearchResultsComponent = React.createClass({
+  render() {
     let results = this.props.results;
 
     return (
@@ -65,27 +65,29 @@ class SearchResultsComponent extends React.Component {
       </table>
     );
   }
-}
+});
 
-class EmptyResultSearchComponent extends React.Component {
-  render () {
+let EmptyResultSearchComponent = React.createClass({
+  render() {
     return (
       <strong>No manga contains the search term '{this.props.searchTerm}'</strong>
     );
   }
-}
+});
 
-class SearchPage extends React.Component {
-  state: {
-    searchTerm: '',
-    results: []
-  }
+let SearchPage = React.createClass({
+  getInitialState() {
+    return {
+      searchTerm: '',
+      results: []
+    };
+  },
 
   search (term) {
     if (term.length) {
       console.log(term);
     }
-  }
+  },
 
   render () {
     return (
@@ -105,8 +107,10 @@ class SearchPage extends React.Component {
       </div>
     );
   }
-}
-
-MR.Router.register('search', () => {
-  MR.renderPage(<SearchPage />);
 });
+
+module.exports = SearchPage;
+
+// MR.Router.register('search', () => {
+//   MR.renderPage(<SearchPage />);
+// });
