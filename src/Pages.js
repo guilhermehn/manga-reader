@@ -1,2 +1,0 @@
-// Pages init
-MR.initPages();
