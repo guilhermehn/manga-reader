@@ -35,10 +35,9 @@
   },
   "dependencies": {
     "classnames": "^2.1.5",
-    "font-awesome": "^4.4.0",
+    "flux": "^2.1.1",
     "keymirror": "^0.1.1",
-    "normalize.css": "^3.0.3",
-    "object-assign": "^4.0.1",
+    "lodash": "^3.10.1",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
     "superagent": "^1.4.0"
