@@ -8,10 +8,20 @@ const {
   PAGE_MOUNT_POINT
 } = require('./Constants');
 
+const HASH_CHANGE_EVENT = 'hashchange';
+
+function addHashListener(callback) {
+  window.addEventListener(HASH_CHANGE_EVENT, callback);
+}
+
+function removeHashListener(callback) {
+  window.removeEventListener(HASH_CHANGE_EVENT, callback);
+}
+
 let Router = {
   routes: {
-    search: require('./pages/SearchPage.react'),
-    settings: require('./pages/SettingsPage.react')
+    search: require('./components/SearchPage.react'),
+    settings: require('./components/SettingsPage.react')
   },
 
   renderPage (PageComponent) {
@@ -28,6 +38,14 @@ let Router = {
     return route;
   },
 
+  addRouteListener(callback) {
+    addHashListener(callback);
+  },
+
+  removeRouteListener(callback) {
+    removeHashListener(callback);
+  },
+
   renderActualRoute() {
     let component = this.routes[this.getActualRoute()];
 
@@ -37,7 +55,7 @@ let Router = {
   init() {
     this.renderActualRoute();
 
-    window.addEventListener('hashchange', this.renderActualRoute.bind(this));
+    addHashListener(this.renderActualRoute.bind(this));
   }
 };
 

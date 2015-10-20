@@ -16,6 +16,10 @@
     cursor pointer
     text-transform uppercase
 
+    &:hover
+      a
+        color menu-item-color-hover
+
     &::first-letter
       font-size menu-font-size + 3
       font-weight 400
@@ -28,13 +32,14 @@
     color menu-item-color
     transition all .1s ease-out
 
-    &:hover
-      color menu-item-color-hover
-
   .active
     background-color menu-active-bg
     border-radius 5px
     cursor default
+
+    &:hover
+      a
+        color menu-active-color
 
     a
       color menu-active-color
