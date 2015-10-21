@@ -66,7 +66,7 @@ let Migration = {
             callback(mangas);
           }
 
-          console.log(mangas);
+          // console.log(mangas);
         });
       }
     });

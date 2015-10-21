@@ -16,23 +16,11 @@
     "default_popup" : "views/popup.html"
   },
 
-  "background" : {
-    "persistent" : true,
-    "scripts" : [
-      "vendor/jquery/dist/jquery.js",
-      "vendor/react/react.js",
-      "js/jQuery.loadScript.js",
-      "build/i18n.js",
-      "build/MangaElt.js",
-      "build/mgEntry.js",
-      "build/BSync.js",
-      "build/personalstat.js",
-      "build/wssql.js",
-      "build/amrcsql.js",
-      "build/lib.js",
-      "build/background.js"
-    ]
-  },
+  // "background" : {
+  //   "persistent" : true,
+  //   "scripts" : [
+  //   ]
+  // },
 
   "content_scripts" : [
     {
@@ -63,21 +51,7 @@
       ],
       "js" : [
         "js/lib.js",
-        "vendor/jquery/dist/jquery.min.js",
         "js/backsite.js"
-      ]
-    },
-    {
-      "matches" : [
-        "http://community.allmangasreader.com/*",
-        "http://amrroot/*"
-      ],
-      "css" : [
-        "css/backamrc.css"
-      ],
-      "js" : [
-        "vendor/jquery/dist/jquery.min.js",
-        "js/backamrc.js"
       ]
     }
   ],

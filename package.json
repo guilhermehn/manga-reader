@@ -7,7 +7,7 @@
     "js": "browserify . | uglifyjs -cm > ./build/main.js",
     "js:watch": "watchify -v -d ./src/App.js -o ./build/main.js",
     "css": "stylus ./styl/main.styl -p | myth -c > ./build/main.css",
-    "css:watch": "gulp styl:watch",
+    "css:watch": "gulp css:watch",
     "build": "npm run css && npm run js",
     "postinstall": "npm run build"
   },
@@ -34,8 +34,10 @@
     "uglifyjs": "^2.4.10"
   },
   "dependencies": {
+    "cheerio": "^0.19.0",
     "classnames": "^2.1.5",
     "flux": "^2.1.1",
+    "jquery": "^2.1.4",
     "keymirror": "^0.1.1",
     "lodash": "^3.10.1",
     "react": "^0.14.0",

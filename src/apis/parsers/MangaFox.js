@@ -1,38 +1,21 @@
-/* global $ */
-// var $ = require('jquery');
-'use strict';
+let $ = require('jquery');
+let parserUtils = require('./parserUtils');
 
-var MIRROR_NAME = 'Manga Fox';
-
-function getPage(url, done) {
-  $.ajax({
-    url : url,
-    beforeSend(xhr) {
-      xhr.setRequestHeader('Cache-Control', 'no-cache');
-      xhr.setRequestHeader('Pragma', 'no-cache');
-    },
-    success(response) {
-      let page = document.createElement('div');
-      page.innerHTML = response;
-      done($(page), response);
-    }
-  });
-}
-
-var MangaFox = {
+let MangaFox = {
   url: 'http://mangafox.me/',
-  mirrorName: MIRROR_NAME,
+  name: 'Manga Fox',
+  icon: 'http://mangafox.me/favicon.ico',
   languages: 'en',
 
-  search(search, callback) {
+  search(search, done) {
     let urlManga = this.url + 'search.php?name=' + search + '&advopts=1';
 
-    getPage(urlManga, function(page, body) {
+    parserUtils.getPage(urlManga, (page, body) => {
       if (body.indexOf('No Manga Series') !== -1) {
-        callback([]);
+        done([]);
       }
       else {
-        var result = page.find('#listing tr td:first-child a').map(function (i, el) {
+        let result = page.find('#listing tr td:first-child a').map( (i, el) => {
           let $el = $(el);
 
           return {
@@ -41,25 +24,25 @@ var MangaFox = {
           };
         }).get();
 
-        callback(result);
+        done(result);
       }
     });
   },
 
-  getListOfChapters(manga, callback) {
+  getListOfChapters(manga, done) {
     let url = manga.url + '?no_warning=1';
 
-    getPage(url, function(page) {
-      var res = page.find('ul.chlist h3, ul.chlist h4').map(function(i, el) {
+    parserUtils.getPage(url, (page) => {
+      let res = page.find('ul.chlist h3, ul.chlist h4').map((i, el) => {
         let $el = $(el);
         let chapterLink = $el.find('a');
         let chapterUrl = chapterLink.attr('href');
 
         if (chapterUrl.indexOf('/manga/') !== -1) {
-          var number = chapterLink.text().substr(manga.title.length + 1);
-          var volume = $el.parents('ul.chlist').prev('div.slide').children('h3').contents(':not(span)').text().trim().substr(7).trim();
-          var title = $el.find('span.title').text().trim();
-          var url = chapterUrl.substr(0, chapterUrl.lastIndexOf('/') + 1);
+          let number = chapterLink.text().substr(manga.title.length + 1);
+          let volume = $el.parents('ul.chlist').prev('div.slide').children('h3').contents(':not(span)').text().trim().substr(7).trim();
+          let title = $el.find('span.title').text().trim();
+          let url = chapterUrl.substr(0, chapterUrl.lastIndexOf('/') + 1);
 
           if (url.substr(url.length - 2, 2) === '//') {
             url = url.substr(0, url.length - 1);
@@ -74,25 +57,25 @@ var MangaFox = {
         }
       }).get();
 
-      callback(res);
+      done(res);
     });
   },
 
   getChapterPages(chapter, done) {
-    getPage(chapter.url + '1.html', function(page) {
+    parserUtils.getPage(chapter.url + '1.html', (page) => {
       let firstPageUrl = page.find('#viewer > a img').attr('src');
       let pagesList = page
         .find('select.m')
         .first()
         .find('option')
-        .map(function(i, el) {
+        .map((i, el) => {
           return parseInt(el.value);
         })
         .get()
-        .filter(function(pageNumber) {
+        .filter((pageNumber) => {
           return pageNumber > 0;
         })
-        .map(function(pageNumber) {
+        .map((pageNumber) => {
           let n = pageNumber.toString();
           return firstPageUrl.replace(/(\d+)(\.jpg)$/, '0'.repeat(3 - n.length) + n + '.jpg');
         });
@@ -102,14 +85,4 @@ var MangaFox = {
   }
 };
 
-MangaFox.search('Berserk', function(result) {
-  let berserk = result[0];
-
-  MangaFox.getListOfChapters(berserk, function(chapters) {
-    let firstChapter = chapters[chapters.length - 1];
-
-    MangaFox.getChapterPages(firstChapter, function(pages) {
-      console.log(pages);
-    });
-  });
-});
+module.exports = MangaFox;

@@ -1,116 +1,182 @@
-var React = require('react');
+let React = require('react');
+let classnames = require('classnames');
+let SearchAPI = require('../apis/SearchAPI');
+let SearchStore = require('../stores/SearchStore');
+let LoadingIcon = require('./LoadingIcon.react');
 
-var searchResultsHeaders = ['Title', 'Mirrors'].map(item => <th key={`th-${item}`}>{item}</th>);
+let SearchField = React.createClass({
+  search() {
+    let term = this.refs.searchTerm.value.trim();
 
-var RESULTS = [
-  {
-    title: 'Berserk',
-    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
-  },
-  {
-    title: 'Bleach',
-    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
-  },
-  {
-    title: 'Gantz',
-    mirrors: ['GoodManga', 'OneManga', 'MangaFox']
-  }
-];
+    if (term === this.props.lastSearchTerm) {
+      return;
+    }
 
-let SearchFieldComponent = React.createClass({
-  performAction() {
-    this.props.action(this.refs.searchTerm.getDOMNode().value);
+    if (term.length) {
+      SearchAPI.search(term);
+    }
   },
 
-  searchKeyPress(e) {
+  handleKeyPress(e) {
     if (e.which === 13) {
-      this.performAction();
+      this.search();
     }
   },
 
   render() {
+    let placeholder = this.props.placeholder || 'Search mangas by name...';
+
     return (
       <div className='search-field'>
-        <input type='text' onKeyPress={this.searchKeyPress} className='search-input' ref='searchTerm' />
-        <button className='search-btn' onClick={this.performAction}><i className='zmdi zmdi-lg zmdi-search'></i></button>
+        <input type='text' placeholder={placeholder} onKeyPress={this.handleKeyPress} className='search-input' ref='searchTerm' />
+        <button title='Search' className='search-btn' onClick={this.search}><i className='zmdi zmdi-lg zmdi-search'></i></button>
       </div>
     );
   }
 });
 
-let SearchResultsComponent = React.createClass({
+let SearchResultsHeaders = React.createClass({
   render() {
-    let results = this.props.results;
+    let headers = ['Title', 'Sites'];
 
     return (
-      <table>
-        <thead>
-          {searchResultsHeaders}
-        </thead>
-        <tbody>
-          {results.map((result, i) => {
+      <tr>
+        {
+          headers.map((item, i) => {
+            let style = classnames({
+              'ta-left': i != headers.length - 1
+            });
+
             return (
-              <tr key={`manga-result-${i}`}>
-                <td>{result.title}</td>
-                <td>{result.mirrors.join(', ')}</td>
-              </tr>
+              <th className={style} key={i}>{item}</th>
             );
-          })}
-        </tbody>
-        {results.length > 50 && (
-          <tfoot>
-            {searchResultsHeaders}
-          </tfoot>
-        )}
-      </table>
+          })
+        }
+      </tr>
     );
   }
 });
 
-let EmptyResultSearchComponent = React.createClass({
+let EmptyResultSearch = React.createClass({
   render() {
     return (
-      <strong>No manga contains the search term '{this.props.searchTerm}'</strong>
+      <strong>No manga contains the search term '{this.props.term}'</strong>
     );
   }
 });
+
+let SitesList = React.createClass({
+  render() {
+    let {title, sites} = this.props;
+    let siteNames = Object.keys(sites);
+
+    let sitesIcons = siteNames.map(siteName => {
+      let siteData = sites[siteName];
+
+      return (
+        <a key={title} href={siteData.url} target='_blank' title={`Read '${title}' from ${siteName}`}>
+          <img src={siteData.icon} alt={siteName} />
+        </a>
+      );
+    });
+
+    return (
+      <span>{sitesIcons}</span>
+    );
+  }
+});
+
+let SearchInfo = React.createClass({
+  render() {
+    return (
+      <div className='search-info'>
+        {this.props.resultsLength} mangas were found for {`'${this.props.term}'`}
+      </div>
+    );
+  }
+});
+
+let SearchResults = React.createClass({
+  render() {
+    let {results, term, done} = this.props;
+
+    if (!results.length) {
+      if (term && done) {
+        return <EmptyResultSearch term={term} />;
+      }
+
+      return null;
+    }
+
+    let resultRows = results.map((result, i) => {
+      return (
+        <tr key={i}>
+          <td>{result.title}</td>
+          <td className='search-results-site-list'>
+            <SitesList title={result.title} sites={result.sites} />
+          </td>
+        </tr>
+      );
+    });
+
+    return (
+      <div className='search-results'>
+        <SearchInfo resultsLength={results.length} term={term} />
+        <table>
+          <thead>
+            <SearchResultsHeaders />
+          </thead>
+          <tbody>
+            {resultRows}
+          </tbody>
+          {results.length > 50 && (
+            <tfoot>
+              <SearchResultsHeaders />
+            </tfoot>
+          )}
+        </table>
+      </div>
+    );
+  }
+});
+
+function getStateFromStores() {
+  return {
+    results: SearchStore.getSearchResults(),
+    term: SearchStore.getLastSearchTerm(),
+    waitingForSearch: SearchStore.isWaitingForSearch()
+  };
+}
 
 let SearchPage = React.createClass({
   getInitialState() {
-    return {
-      searchTerm: '',
-      results: []
-    };
+    return getStateFromStores();
   },
 
-  search (term) {
-    if (term.length) {
-      console.log(term);
-    }
+  componentDidMount() {
+    SearchStore.addChangeListener(this._onChange);
   },
 
-  render () {
+  componentWillUnmount() {
+    SearchStore.removeChangeListener(this._onChange);
+  },
+
+  _onChange() {
+    this.setState(getStateFromStores());
+  },
+
+  render() {
+    let {results, term, waitingForSearch} = this.state;
+
     return (
       <div>
         <h2>Search mangas</h2>
-
-        <SearchFieldComponent action={this.search} />
-
-        {() => {
-          if (this.state.results.length) {
-            return <SearchResultsComponent results={this.state.results} />;
-          }
-          else if (this.state.searchTerm !== '') {
-            return <EmptyResultSearchComponent searchTerm={this.state.searchTerm} />;
-          }
-        }}
+        <SearchField lastSearchTerm={term} />
+        <LoadingIcon text={`Searching for '${term}'...`} visible={waitingForSearch} />
+        <SearchResults results={results} term={term} done={!waitingForSearch} />
       </div>
     );
   }
 });
 
 module.exports = SearchPage;
-
-// MR.Router.register('search', () => {
-//   MR.renderPage(<SearchPage />);
-// });
