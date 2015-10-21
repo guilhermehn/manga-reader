@@ -30,8 +30,6 @@ let MangaFox = {
 
       if (nextPageLink.length) {
         // MangaFox has a limited searchs
-        console.log('Will load', `${this.url}${nextPageLink.attr('href')}`);
-
         setTimeout(() => {
           this.search(search, done, partialResult, `${this.url}${nextPageLink.attr('href').substring(1)}`);
         }, 6000);
