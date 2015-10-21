@@ -7,24 +7,37 @@ let MangaFox = {
   icon: 'http://mangafox.me/favicon.ico',
   languages: 'en',
 
-  search(search, done) {
-    let urlManga = this.url + 'search.php?name=' + search + '&advopts=1';
+  search(search, done, accumulator, nextUrl) {
+    let urlManga = nextUrl ? nextUrl : `${this.url}search.php?name=${search}&advopts=1`;
 
     parserUtils.getPage(urlManga, (page, body) => {
       if (body.indexOf('No Manga Series') !== -1) {
         done([]);
+        return;
+      }
+
+      let result = page.find('#listing tr td:first-child a').map((i, el) => {
+        let $el = $(el);
+
+        return {
+          title: $el.html(),
+          url: $el.attr('href')
+        };
+      }).get();
+
+      let partialResult = Array.isArray(accumulator) ? accumulator.concat(result) : result;
+      let nextPageLink = page.find('#nav li:last-child a');
+
+      if (nextPageLink.length) {
+        // MangaFox has a limited searchs
+        console.log('Will load', `${this.url}${nextPageLink.attr('href')}`);
+
+        setTimeout(() => {
+          this.search(search, done, partialResult, `${this.url}${nextPageLink.attr('href').substring(1)}`);
+        }, 6000);
       }
       else {
-        let result = page.find('#listing tr td:first-child a').map( (i, el) => {
-          let $el = $(el);
-
-          return {
-            title: $el.html(),
-            url: $el.attr('href')
-          };
-        }).get();
-
-        done(result);
+        done(partialResult);
       }
     });
   },

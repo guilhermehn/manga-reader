@@ -22,14 +22,26 @@ input.search-input
     animation open-animation 0.5s ease
 
   th, td
-    padding 10px 0
+    padding 10px 5px
     border-bottom 1px solid #ccc
 
   tr:hover
-    background darken(base-bg-color, 5%)
+    td
+      background darken(base-bg-color, 5%)
 
 .search-results-site-list
-  text-align center
+  text-align right
+
+  a
+    display inline-block
+    margin-right 5px
+
+    &:last-child
+      margin-right 0
+
+  img
+    width 16px
+    height 16px
 
 .search-info
   margin-bottom 20px

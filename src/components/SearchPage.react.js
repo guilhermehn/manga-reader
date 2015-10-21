@@ -3,6 +3,7 @@ let classnames = require('classnames');
 let SearchAPI = require('../apis/SearchAPI');
 let SearchStore = require('../stores/SearchStore');
 let LoadingIcon = require('./LoadingIcon.react');
+let {getParserIcon} = require('../apis/parsers');
 
 let SearchField = React.createClass({
   search() {
@@ -37,21 +38,10 @@ let SearchField = React.createClass({
 
 let SearchResultsHeaders = React.createClass({
   render() {
-    let headers = ['Title', 'Sites'];
-
     return (
       <tr>
-        {
-          headers.map((item, i) => {
-            let style = classnames({
-              'ta-left': i != headers.length - 1
-            });
-
-            return (
-              <th className={style} key={i}>{item}</th>
-            );
-          })
-        }
+        <th className='ta-left'>Title</th>
+        <th className='ta-right'>Sites</th>
       </tr>
     );
   }
@@ -67,21 +57,18 @@ let EmptyResultSearch = React.createClass({
 
 let SitesList = React.createClass({
   render() {
-    let {title, sites} = this.props;
-    let siteNames = Object.keys(sites);
+    let {sites} = this.props;
 
-    let sitesIcons = siteNames.map(siteName => {
-      let siteData = sites[siteName];
-
+    let sitesIcons = sites.map((item, i) => {
       return (
-        <a key={title} href={siteData.url} target='_blank' title={`Read '${title}' from ${siteName}`}>
-          <img src={siteData.icon} alt={siteName} />
+        <a key={i} href={item.url} target='_blank' title={`Read '${item.title}' from ${item.site}`}>
+          <img src={getParserIcon(item.site)} alt={item.site} />
         </a>
       );
     });
 
     return (
-      <span>{sitesIcons}</span>
+      <span className='ta-right'>{sitesIcons}</span>
     );
   }
 });
