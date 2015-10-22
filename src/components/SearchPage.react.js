@@ -1,15 +1,46 @@
 let React = require('react');
-let classnames = require('classnames');
 let SearchAPI = require('../apis/SearchAPI');
 let SearchStore = require('../stores/SearchStore');
 let LoadingIcon = require('./LoadingIcon.react');
 let {getParserIcon} = require('../apis/parsers');
+
+let SearchWarning = React.createClass({
+  continue() {
+    SearchAPI.search(this.props.term);
+    SearchAPI.hideSearchWarning();
+  },
+
+  cancel() {
+    SearchAPI.hideSearchWarning();
+  },
+
+  render() {
+    if (!this.props.visible) {
+      return null;
+    }
+
+    return (
+      <div className='notice open-animation'>
+        <h3><i className='zmdi zmdi-alert-triangle'></i> Searching for less than 4 letters will be slow.</h3>
+        <p>Do you really want to continue?</p>
+        <button type='button' className='btn-confirm' onClick={this.continue}>Continue</button>
+        <button type='button' onClick={this.cancel}>Cancel</button>
+      </div>
+    );
+  }
+});
 
 let SearchField = React.createClass({
   search() {
     let term = this.refs.searchTerm.value.trim();
 
     if (term === this.props.lastSearchTerm) {
+      return;
+    }
+
+    if (term.length < 4) {
+      SearchAPI.addSearchTermToHistory(term, true);
+      SearchAPI.showSearchWarning();
       return;
     }
 
@@ -131,7 +162,8 @@ function getStateFromStores() {
   return {
     results: SearchStore.getSearchResults(),
     term: SearchStore.getLastSearchTerm(),
-    waitingForSearch: SearchStore.isWaitingForSearch()
+    waitingForSearch: SearchStore.isWaitingForSearch(),
+    showSearchWarning: SearchStore.shouldShowSearchWarning()
   };
 }
 
@@ -153,12 +185,18 @@ let SearchPage = React.createClass({
   },
 
   render() {
-    let {results, term, waitingForSearch} = this.state;
+    let {
+      results,
+      term,
+      waitingForSearch,
+      showSearchWarning
+    } = this.state;
 
     return (
       <div>
         <h2>Search mangas</h2>
         <SearchField lastSearchTerm={term} />
+        <SearchWarning visible={showSearchWarning} term={term} />
         <LoadingIcon text={`Searching for '${term}'...`} visible={waitingForSearch} />
         <SearchResults results={results} term={term} done={!waitingForSearch} />
       </div>

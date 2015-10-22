@@ -8,6 +8,18 @@ let SearchAPI = {
     parsers.search(term, (results) => {
       SearchActionsCreators.receiveSearchResults(results);
     });
+  },
+
+  addSearchTermToHistory(term) {
+    SearchActionsCreators.addSearchTermToHistory(term);
+  },
+
+  showSearchWarning() {
+    SearchActionsCreators.showSearchWarning();
+  },
+
+  hideSearchWarning() {
+    SearchActionsCreators.hideSearchWarning();
   }
 };
 

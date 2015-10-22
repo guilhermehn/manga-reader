@@ -9,6 +9,7 @@ let _searchHistory = [];
 let _term;
 let _waitingForSearch = false;
 let _results = [];
+let _searchWarningVisible = false;
 
 let SearchStore = Object.assign({}, EventEmitter.prototype, {
   emitChange() {
@@ -39,6 +40,30 @@ let SearchStore = Object.assign({}, EventEmitter.prototype, {
     return _waitingForSearch;
   },
 
+  addSearchTermToHistory(term, dontEmit) {
+    if (_searchHistory.indexOf(term) < 0) {
+      _searchHistory.push(term);
+
+      if (!dontEmit) {
+        this.emitChange();
+      }
+    }
+  },
+
+  shouldShowSearchWarning() {
+    return _searchWarningVisible;
+  },
+
+  showSearchWarning() {
+    _searchWarningVisible = true;
+    this.emitChange();
+  },
+
+  hideSearchWarning() {
+    _searchWarningVisible = false;
+    this.emitChange();
+  },
+
   getLastSearchTerm() {
     return _term;
   },
@@ -56,6 +81,18 @@ SearchStore.dispatchToken = AppDispatcher.register((action) => {
 
   case ACTION_TYPES.DID_SENT_SEARCH:
     SearchStore.didSentSearch(action.term);
+    break;
+
+  case ACTION_TYPES.ADD_TERM_TO_HISTORY:
+    SearchStore.addSearchTermToHistory(action.term);
+    break;
+
+  case ACTION_TYPES.SHOW_SEARCH_WARNING:
+    SearchStore.showSearchWarning();
+    break;
+
+  case ACTION_TYPES.HIDE_SEARCH_WARNING:
+    SearchStore.hideSearchWarning();
     break;
 
   default:

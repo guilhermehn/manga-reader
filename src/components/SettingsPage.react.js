@@ -65,7 +65,7 @@ let loadUserSettingsMixin = {
 let MigrationNotice = React.createClass({
   render() {
     return (
-      <div className='migration-notice'>
+      <div className='notice'>
         <p><strong>'All Mangas Reader' data was found. Import to the new format?</strong></p>
         <button type='button' className='btn-confirm'>Import</button>
         <button type='button' onClick={dismissMigration}>No</button>
