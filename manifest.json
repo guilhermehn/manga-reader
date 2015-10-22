@@ -1,68 +1,68 @@
 ﻿{
-  "name" : "Manga Reader",
-  "version" : "1.5.7",
-  "manifest_version" : 2,
-  "description" : "__MSG_description__",
-  "default_locale" : "en",
-  "icons" : {
-    "16" : "img/icon-32.png",
-    "32" : "img/icon-32.png",
-    "128" : "img/icon-32.png"
+  "name": "Manga Reader",
+  "version": "1.5.7",
+  "manifest_version": 2,
+  "description": "__MSG_description__",
+  "default_locale": "en",
+  "icons": {
+    "16": "legacy/img/icon-32.png",
+    "32": "legacy/img/icon-32.png",
+    "128": "legacy/img/icon-32.png"
   },
 
-  "browser_action" : {
-    "default_icon" : "img/amrlittle.png",
-    "default_title" : "AllMangasReader",
-    "default_popup" : "views/popup.html"
+  "browser_action": {
+    "default_icon": "legacy/img/amrlittle.png",
+    "default_title": "AllMangasReader",
+    "default_popup": "legacy/view/popup.html"
   },
 
-  // "background" : {
-  //   "persistent" : true,
-  //   "scripts" : [
+  // "background": {
+  //   "persistent": true,
+  //   "scripts": [
   //   ]
   // },
 
-  "content_scripts" : [
+  "content_scripts": [
     {
-      "matches" : [
+      "matches": [
         "http://*/*",
         "https://*/*"
       ],
-      "exclude_matches" : [
+      "exclude_matches": [
         "http://*.allmangasreader.com/*"
       ],
-      "css" : [
-        "css/back.css"
+      "css": [
+        "legacy/css/back.css"
       ],
-      "js" : [
-        "js/testPage.js"
+      "js": [
+        "legacy/js/testPage.js"
       ]
     },
     {
-      "matches" : [
+      "matches": [
         "http://*.allmangasreader.com/*"
       ],
-      "exclude_matches" : [
+      "exclude_matches": [
         "http://wiki.allmangasreader.com/*",
         "http://allmanagesreader.com/forum/*"
       ],
-      "css" : [
-        "css/backsite.css"
+      "css": [
+        "legacy/css/backsite.css"
       ],
-      "js" : [
-        "js/lib.js",
-        "js/backsite.js"
+      "js": [
+        "legacy/js/lib.js",
+        "legacy/js/backsite.js"
       ]
     }
   ],
 
-  "content_security_policy" : "script-src 'self' 'unsafe-eval' https://ssl10.ovh.net https://raw.github.com/ https://cdnjs.cloudflare.com/ https://necolas.github.io; object-src 'self'",
-  "homepage_url" : "http://www.allmangasreader.com/",
-  "key" : "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFE73kwUiPfxcBtTkkkboktSCXCrDxMWvYSO72IabK3Q9pqvkEcViyFcuj6mpztx55kYhwFT+ntasZZiNgzhxkjc9zEuHopyrg+/S2tgGa7ueZ+P8s3IMOeEWj9Mqw2qyvPoZ508Q6FwrGjU6rZAhBtS5dzhibkFxRQc9Yej2ppQIDAQAB",
-  "minimum_chrome_version" : "30.0",
-  "options_page" : "main.html#/settings",
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl10.ovh.net https://raw.github.com/ https://cdnjs.cloudflare.com/ https://necolas.github.io; object-src 'self'",
+  "homepage_url": "http://www.allmangasreader.com/",
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFE73kwUiPfxcBtTkkkboktSCXCrDxMWvYSO72IabK3Q9pqvkEcViyFcuj6mpztx55kYhwFT+ntasZZiNgzhxkjc9zEuHopyrg+/S2tgGa7ueZ+P8s3IMOeEWj9Mqw2qyvPoZ508Q6FwrGjU6rZAhBtS5dzhibkFxRQc9Yej2ppQIDAQAB",
+  "minimum_chrome_version": "30.0",
+  "options_page": "main.html#/settings",
 
-  "permissions" : [
+  "permissions": [
     "tabs",
     "https://*/*",
     "http://*/*",
@@ -75,30 +75,30 @@
     "bookmarks"
   ],
 
-  "update_url" : "http://allmangasreader.com/update/update.xml",
+  "update_url": "http://allmangasreader.com/update/update.xml",
 
-  "web_accessible_resources" : [
-    "img/icon-32.png",
-    "img/down.png",
-    "img/bookmark.png",
-    "img/down.png",
-    "img/read_stop.png",
-    "img/lefttoright.png",
-    "img/stop.gif",
-    "img/loading.gif",
-    "img/cancel.png",
-    "img/ontop.png",
-    "img/righttoleft.png",
-    "img/load16.gif",
-    "img/add.png",
-    "img/bookmarkred.png",
-    "img/warn.png",
-    "img/read_play.png",
-    "img/amrlittle.png",
-    "img/dev.png",
-    "img/ltload.gif",
-    "img/imgerror.png",
-    "img/load10.gif",
-    "img/find.png"
+  "web_accessible_resources": [
+    "legacy/img/icon-32.png",
+    "legacy/img/down.png",
+    "legacy/img/bookmark.png",
+    "legacy/img/down.png",
+    "legacy/img/read_stop.png",
+    "legacy/img/lefttoright.png",
+    "legacy/img/stop.gif",
+    "legacy/img/loading.gif",
+    "legacy/img/cancel.png",
+    "legacy/img/ontop.png",
+    "legacy/img/righttoleft.png",
+    "legacy/img/load16.gif",
+    "legacy/img/add.png",
+    "legacy/img/bookmarkred.png",
+    "legacy/img/warn.png",
+    "legacy/img/read_play.png",
+    "legacy/img/amrlittle.png",
+    "legacy/img/dev.png",
+    "legacy/img/ltload.gif",
+    "legacy/img/imgerror.png",
+    "legacy/img/load10.gif",
+    "legacy/img/find.png"
   ]
 }
