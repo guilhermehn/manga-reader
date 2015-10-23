@@ -1,10 +1,16 @@
 let React = require('react');
+let PropTypes = React.PropTypes;
 let SearchAPI = require('../apis/SearchAPI');
 let SearchStore = require('../stores/SearchStore');
 let LoadingIcon = require('./LoadingIcon.react');
 let {getParserIcon} = require('../apis/parsers');
 
 let SearchWarning = React.createClass({
+  propTypes: {
+    term: PropTypes.string,
+    visible: PropTypes.bool.isRequired
+  },
+
   continue() {
     SearchAPI.search(this.props.term);
     SearchAPI.hideSearchWarning();
@@ -114,28 +120,47 @@ let SearchInfo = React.createClass({
   }
 });
 
-let SearchResults = React.createClass({
+let SearchResultsRows = React.createClass({
   render() {
-    let {results, term, done} = this.props;
+    return (
+      <tbody>
+        {
+          this.props.results.map((result, i) => {
+            return (
+              <tr key={i}>
+                <td>{result.title}</td>
+                <td className='search-results-site-list'>
+                  <SitesList title={result.title} sites={result.sites} />
+                </td>
+              </tr>
+            );
+          })
+        }
+      </tbody>
+    );
+  }
+});
+
+let SearchResultsTable = React.createClass({
+  render() {
+    let {
+      results,
+      term,
+      waitingForSearch,
+      showSearchWarning
+    } = this.props;
+
+    if (showSearchWarning) {
+      return null;
+    }
 
     if (!results.length) {
-      if (term && done) {
+      if (term && !waitingForSearch) {
         return <EmptyResultSearch term={term} />;
       }
 
       return null;
     }
-
-    let resultRows = results.map((result, i) => {
-      return (
-        <tr key={i}>
-          <td>{result.title}</td>
-          <td className='search-results-site-list'>
-            <SitesList title={result.title} sites={result.sites} />
-          </td>
-        </tr>
-      );
-    });
 
     return (
       <div className='search-results'>
@@ -144,9 +169,7 @@ let SearchResults = React.createClass({
           <thead>
             <SearchResultsHeaders />
           </thead>
-          <tbody>
-            {resultRows}
-          </tbody>
+          <SearchResultsRows results={results} />
           {results.length > 50 && (
             <tfoot>
               <SearchResultsHeaders />
@@ -186,7 +209,6 @@ let SearchPage = React.createClass({
 
   render() {
     let {
-      results,
       term,
       waitingForSearch,
       showSearchWarning
@@ -198,7 +220,7 @@ let SearchPage = React.createClass({
         <SearchField lastSearchTerm={term} />
         <SearchWarning visible={showSearchWarning} term={term} />
         <LoadingIcon text={`Searching for '${term}'...`} visible={waitingForSearch} />
-        <SearchResults results={results} term={term} done={!waitingForSearch} />
+        <SearchResultsTable {...this.state} />
       </div>
     );
   }
