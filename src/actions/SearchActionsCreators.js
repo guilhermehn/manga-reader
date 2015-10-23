@@ -19,10 +19,11 @@ module.exports = {
     });
   },
 
-  addSearchTermToHistory(term) {
+  addSearchTermToHistory(term, dontEmit) {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.ADD_TERM_TO_HISTORY,
-      results: term
+      term: term,
+      dontEmit: !!dontEmit
     });
   },
 

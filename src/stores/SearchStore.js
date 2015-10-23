@@ -6,7 +6,6 @@ let {
 } = require('../constants/SearchConstants');
 
 let _searchHistory = [];
-let _term;
 let _waitingForSearch = false;
 let _results = [];
 let _searchWarningVisible = false;
@@ -24,48 +23,16 @@ let SearchStore = Object.assign({}, EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, callback);
   },
 
-  didSentSearch(term) {
-    _waitingForSearch = true;
-    _term = term;
-    this.emitChange();
-  },
-
-  receiveSearchResults(results) {
-    _results = results;
-    _waitingForSearch = false;
-    this.emitChange();
-  },
-
   isWaitingForSearch() {
     return _waitingForSearch;
-  },
-
-  addSearchTermToHistory(term, dontEmit) {
-    if (_searchHistory.indexOf(term) < 0) {
-      _searchHistory.push(term);
-
-      if (!dontEmit) {
-        this.emitChange();
-      }
-    }
   },
 
   shouldShowSearchWarning() {
     return _searchWarningVisible;
   },
 
-  showSearchWarning() {
-    _searchWarningVisible = true;
-    this.emitChange();
-  },
-
-  hideSearchWarning() {
-    _searchWarningVisible = false;
-    this.emitChange();
-  },
-
   getLastSearchTerm() {
-    return _term;
+    return _searchHistory[_searchHistory.length - 1];
   },
 
   getSearchResults() {
@@ -73,26 +40,56 @@ let SearchStore = Object.assign({}, EventEmitter.prototype, {
   }
 });
 
+function receiveSearchResults(results) {
+  _results = results;
+  _waitingForSearch = false;
+  SearchStore.emitChange();
+}
+
+function addSearchTermToHistory(term, dontEmit) {
+  _searchHistory.push(term);
+
+  if (!dontEmit) {
+    SearchStore.emitChange();
+  }
+}
+
+function didSentSearch(term) {
+  _waitingForSearch = true;
+  _searchHistory.push(term);
+  SearchStore.emitChange();
+}
+
+function showSearchWarning() {
+  _searchWarningVisible = true;
+  SearchStore.emitChange();
+}
+
+function hideSearchWarning() {
+  _searchWarningVisible = false;
+  SearchStore.emitChange();
+}
+
 SearchStore.dispatchToken = AppDispatcher.register((action) => {
   switch(action.type) {
   case ACTION_TYPES.RECEIVE_SEARCH_RESULTS:
-    SearchStore.receiveSearchResults(action.results);
+    receiveSearchResults(action.results);
     break;
 
   case ACTION_TYPES.DID_SENT_SEARCH:
-    SearchStore.didSentSearch(action.term);
+    didSentSearch(action.term);
     break;
 
   case ACTION_TYPES.ADD_TERM_TO_HISTORY:
-    SearchStore.addSearchTermToHistory(action.term);
+    addSearchTermToHistory(action.term, action.dontEmit);
     break;
 
   case ACTION_TYPES.SHOW_SEARCH_WARNING:
-    SearchStore.showSearchWarning();
+    showSearchWarning();
     break;
 
   case ACTION_TYPES.HIDE_SEARCH_WARNING:
-    SearchStore.hideSearchWarning();
+    hideSearchWarning();
     break;
 
   default:

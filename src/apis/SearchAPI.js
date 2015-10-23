@@ -10,8 +10,8 @@ let SearchAPI = {
     });
   },
 
-  addSearchTermToHistory(term) {
-    SearchActionsCreators.addSearchTermToHistory(term);
+  addSearchTermToHistory(term, dontEmit) {
+    SearchActionsCreators.addSearchTermToHistory(term, dontEmit);
   },
 
   showSearchWarning() {
