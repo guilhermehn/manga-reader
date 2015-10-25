@@ -1,17 +1,20 @@
-let $ = require('jquery');
+let request = require('superagent');
+let cheerio = require('cheerio');
+
+const SCRIPT_TAG_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/g;
+
+function stripScriptTags(body) {
+  return body.replace(SCRIPT_TAG_REGEX, '');
+}
 
 let parserUtils = {
   getPage(url, done) {
-    $.ajax({
-      url : url,
-      beforeSend(xhr) {
-        xhr.setRequestHeader('Cache-Control', 'no-cache');
-        xhr.setRequestHeader('Pragma', 'no-cache');
-      },
-      success(response) {
-        done($(response), response);
-      }
-    });
+    request
+      .get(url)
+      .end((err, res) => {
+        let page = cheerio(res.text);
+        done(page, res.text);
+      });
   }
 };
 

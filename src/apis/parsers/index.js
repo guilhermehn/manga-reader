@@ -1,11 +1,14 @@
 let async = require('async');
 
-let parsers = {
-  MangaFox: require('./MangaFox'),
-  GoodManga: require('./GoodManga')
-};
+let parsers = [
+  require('./MangaFox'),
+  require('./GoodManga')
+];
 
-let parserList = Object.keys(parsers);
+let parsersByName = parsers.reduce((result, parser) => {
+  result[parser.name] = parser;
+  return result;
+}, {});
 
 function normalizeName(name) {
   return name.toLowerCase().replace(/[\W]/g, '');
@@ -15,15 +18,15 @@ function mergeSearchResults(resultCollection) {
   let siteByNormalizedMangaName = {};
 
   resultCollection.forEach(parserResult => {
-    parserResult.results.forEach((mangaData) => {
-      let name = normalizeName(mangaData.title);
-      mangaData.site = parserResult.parserName;
+    parserResult.results.forEach((source) => {
+      let name = normalizeName(source.title);
+      source.name = parserResult.parserName;
 
       if (siteByNormalizedMangaName.hasOwnProperty(name)) {
-        siteByNormalizedMangaName[name].push(mangaData);
+        siteByNormalizedMangaName[name].push(source);
       }
       else {
-        siteByNormalizedMangaName[name]= [mangaData];
+        siteByNormalizedMangaName[name] = [source];
       }
     });
   });
@@ -36,15 +39,13 @@ function mergeSearchResults(resultCollection) {
 
       return {
         title: results[0].title,
-        sites: results
+        sources: results
       };
     });
 }
 
 function search(term, done) {
-  let tasks = parserList.map((parserName) => {
-    let parser = parsers[parserName];
-
+  let tasks = parsers.map((parser) => {
     function parseTask(done) {
       parser.search(term, (results) => {
         done(null, {
@@ -63,13 +64,10 @@ function search(term, done) {
 }
 
 function getParserIcon(name) {
-  let parserName = parserList.filter(parserName => {
-    return parsers[parserName].name === name;
-  });
-
-  return parsers[parserName].icon;
+  return parsersByName[name].icon;
 }
 
 module.exports = parsers;
+module.exports.byName = parsersByName;
 module.exports.search = search;
 module.exports.getParserIcon = getParserIcon;

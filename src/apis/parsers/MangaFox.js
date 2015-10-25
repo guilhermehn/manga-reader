@@ -1,5 +1,5 @@
-let $ = require('jquery');
-let parserUtils = require('./parserUtils');
+let $ = require('cheerio');
+let {getPage} = require('./parserUtils');
 
 let MangaFox = {
   url: 'http://mangafox.me/',
@@ -10,7 +10,7 @@ let MangaFox = {
   search(search, done, accumulator, nextUrl) {
     let urlManga = nextUrl ? nextUrl : `${this.url}search.php?name=${search}&advopts=1`;
 
-    parserUtils.getPage(urlManga, (page, body) => {
+    getPage(urlManga, (page, body) => {
       if (body.indexOf('No Manga Series') !== -1) {
         done([]);
         return;
@@ -43,7 +43,7 @@ let MangaFox = {
   getListOfChapters(manga, done) {
     let url = manga.url + '?no_warning=1';
 
-    parserUtils.getPage(url, (page) => {
+    getPage(url, (page) => {
       let res = page.find('ul.chlist h3, ul.chlist h4').map((i, el) => {
         let $el = $(el);
         let chapterLink = $el.find('a');
@@ -73,7 +73,7 @@ let MangaFox = {
   },
 
   getChapterPages(chapter, done) {
-    parserUtils.getPage(chapter.url + '1.html', (page) => {
+    getPage(chapter.url + '1.html', (page) => {
       let firstPageUrl = page.find('#viewer > a img').attr('src');
       let pagesList = page
         .find('select.m')
@@ -92,6 +92,20 @@ let MangaFox = {
         });
 
       done(pagesList);
+    });
+  },
+
+  getMangaInfo(manga, done) {
+    getPage(manga.url, (page) => {
+      let infoTable = page.find('#title > table tr:nth-child(2)');
+
+      done({
+        releaseDate: infoTable.find('> td:nth-child(1) a').text().trim(),
+        authors: infoTable.find('> td:nth-child(2)').text().split(/,/).filter(name => !/\[\w+\]/.test(name)),
+        artists: infoTable.find('> td:nth-child(3)').text().split(/,/),
+        genres: infoTable.find('> td:nth-child(4)').text().toLowerCase().split(/,/),
+        status: page.find('#series_info > div:nth-child(5) > span').text().split(/,/)[0].trim()
+      });
     });
   }
 };

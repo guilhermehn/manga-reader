@@ -3,16 +3,11 @@ let PropTypes = React.PropTypes;
 
 let LoadingIcon = React.createClass({
   propTypes: {
-    visible: PropTypes.bool.isRequired,
     text: PropTypes.string
   },
 
   render() {
-    let {visible, text} = this.props;
-
-    if (!visible) {
-      return null;
-    }
+    let {text} = this.props;
 
     return (
       <div className='loading-icon-holder'>

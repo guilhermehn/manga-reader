@@ -9,11 +9,23 @@ gulp.task('css', function() {
     .pipe(plugins.autoprefixer({
       browsers: ['last 5 Chrome versions']
     }))
-    .pipe(gulp.dest('./build/'));
+    .pipe(gulp.dest('./build/'))
+    .pipe(plugins.livereload());
 });
 
 gulp.task('css:watch', function() {
   gulp.watch('./styl/*.styl', ['css']);
+});
+
+gulp.task('watch-build', function() {
+  return gulp.src('./build/*')
+    .pipe(plugins.livereload());
+});
+
+gulp.task('watch', function() {
+  plugins.livereload.listen();
+  gulp.watch('./build/*', ['watch-build']);
+  gulp.start('css:watch');
 });
 
 gulp.task('default', ['css']);

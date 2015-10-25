@@ -1,5 +1,5 @@
-let $ = require('jquery');
-let parserUtils = require('./parserUtils');
+let $ = require('cheerio');
+let {getPage} = require('./parserUtils');
 
 let GoodManga = {
   url: 'http://w2.goodmanga.net/',
@@ -8,7 +8,7 @@ let GoodManga = {
   languages : 'en',
 
   search(search, done) {
-    parserUtils.getPage('http://www.goodmanga.net/manga-search?key=' + search + '&search=Go', (page, body) => {
+    getPage('http://www.goodmanga.net/manga-search?key=' + search + '&search=Go', (page, body) => {
       let result = page
           .find('.series_list .right_col h3 a:first-child')
           .map((i, el) => {
@@ -21,7 +21,7 @@ let GoodManga = {
           })
           .get();
 
-        done(result);
+      done(result);
     });
   },
 
@@ -97,6 +97,37 @@ let GoodManga = {
         let src = $(div).find('#manga_viewer img').attr('src');
         $(image).attr('src', src);
       }
+    });
+  },
+
+  getMangaInfo(source, done) {
+    getPage(source.url, (page) => {
+      let base = page.find('#series_details');
+
+      let staff = base.find('> div:nth-child(2)').eq(0).text().trim().split(/:\s/)[1].split(/,\s/);
+      let authors = [];
+      let artists = [];
+
+      staff.forEach(member => {
+        if (member.indexOf('art') > 0) {
+          artists.push(member.replace(' (art)', ''));
+        }
+        else {
+          authors.push(member);
+        }
+      });
+
+      let status = base.find('> div:nth-child(4)').text().trim().split(/:\s/)[1];
+      let releaseDate = base.find('> div:nth-child(5)').text().trim().split(/:\s/)[1];
+      let genres = base.find('> div:nth-child(7)').text().trim().toLowerCase().split(/,\s/);
+
+      done({
+        authors: authors,
+        artists: artists.length ? artists : authors,
+        status: status,
+        genres: genres,
+        releaseDate: releaseDate
+      });
     });
   }
 };
