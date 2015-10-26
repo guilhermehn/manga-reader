@@ -6,7 +6,7 @@ let SearchResultsSourceList = React.createClass({
     let {title, sources} = this.props;
 
     let sourcesIcons = sources.map((source, i) => {
-      let altText = `Read '${title}' from ${source.title}`;
+      let altText = `Read '${title}' from ${source.name}`;
 
       return (
         <a key={i} href={source.url} target='_blank' title={altText}>
