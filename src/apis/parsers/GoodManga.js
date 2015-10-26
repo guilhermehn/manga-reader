@@ -119,7 +119,7 @@ let GoodManga = {
 
       let status = base.find('> div:nth-child(4)').text().trim().split(/:\s/)[1];
       let releaseDate = base.find('> div:nth-child(5)').text().trim().split(/:\s/)[1];
-      let genres = base.find('> div:nth-child(7)').text().trim().toLowerCase().split(/,\s/);
+      let genres = base.find('> div:nth-child(7)').text().trim().toLowerCase().split(/:\s/)[1].split(/,\s/);
 
       done({
         authors: authors,

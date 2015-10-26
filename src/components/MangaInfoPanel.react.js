@@ -45,11 +45,30 @@ let MangaInfoPanel = React.createClass({
 
     return (
       <div className='info-panel'>
-        Release date: {mangaInfo.releaseDate}<br />
-        Author{mangaInfo.authors.length > 1 && 's'}: {mangaInfo.authors.join(separator)}<br />
-        Artist{mangaInfo.artists.length > 1 && 's'}: {mangaInfo.artists.join(separator)}<br />
-        Genre{mangaInfo.genres.length > 1 && 's'}: {mangaInfo.genres.join(separator)}<br />
-        Status: {mangaInfo.status}<br />
+        <table>
+          <tbody>
+            <tr>
+              <td>Release date:</td>
+              <td>{mangaInfo.releaseDate}</td>
+            </tr>
+            <tr>
+              <td>Author{mangaInfo.authors.length > 1 && 's'}:</td>
+              <td>{mangaInfo.authors.join(separator)}</td>
+            </tr>
+            <tr>
+              <td>Artist{mangaInfo.artists.length > 1 && 's'}:</td>
+              <td>{mangaInfo.artists.join(separator)}</td>
+            </tr>
+            <tr>
+              <td>Genre{mangaInfo.genres.length > 1 && 's'}:</td>
+              <td>{mangaInfo.genres.join(separator)}</td>
+            </tr>
+            <tr>
+              <td>Status:</td>
+              <td>{mangaInfo.status}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }

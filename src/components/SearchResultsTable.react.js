@@ -44,7 +44,7 @@ let SearchResultsTable = React.createClass({
     return (
       <div className='search-results'>
         <SearchInfo resultsLength={results.length} term={term} />
-        <table>
+        <table className='search-results-table'>
           <thead>
             <SearchResultsHeaders />
           </thead>

@@ -16,7 +16,7 @@ let SearchResultsRow = React.createClass({
     return (
       <tr onClick={handleClick}>
         <td>
-          {infoExpanded ? <h3>{manga.title}</h3> : manga.title}
+          {infoExpanded ? <h3 className='info-panel-title'>{manga.title}</h3> : manga.title}
           {infoExpanded && <MangaInfoPanel manga={manga} />}
         </td>
         <td className='search-results-site-list'>
