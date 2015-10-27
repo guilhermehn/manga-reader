@@ -1,5 +1,7 @@
 let $ = require('cheerio');
 let {getPage} = require('./parserUtils');
+let Chapter = require('../../Chapter');
+let moment = require('moment');
 
 let MangaFox = {
   url: 'http://mangafox.me/',
@@ -98,13 +100,27 @@ let MangaFox = {
   getMangaInfo(manga, done) {
     getPage(manga.url, (page) => {
       let infoTable = page.find('#title > table tr:nth-child(2)');
+      let lastVolume = page.find('.volume').contents(':not(span)').text().trim();
+      let chapterList = page.find('.chlist').eq(0);
+      let lastChapterEl = chapterList.find('li:first-child');
+      let lastChapterLinkEl = lastChapterEl.find('h3 a');
+      let lastChapterTitleEl = lastChapterLinkEl.next('.title');
+      let lastChapterDateString = lastChapterEl.find('.date').text().trim();
+      let lastChapterDate = lastChapterDateString === 'Today' ? moment(new Date()) : moment(lastChapterDateString, 'MMM DD, YYYY');
 
       done({
         releaseDate: infoTable.find('> td:nth-child(1) a').text().trim(),
         authors: infoTable.find('> td:nth-child(2)').text().split(/,/).filter(name => !/\[\w+\]/.test(name)),
         artists: infoTable.find('> td:nth-child(3)').text().split(/,/),
         genres: infoTable.find('> td:nth-child(4)').text().toLowerCase().split(/,/),
-        status: page.find('#series_info > div:nth-child(5) > span').text().split(/,/)[0].trim()
+        status: page.find('#series_info > div:nth-child(5) > span').text().split(/,/)[0].trim(),
+        lastChapter: new Chapter({
+          number: parseInt(/\d+$/.exec(lastChapterLinkEl.text())),
+          volume: /\s\d+$/.test(lastVolume) ? parseInt(lastVolume.split(/\s+/)[1]) : null,
+          title: lastChapterTitleEl.length ? lastChapterTitleEl.text().trim() : null,
+          url: lastChapterLinkEl.attr('href'),
+          date: lastChapterDate.toString()
+        })
       });
     });
   }

@@ -42,6 +42,7 @@
     "jquery": "^2.1.4",
     "keymirror": "^0.1.1",
     "lodash": "^3.10.1",
+    "moment": "^2.10.6",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
     "superagent": "^1.4.0"

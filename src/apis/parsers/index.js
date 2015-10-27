@@ -67,7 +67,14 @@ function getParserIcon(name) {
   return parsersByName[name].icon;
 }
 
+function getListOfChapters(manga, done) {
+  manga.sources.forEach(source => {
+    parsersByName[source.name].getListOfChapters(source, done);
+  });
+}
+
 module.exports = parsers;
 module.exports.byName = parsersByName;
 module.exports.search = search;
 module.exports.getParserIcon = getParserIcon;
+module.exports.getListOfChapters = getListOfChapters;

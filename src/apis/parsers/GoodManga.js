@@ -1,5 +1,7 @@
 let $ = require('cheerio');
 let {getPage} = require('./parserUtils');
+let Chapter = require('../../Chapter');
+let moment = require('moment');
 
 let GoodManga = {
   url: 'http://w2.goodmanga.net/',
@@ -100,6 +102,10 @@ let GoodManga = {
     });
   },
 
+  getListOfChapters(url, done) {
+
+  },
+
   getMangaInfo(source, done) {
     getPage(source.url, (page) => {
       let base = page.find('#series_details');
@@ -120,13 +126,22 @@ let GoodManga = {
       let status = base.find('> div:nth-child(4)').text().trim().split(/:\s/)[1];
       let releaseDate = base.find('> div:nth-child(5)').text().trim().split(/:\s/)[1];
       let genres = base.find('> div:nth-child(7)').text().trim().toLowerCase().split(/:\s/)[1].split(/,\s/);
+      let lastChapterEl = page.find('#chapters li:first-child a');
+      let lestChapterDate = lastChapterEl.next().text();
 
       done({
         authors: authors,
         artists: artists.length ? artists : authors,
         status: status,
         genres: genres,
-        releaseDate: releaseDate
+        releaseDate: releaseDate,
+        lastChapter: new Chapter({
+          number: parseInt(lastChapterEl.text().split(/^[\w\s]+Chapter\s/i)[1].trim()),
+          volume: null,
+          title: null,
+          url: lastChapterEl.attr('href'),
+          date: moment(lestChapterDate, 'MMM DD, YYYY').toString()
+        })
       });
     });
   }

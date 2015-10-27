@@ -3,6 +3,11 @@ let MangaAPI = require('../apis/MangaAPI');
 let MangaStore = require('../stores/MangaStore');
 let PropTypes = React.PropTypes;
 let LoadingIcon = require('./LoadingIcon.react');
+let moment = require('moment');
+
+function formatDate(dateString) {
+  return moment(new Date(dateString)).format('DD/MM/YYYY');
+}
 
 function getStateFromStores(manga) {
   return {
@@ -43,6 +48,17 @@ let MangaInfoPanel = React.createClass({
       );
     }
 
+    let ChapterCountRow = null;
+
+    if (mangaInfo.lastChapter) {
+      ChapterCountRow = (
+        <tr>
+          <td>Chapters:</td>
+          <td>{mangaInfo.lastChapter.number} {mangaInfo.lastChapter.date ? `(released in ${formatDate(mangaInfo.lastChapter.date)})` : ''}</td>
+        </tr>
+      );
+    }
+
     return (
       <div className='info-panel'>
         <table>
@@ -67,6 +83,7 @@ let MangaInfoPanel = React.createClass({
               <td>Status:</td>
               <td>{mangaInfo.status}</td>
             </tr>
+            {ChapterCountRow}
           </tbody>
         </table>
       </div>

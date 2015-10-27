@@ -17,6 +17,12 @@ let MangaAPI = {
     parser.getMangaInfo(source, (info) => {
       MangaActionsCreators.receiveMangaInfo(manga, info);
     });
+  },
+
+  getListOfChapters(manga) {
+    parsers.getListOfChapters(manga, (chapters) => {
+      console.log(chapters);
+    });
   }
 };
 
