@@ -40,9 +40,8 @@ let SearchPage = React.createClass({
 
     return (
       <div>
-        <h2>Search mangas</h2>
         <SearchField lastSearchTerm={term} />
-        <SearchWarning visible={showSearchWarning} term={term} />
+        {showSearchWarning && <SearchWarning term={term} />}
         {waitingForSearch && <LoadingIcon text={`Searching for '${term}'...`} />}
         <SearchResultsTable {...this.state} />
       </div>

@@ -8,7 +8,7 @@ let MenuItem = React.createClass({
     return (
       <li>
         <Link to={`/${route}`} className='menu-item' activeClassName='menu-item-active'>
-          <i className={`zmdi zmd-lg ${iconClassname}`}></i>{title}
+          <span><i className={`zmdi zmd-lg ${iconClassname}`}></i>{title}</span>
         </Link>
       </li>
     );

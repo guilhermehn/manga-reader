@@ -6,35 +6,37 @@
     font-size 0
 
   li
-    font-family menu-font-family
     display inline-block
-    height menu-height
-    line-height menu-height
-    text-align center
+    margin-right 5px
     font-size menu-font-size
-    cursor pointer
+    text-align center
     text-transform uppercase
+    font-family menu-font-family
+    cursor pointer
+
+    &:last-child
+      margin-right 0
 
 .menu-item
   display block
   padding menu-item-padding
+  border-radius 5px
   text-decoration none
   color menu-item-color
   transition all .1s ease-out
 
-  &:hover
-    color menu-item-color-hover
+  &:hover:not(.menu-item-active)
+    color color-secondary-1-lighter
+    background-color darken(menu-item-active-bg-color, 10%)
 
   i
     margin-right 5px
-    font-size menu-font-size + 3
     font-weight 400
 
-.menu-item-active
-  border-radius 5px
-  background-color menu-active-bg
-  color menu-active-color
-  cursor default
+  span
+    line-height menu-item-height
 
-  &:hover
-    color menu-active-color
+.menu-item-active
+  color color-secondary-1-lighter
+  background-color menu-item-active-bg-color
+  cursor default

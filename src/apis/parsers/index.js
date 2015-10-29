@@ -39,6 +39,7 @@ function mergeSearchResults(resultCollection) {
 
       return {
         title: results[0].title,
+        normalizedName: name,
         sources: results
       };
     });

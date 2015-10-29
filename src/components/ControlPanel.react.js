@@ -1,15 +1,14 @@
 let React = require('react'); // eslint-disable-line
-let Menu = require('./Menu.react');
-let Header = require('./Header.react');
-let {menuItems} = require('../constants/MenuConstants');
+let ControlPanelHeader = require('./ControlPanelHeader.react');
 
 let ControlPanel = React.createClass({
   render() {
     return (
-      <div>
-        <Header />
-        <Menu items={menuItems} />
-        {this.props.children}
+      <div className='control-panel'>
+        <ControlPanelHeader />
+        <div className='control-panel-content'>
+          {this.props.children}
+        </div>
       </div>
     );
   }

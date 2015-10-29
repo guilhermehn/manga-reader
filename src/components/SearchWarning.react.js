@@ -4,8 +4,7 @@ let SearchAPI = require('../apis/SearchAPI');
 
 let SearchWarning = React.createClass({
   propTypes: {
-    term: PropTypes.string,
-    visible: PropTypes.bool.isRequired
+    term: PropTypes.string
   },
 
   continue() {
@@ -18,10 +17,6 @@ let SearchWarning = React.createClass({
   },
 
   render() {
-    if (!this.props.visible) {
-      return null;
-    }
-
     return (
       <div className='notice open-animation'>
         <h3><i className='zmdi zmdi-alert-triangle'></i> Searching for less than 4 letters will be slow.</h3>

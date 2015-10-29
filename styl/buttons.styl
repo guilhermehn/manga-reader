@@ -1,3 +1,22 @@
+button,
+.btn
+  padding 10px 20px
+  margin-right 1em
+  border-radius 3px
+  color button-color
+  background-color button-bg-color
+  transition all 0.1s ease-out
+
+  &:last-child
+    margin-right 0
+
+  &:hover
+    background-color button-bg-color-hover
+
+a.btn
+  display inline-block
+  text-decoration none
+
 .btn-confirm
   background-color darken(base-active-color, 10)
 

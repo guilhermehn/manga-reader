@@ -5,15 +5,15 @@ base-font-size = 16px
 base-font-family = "lato", sans-serif
 base-width = 900px
 
-menu-height = 25px
 menu-font-family = "lato", sans-serif
 menu-font-size = 12px
 menu-padding = 20px 0
+menu-item-height = 30px
 menu-item-padding = 5px 15px
-menu-item-color = #70777b
+menu-item-color = color-secondary-1-light
 menu-item-color-hover = lighten(menu-item-color, 30)
-menu-active-bg = base-active-color
-menu-active-color = base-active-color-hover
+menu-item-active-bg-color = lighten(color-secondary-1-dark, 20%)
+menu-item-active-color = color-secondary-1-lighter
 
 header-color = base-active-color-hover
 
@@ -22,9 +22,16 @@ form-input-border-radius = 5px
 form-button-bg-color = form-input-shadow-color
 form-button-bg-color-hover = darken(form-button-bg-color, 50)
 
+button-color = #000
+button-bg-color = #efefef
+button-bg-color-hover = darken(button-bg-color, 10%)
+
 search-input-height = 50px
 search-input-font-size = 1.5em
 
+search-results-row-bg-color = lighten(color-secondary-1-lighter, 80%)
+search-results-border-color = #eee
+
 loading-icon-size = 25px
 loading-icon-speed = 1s
-loading-icon-color = header-color
+loading-icon-color = color-secondary-1-lighter

@@ -7,6 +7,7 @@ input.search-input
   height search-input-height
   font-size search-input-font-size
   border-radius form-input-border-radius 0 0 form-input-border-radius
+  outline none
 
 .search-btn
   font-size search-input-font-size
@@ -20,11 +21,11 @@ input.search-input
 
   th, td
     padding 10px 5px
-    border-bottom 1px solid #ccc
+    border-bottom 1px solid search-results-border-color
 
   tr:hover
     td
-      background darken(base-bg-color, 5%)
+      background search-results-row-bg-color
       cursor pointer
 
 .search-results-site-list
@@ -60,3 +61,10 @@ input.search-input
 
 .info-panel-toolbar
   margin-top 20px
+
+.info-panel-open-link
+  display inline-block
+  background color-primary
+  text-decoration none
+  padding 10px 5px
+  color color-secondary-1-lighter
