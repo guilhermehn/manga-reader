@@ -1,16 +1,22 @@
-'use strict';
-
 let React = require('react'); // eslint-disable-line
-let ReactDOM = require('react-dom');
-let Menu = require('./components/Menu.react');
-let Header = require('./components/Header.react');
-let Router = require('./Router');
+let {render} = require('react-dom');
+let {Router, Route} = require('react-router');
+let ControlPanel = require('./components/ControlPanel.react');
+let SearchPage = require('./components/SearchPage.react');
+let SettingsPage = require('./components/SettingsPage.react');
+let ReaderPage = require('./components/ReaderPage.react');
 let Storage = require('./Storage');
 // let Migration = require('./Migration');
 
 Storage.init();
-Router.init();
 // Migration.init();
 
-ReactDOM.render(<Header />, document.querySelector('header'));
-ReactDOM.render(<Menu />, document.querySelector('.menu'));
+render((
+  <Router>
+    <Route path='/' component={ControlPanel}>
+      <Route path='search' component={SearchPage} />
+      <Route path='settings' component={SettingsPage} />
+    </Route>
+    <Route path='/reader/:name' component={ReaderPage} />
+  </Router>
+), document.querySelector('#root'));

@@ -9,8 +9,7 @@ gulp.task('css', function() {
     .pipe(plugins.autoprefixer({
       browsers: ['last 5 Chrome versions']
     }))
-    .pipe(gulp.dest('./build/'))
-    .pipe(plugins.livereload());
+    .pipe(gulp.dest('./build/'));
 });
 
 gulp.task('css:watch', function() {

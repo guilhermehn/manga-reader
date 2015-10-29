@@ -1,63 +1,31 @@
-'use strict';
-
 let React = require('react');
-let classnames = require('classnames');
-let Router = require('../Router');
-let {
-  MENU_ITEMS
-} = require('../Constants');
+let {Link} = require('react-router');
 
-let MenuItemComponent = React.createClass({
-  handleClick(e) {
-    this.refs.link.click(e);
-  },
-
+let MenuItem = React.createClass({
   render() {
-    let {active, route, iconClassname, title} = this.props;
-    let url = active ? '#' : `#/${route}`;
-    let linkClassNames = classnames({
-      active: active
-    });
+    let {route, iconClassname, title} = this.props;
 
     return (
-      <li className={linkClassNames} onClick={this.handleClick}>
-        <a href={url} ref='link'><i className={`zmdi zmd-lg ${iconClassname}`}></i>{title}</a>
+      <li>
+        <Link to={`/${route}`} className='menu-item' activeClassName='menu-item-active'>
+          <i className={`zmdi zmd-lg ${iconClassname}`}></i>{title}
+        </Link>
       </li>
     );
   }
 });
 
-function getStateFromRouter() {
-  return {
-    actualRoute: Router.getActualRoute()
-  };
-}
-
-let MenuComponent = React.createClass({
-  getInitialState() {
-    return getStateFromRouter();
-  },
-
-  componentDidMount() {
-    Router.addRouteListener(this._onChange);
-  },
-
-  componentWillUnmount() {
-    Router.removeRouteListener(this._onChange);
-  },
-
-  _onChange() {
-    this.setState(getStateFromRouter());
-  },
-
+let Menu = React.createClass({
   render() {
-    let {actualRoute} = this.state;
+    let menuItems = this.props.items.map((item, i) =>
+      <MenuItem key={i} {...item} />);
 
-    let menuItems = MENU_ITEMS.map((item, i) =>
-      <MenuItemComponent active={item.route === actualRoute} key={i} {...item} />);
-
-    return <ul>{menuItems}</ul>;
+    return (
+      <div className="menu">
+        <ul>{menuItems}</ul>
+      </div>
+    );
   }
 });
 
-module.exports = MenuComponent;
+module.exports = Menu;

@@ -8,7 +8,6 @@
   li
     font-family menu-font-family
     display inline-block
-    padding menu-item-padding
     height menu-height
     line-height menu-height
     text-align center
@@ -16,31 +15,26 @@
     cursor pointer
     text-transform uppercase
 
-    &:hover
-      a
-        color menu-item-color-hover
+.menu-item
+  display block
+  padding menu-item-padding
+  text-decoration none
+  color menu-item-color
+  transition all .1s ease-out
 
-    &::first-letter
-      font-size menu-font-size + 3
-      font-weight 400
+  &:hover
+    color menu-item-color-hover
 
   i
     margin-right 5px
+    font-size menu-font-size + 3
+    font-weight 400
 
-  a
-    text-decoration none
-    color menu-item-color
-    transition all .1s ease-out
+.menu-item-active
+  border-radius 5px
+  background-color menu-active-bg
+  color menu-active-color
+  cursor default
 
-  .active
-    background-color menu-active-bg
-    border-radius 5px
-    cursor default
-
-    &:hover
-      a
-        color menu-active-color
-
-    a
-      color menu-active-color
-      cursor default
+  &:hover
+    color menu-active-color

@@ -1,5 +1,5 @@
 let React = require('react');
-let MangaInfoPanel = require('./MangaInfoPanel.react');
+let MangaDetailsPanel = require('./MangaDetailsPanel.react');
 let SearchResultsSourceList = require('./SearchResultsSourceList.react');
 
 let SearchResultsRow = React.createClass({
@@ -17,7 +17,7 @@ let SearchResultsRow = React.createClass({
       <tr onClick={handleClick}>
         <td>
           {infoExpanded ? <h3 className='info-panel-title'>{manga.title}</h3> : manga.title}
-          {infoExpanded && <MangaInfoPanel manga={manga} />}
+          {infoExpanded && <MangaDetailsPanel manga={manga} />}
         </td>
         <td className='search-results-site-list'>
           <SearchResultsSourceList title={manga.title} sources={manga.sources} />

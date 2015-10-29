@@ -99,20 +99,33 @@ let MangaFox = {
 
   getMangaInfo(manga, done) {
     getPage(manga.url, (page) => {
-      let infoTable = page.find('#title > table tr:nth-child(2)');
+      let infoCells = page.find('#title > table tr:nth-child(2) > td');
       let lastVolume = page.find('.volume').contents(':not(span)').text().trim();
       let chapterList = page.find('.chlist').eq(0);
       let lastChapterEl = chapterList.find('li:first-child');
       let lastChapterLinkEl = lastChapterEl.find('h3 a');
       let lastChapterTitleEl = lastChapterLinkEl.next('.title');
       let lastChapterDateString = lastChapterEl.find('.date').text().trim();
-      let lastChapterDate = lastChapterDateString === 'Today' ? moment(new Date()) : moment(lastChapterDateString, 'MMM DD, YYYY');
+      let lastChapterDate;
+
+      switch (lastChapterDateString) {
+      case 'Today':
+        lastChapterDate = moment(new Date());
+        break;
+
+      case 'Yesterday':
+        lastChapterDate = moment(new Date()).subtract(1, 'days');
+        break;
+
+      default:
+        lastChapterDate = moment(lastChapterDateString, 'MMM DD, YYYY');
+      }
 
       done({
-        releaseDate: infoTable.find('> td:nth-child(1) a').text().trim(),
-        authors: infoTable.find('> td:nth-child(2)').text().split(/,/).filter(name => !/\[\w+\]/.test(name)),
-        artists: infoTable.find('> td:nth-child(3)').text().split(/,/),
-        genres: infoTable.find('> td:nth-child(4)').text().toLowerCase().split(/,/),
+        releaseDate: infoCells.eq(0).find('a').text().trim(),
+        authors: infoCells.eq(1).text().split(/,/).filter(name => !/\[\w+\]/.test(name)),
+        artists: infoCells.eq(2).text().split(/,/),
+        genres: infoCells.eq(3).text().toLowerCase().split(/,/),
         status: page.find('#series_info > div:nth-child(5) > span').text().split(/,/)[0].trim(),
         lastChapter: new Chapter({
           number: parseInt(/\d+$/.exec(lastChapterLinkEl.text())),

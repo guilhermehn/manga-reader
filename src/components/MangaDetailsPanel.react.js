@@ -15,7 +15,25 @@ function getStateFromStores(manga) {
   };
 }
 
-let MangaInfoPanel = React.createClass({
+let ChapterCountRow = React.createClass({
+  render() {
+    let {date, number} = this.props;
+    let dateString = '';
+
+    if (date) {
+      dateString = `(released in ${formatDate(date)})`;
+    }
+
+    return(
+      <tr>
+        <td>Chapters:</td>
+        <td>{number} {dateString}</td>
+      </tr>
+    );
+  }
+});
+
+let MangaDetailsPanel = React.createClass({
   getInitialState() {
     return getStateFromStores(this.props.manga);
   },
@@ -48,15 +66,10 @@ let MangaInfoPanel = React.createClass({
       );
     }
 
-    let ChapterCountRow = null;
+    let chapterCountRow = null;
 
     if (mangaInfo.lastChapter) {
-      ChapterCountRow = (
-        <tr>
-          <td>Chapters:</td>
-          <td>{mangaInfo.lastChapter.number} {mangaInfo.lastChapter.date ? `(released in ${formatDate(mangaInfo.lastChapter.date)})` : ''}</td>
-        </tr>
-      );
+      chapterCountRow = <ChapterCountRow number={mangaInfo.lastChapter.number} date={mangaInfo.lastChapter.date} />;
     }
 
     return (
@@ -83,12 +96,15 @@ let MangaInfoPanel = React.createClass({
               <td>Status:</td>
               <td>{mangaInfo.status}</td>
             </tr>
-            {ChapterCountRow}
+            {chapterCountRow}
           </tbody>
         </table>
+        <div className="info-panel-toolbar">
+          <button type='button'>Start reading</button>
+        </div>
       </div>
     );
   }
 });
 
-module.exports = MangaInfoPanel;
+module.exports = MangaDetailsPanel;

@@ -1,5 +1,6 @@
 let React = require('react');
 let parsers = require('../apis/parsers');
+let {stopPropagation} = require('../utils');
 
 let SearchResultsSourceList = React.createClass({
   render() {
@@ -9,7 +10,7 @@ let SearchResultsSourceList = React.createClass({
       let altText = `Read '${title}' from ${source.name}`;
 
       return (
-        <a key={i} href={source.url} target='_blank' title={altText}>
+        <a key={i} href={source.url} target='_blank' title={altText} onClick={stopPropagation}>
           <img src={parsers.byName[source.name].icon} alt={altText} />
         </a>
       );
