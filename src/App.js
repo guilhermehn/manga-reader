@@ -6,10 +6,7 @@ let SearchPage = require('./components/SearchPage.react');
 let SettingsPage = require('./components/SettingsPage.react');
 let ReaderPage = require('./components/ReaderPage.react');
 let Storage = require('./Storage');
-// let Migration = require('./Migration');
-
 Storage.init();
-// Migration.init();
 
 render((
   <Router>
