@@ -37,5 +37,12 @@ module.exports = {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.HIDE_SEARCH_WARNING
     });
+  },
+
+  selectMangaToRead(manga) {
+    AppDispatcher.dispatch({
+      type: ACTION_TYPES.SELECTED_MANGA_TO_READ,
+      manga: manga
+    });
   }
 };

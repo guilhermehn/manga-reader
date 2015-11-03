@@ -20,6 +20,10 @@ let SearchAPI = {
 
   hideSearchWarning() {
     SearchActionsCreators.hideSearchWarning();
+  },
+
+  selectMangaToRead(manga) {
+    SearchActionsCreators.selectMangaToRead(manga);
   }
 };
 

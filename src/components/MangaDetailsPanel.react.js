@@ -1,10 +1,12 @@
 let React = require('react');
 let MangaAPI = require('../apis/MangaAPI');
+let ReaderAPI = require('../apis/ReaderAPI');
 let MangaStore = require('../stores/MangaStore');
 let PropTypes = React.PropTypes;
 let LoadingIcon = require('./LoadingIcon.react');
 let moment = require('moment');
 let {Link} = require('react-router');
+let utils = require('../utils');
 
 function formatDate(dateString) {
   return moment(new Date(dateString)).format('DD/MM/YYYY');
@@ -60,6 +62,10 @@ let MangaDetailsPanel = React.createClass({
     this.setState(getStateFromStores(this.props.manga));
   },
 
+  handleClick(e) {
+    utils.stopPropagation(e);
+  },
+
   render() {
     let {manga} = this.props;
     let {mangaInfo} = this.state;
@@ -105,7 +111,7 @@ let MangaDetailsPanel = React.createClass({
           </tbody>
         </table>
         <div className="info-panel-toolbar">
-          <Link className='btn' to={`/reader/${manga.normalizedName}`}>Start reading</Link>
+          <Link className='btn' onClick={this.handleClick} to={`/reader/${manga.normalizedName}`}>Start reading</Link>
         </div>
       </div>
     );

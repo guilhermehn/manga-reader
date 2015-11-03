@@ -67,6 +67,7 @@
     "https://*/*",
     "http://*/*",
     "https://ssl10.ovh.net/*",
+    "storage",
     "unlimited_storage",
     "clipboardWrite",
     "contextMenus",

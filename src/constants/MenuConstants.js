@@ -1,5 +1,10 @@
 const MENU_ITEMS = [
   {
+    route: 'reading',
+    title: 'Reading list',
+    iconClassname: 'zmdi-view-list'
+  },
+  {
     route: 'search',
     title: 'Search',
     iconClassname: 'zmdi-search'

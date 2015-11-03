@@ -1,0 +1,30 @@
+.progress-bar
+  position relative
+  width 100%
+  height progress-bar-height
+  background-color progress-bar-bg-color
+  border-radius 3px
+  overflow hidden
+
+.progress-bar-text
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height progress-bar-height
+  line-height progress-bar-height
+  z-index 2
+  font-size progress-bar-text-size
+  font-weight 900
+  color progress-bar-text-color
+  text-shadow 0 1px 2px #000
+  text-align center
+
+.progress-bar-progress
+  position absolute
+  top 0
+  left 0
+  height progress-bar-height
+  z-index 1
+  background-color progress-bar-fg-color
+  border-radius 0 3px 3px 0

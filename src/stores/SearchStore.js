@@ -9,6 +9,7 @@ let _searchHistory = [];
 let _waitingForSearch = false;
 let _results = [];
 let _searchWarningVisible = false;
+let _selectedManga = null;
 
 let SearchStore = Object.assign({}, EventEmitter.prototype, {
   emitChange() {
@@ -37,6 +38,16 @@ let SearchStore = Object.assign({}, EventEmitter.prototype, {
 
   getSearchResults() {
     return _results;
+  },
+
+  getSelectedMangaToRead(normalizedName) {
+    let selectedManga = _results.filter(manga => manga.normalizedName === normalizedName);
+
+    if (!selectedManga.length) {
+      return null;
+    }
+
+    return selectedManga[0];
   }
 });
 
@@ -70,6 +81,11 @@ function hideSearchWarning() {
   SearchStore.emitChange();
 }
 
+function selectedMangaToRead(manga) {
+  _selectedManga = manga;
+  SearchStore.emitChange();
+}
+
 SearchStore.dispatchToken = AppDispatcher.register((action) => {
   switch(action.type) {
   case ACTION_TYPES.RECEIVE_SEARCH_RESULTS:
@@ -90,6 +106,10 @@ SearchStore.dispatchToken = AppDispatcher.register((action) => {
 
   case ACTION_TYPES.HIDE_SEARCH_WARNING:
     hideSearchWarning();
+    break;
+
+  case ACTION_TYPES.SELECTED_MANGA_TO_READ:
+    selectedMangaToRead(action.manga);
     break;
 
   default:
