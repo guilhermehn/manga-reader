@@ -44,8 +44,8 @@
     "keymirror": "^0.1.1",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
-    "react": "^0.14.0",
-    "react-dom": "^0.14.0",
+    "react": "^0.14.2",
+    "react-dom": "^0.14.2",
     "react-router": "^1.0.0-rc3",
     "superagent": "^1.4.0"
   },
