@@ -5,9 +5,15 @@ let {
 } = require('../constants/ReaderConstants');
 
 module.exports = {
-  selectMangaToRead(manga) {
+  startedLoadingManga() {
     AppDispatcher.dispatch({
-      type: ACTION_TYPES.SELECTED_MANGA_TO_READ,
+      type: ACTION_TYPES.STARTED_LOADING_MANGA
+    });
+  },
+
+  receiveMangaWithPages(manga) {
+    AppDispatcher.dispatch({
+      type: ACTION_TYPES.RECEIVE_MANGA_WITH_PAGES,
       manga: manga
     });
   }

@@ -2,7 +2,8 @@ let keyMirror = require('keymirror');
 
 let ReaderConstants = {
   ACTION_TYPES: keyMirror({
-    SELECTED_MANGA_TO_READ: null
+    RECEIVE_MANGA_WITH_PAGES: null,
+    STARTED_LOADING_MANGA: null
   })
 };
 

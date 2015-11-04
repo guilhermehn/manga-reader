@@ -62,10 +62,6 @@ let MangaDetailsPanel = React.createClass({
     this.setState(getStateFromStores(this.props.manga));
   },
 
-  handleClick(e) {
-    utils.stopPropagation(e);
-  },
-
   render() {
     let {manga} = this.props;
     let {mangaInfo} = this.state;
@@ -111,7 +107,7 @@ let MangaDetailsPanel = React.createClass({
           </tbody>
         </table>
         <div className="info-panel-toolbar">
-          <Link className='btn' onClick={this.handleClick} to={`/reader/${manga.normalizedName}`}>Start reading</Link>
+          <Link className='btn' onClick={utils.stopPropagation} to={`/reader/${manga.normalizedName}?method=search`}>Start reading</Link>
         </div>
       </div>
     );

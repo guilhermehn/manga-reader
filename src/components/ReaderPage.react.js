@@ -1,13 +1,15 @@
 let React = require('react');
-let SearchStore = require('../stores/SearchStore');
+let ReaderAPI = require('../apis/ReaderAPI');
 let SettingsAPI = require('../apis/SettingsAPI');
-let MangaAPI = require('../apis/MangaAPI');
+let ReaderStore = require('../stores/ReaderStore');
 let SettingsStore = require('../stores/SettingsStore');
 let {History} = require('react-router');
 
 function getStateFromStores() {
   return {
-    settings: SettingsAPI.getSettings()
+    settings: SettingsAPI.getSettings(),
+    manga: ReaderStore.getManga(),
+    doneLoadingManga: ReaderStore.doneLoadingManga()
   };
 }
 
@@ -15,40 +17,70 @@ let ReaderPage = React.createClass({
   mixins: [History],
 
   getInitialState() {
-    return getStateFromStores();
+    return getStateFromStores(this.props.params.name);
   },
 
   componentDidMount() {
-    SettingsStore.addChangeListener(this._onChange);
-    SettingsAPI.loadSettings();
+    let {name, chapter} = this.props.params;
+    let {method} = this.props.location.query;
 
-    let manga = SearchStore.getSelectedMangaToRead(this.props.params.name);
-    // MangaAPI
+    if (typeof chapter === 'undefined') {
+      chapter = 1;
+    }
+
+    SettingsAPI.loadSettings();
+    ReaderAPI.loadMangaChapter(name, chapter, method);
+
+    SettingsStore.addChangeListener(this._onChange);
+    ReaderStore.addChangeListener(this._onChange);
   },
 
   componentWillUnmount() {
     SettingsStore.removeChangeListener(this._onChange);
+    ReaderStore.removeChangeListener(this._onChange);
   },
 
   _onChange() {
-    this.setState(getStateFromStores());
-  },
-
-  componentWillMount() {
-    // TODO: Try to get tha manga from the reading list before redirect
-
-    // let {params} = this.props;
-    // let manga = SearchStore.getSelectedMangaToRead(params.name);
-
-    // if (!manga) {
-    //   this.history.pushState(null, '/search');
-    // }
+    this.setState(getStateFromStores(this.props.params.name));
   },
 
   render() {
+    let {manga, doneLoadingManga} = this.state;
+
+    if (!doneLoadingManga || !manga || !manga.hasOwnProperty('pages')) {
+      let message;
+
+      if (!doneLoadingManga) {
+        message = 'Loading manga...';
+      }
+
+      return (
+        <div className='reader'>
+          <div className='reader-notice'>
+            {message}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className='reader'>
+        <div className='reader-header'>
+          <h1>{manga.title}</h1>
+        </div>
 
+        <div className='reader-manga-pages'>
+          {
+            manga.pages.map((pageUrl, i) => {
+              return (
+                <div className='reader-manga-page' key={i}>
+                  <img src={pageUrl} />
+                </div>
+              );
+            })
+          }
+
+        </div>
       </div>
     );
   }

@@ -1,11 +1,11 @@
 let SearchActionsCreators = require('../actions/SearchActionsCreators');
-let parsers = require('./parsers');
+let ParsersAPI = require('./ParsersAPI');
 
 let SearchAPI = {
   search(term) {
     SearchActionsCreators.didSentSearch(term);
 
-    parsers.search(term, (results) => {
+    ParsersAPI.search(term, (results) => {
       SearchActionsCreators.receiveSearchResults(results);
     });
   },
@@ -20,10 +20,6 @@ let SearchAPI = {
 
   hideSearchWarning() {
     SearchActionsCreators.hideSearchWarning();
-  },
-
-  selectMangaToRead(manga) {
-    SearchActionsCreators.selectMangaToRead(manga);
   }
 };
 

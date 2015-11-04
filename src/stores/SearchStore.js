@@ -40,7 +40,7 @@ let SearchStore = Object.assign({}, EventEmitter.prototype, {
     return _results;
   },
 
-  getSelectedMangaToRead(normalizedName) {
+  getMangaByName(normalizedName) {
     let selectedManga = _results.filter(manga => manga.normalizedName === normalizedName);
 
     if (!selectedManga.length) {

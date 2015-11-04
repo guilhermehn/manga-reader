@@ -34,6 +34,9 @@ let ReadingListItem = React.createClass({
       );
     }
 
+    let nextChapterNumber = item.lastReadChapter + 1;
+    let nextChapterUrl = `/reader/${item.normalizedName}/${nextChapterNumber}`;
+
     return (
       <div className='reading-list-item'>
         <h3>{item.title} {newChapterSinceLastRead && newChapterLabel}</h3>
@@ -48,7 +51,7 @@ let ReadingListItem = React.createClass({
 
         <div className='reading-list-item-toolbar'>
           <div className='reading-list-item-toolbar-left'>
-            {!done && <Link className='btn btn-primary' to={`/reader/${item.normalizedName}`}>Read chapter <strong>{item.lastReadChapter + 1}</strong></Link>}
+            {!done && <Link className='btn btn-primary' to={nextChapterUrl}>Read chapter <strong>{nextChapterNumber}</strong></Link>}
             {(done && item.status === 'complete') && <strong>Complete</strong>}
           </div>
 

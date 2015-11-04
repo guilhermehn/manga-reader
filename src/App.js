@@ -17,5 +17,6 @@ render((
       <Route path='settings' component={SettingsPage} />
     </Route>
     <Route path='/reader/:name' component={ReaderPage} />
+    <Route path='/reader/:name/:chapter' component={ReaderPage} />
   </Router>
 ), document.querySelector('#root'));

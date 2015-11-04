@@ -2,6 +2,10 @@ let $ = require('cheerio');
 let {getPage} = require('./parserUtils');
 let Chapter = require('../../Chapter');
 let moment = require('moment');
+let _ = require('lodash');
+let url = require('url');
+
+let zeroLeftPad = _.curry(_.padLeft)(_, 3, '0');
 
 let MangaFox = {
   url: 'http://mangafox.me/',
@@ -74,23 +78,22 @@ let MangaFox = {
     });
   },
 
-  getChapterPages(chapter, done) {
-    getPage(chapter.url + '1.html', (page) => {
-      let firstPageUrl = page.find('#viewer > a img').attr('src');
+  getChapterPages(mangaUrl, chapterNumber, done) {
+    let number = zeroLeftPad(chapterNumber);
+    let chapterUrl = url.resolve(mangaUrl, `c${number}/1.html`);
+
+    getPage(chapterUrl, (page) => {
+      let firstPageUrl = page.find('#viewer img').attr('src');
       let pagesList = page
         .find('select.m')
-        .first()
+        .eq(0)
         .find('option')
-        .map((i, el) => {
-          return parseInt(el.value);
-        })
+        .map((i, el) => parseInt(el.attribs.value))
         .get()
-        .filter((pageNumber) => {
-          return pageNumber > 0;
-        })
-        .map((pageNumber) => {
+        .filter(pageNumber => pageNumber > 0)
+        .map(pageNumber => {
           let n = pageNumber.toString();
-          return firstPageUrl.replace(/(\d+)(\.jpg)$/, '0'.repeat(3 - n.length) + n + '.jpg');
+          return firstPageUrl.replace(/(\d+)(\.jpg)$/, zeroLeftPad(n) + '.jpg');
         });
 
       done(pagesList);
