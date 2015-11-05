@@ -1,6 +1,6 @@
 let React = require('react');
 let MangaDetailsPanel = require('./MangaDetailsPanel.react');
-let SearchResultsSourceList = require('./SearchResultsSourceList.react');
+// let SearchResultsSourceList = require('./SearchResultsSourceList.react');
 
 let SearchResultsRow = React.createClass({
   getDefaultProps() {
@@ -19,9 +19,9 @@ let SearchResultsRow = React.createClass({
           {infoExpanded ? <h3 className='info-panel-title'>{manga.title}</h3> : manga.title}
           {infoExpanded && <MangaDetailsPanel manga={manga} />}
         </td>
-        <td className='search-results-site-list'>
+        {/*<td className='search-results-site-list'>
           <SearchResultsSourceList title={manga.title} sources={manga.sources} />
-        </td>
+        </td>*/}
       </tr>
     );
   }

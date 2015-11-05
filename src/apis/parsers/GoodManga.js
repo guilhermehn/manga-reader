@@ -2,9 +2,12 @@ let $ = require('cheerio');
 let {getPage} = require('./parserUtils');
 let Chapter = require('../../Chapter');
 let moment = require('moment');
+let {resolve} = require('url');
+let {join} = require('path');
+let {last} = require('lodash');
 
 let GoodManga = {
-  url: 'http://w2.goodmanga.net/',
+  url: 'http://www.goodmanga.net/',
   name : 'GoodManga',
   icon : 'http://www.goodmanga.net/favicon.gif',
   languages : 'en',
@@ -79,31 +82,25 @@ let GoodManga = {
     });
   },
 
-  getListImages(doc, curUrl2) {
-    return $(doc)
-      .find('#page #content #assets #asset_2 select.page_select:first option')
-      .map(function (index) {
-        return $(this).val();
-      })
-      .get();
-  },
+  getChapterPages(mangaUrl, chapterNumber, done) {
+    let urlParts = mangaUrl.split(/\//);
+    let urlPath = join(last(urlParts), 'chapter', chapterNumber + '');
+    let chapterUrl = resolve(this.url, urlPath);
 
-  getImageFromPageAndWrite(urlImg, image, doc, curUrl) {
-    $.ajax({
-      url : urlImg,
+    getPage(chapterUrl, (page) => {
+      let firstPageUrl = page.find('#manga_viewer > a img').attr('src');
+      let pagesList = page
+        .find('.page_select')
+        .eq(2)
+        .find('option');
 
-      success(objResponse) {
-        let div = document.createElement('div');
-        div.innerHTML = objResponse;
+      let pages = new Array(pagesList.length);
 
-        let src = $(div).find('#manga_viewer img').attr('src');
-        $(image).attr('src', src);
-      }
+      pagesList.each(i =>
+          pages.push(firstPageUrl.replace(/(\d+)(\.\w+)$/, `${i + 1}.jpg`)));
+
+      done(pages);
     });
-  },
-
-  getListOfChapters(url, done) {
-
   },
 
   getMangaInfo(source, done) {

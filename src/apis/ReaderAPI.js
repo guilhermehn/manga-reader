@@ -18,12 +18,12 @@ function loadChapterPages(source, chapterNumber, done) {
   ParsersAPI.getChapterPages(source, chapterNumber, pages => done(pages));
 }
 
-function loadMangaChapter(name, chapterNumber, method) {
+function loadMangaChapter(name, sourceName, chapterNumber, method) {
   ReaderActionsCreators.startedLoadingManga();
 
   loadMangaByName(name, method, manga => {
     if (manga) {
-      let source = manga.source ? manga.source : manga.sources[0];
+      let source = manga.sources.filter(source => source.name === sourceName)[0];
 
       loadChapterPages(source, chapterNumber, pages => {
         manga.pages = pages;

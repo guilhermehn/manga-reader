@@ -1,3 +1,4 @@
+let localforage = require('localforage');
 let SettingsActionsCreators = require('../actions/SettingsActionsCreators');
 let {
   SETTINGS_KEY,
@@ -5,29 +6,27 @@ let {
 } = require('../constants/SettingsConstants');
 
 let SettingsAPI = {
-  getSettings() {
-    let savedData = localStorage.getItem(SETTINGS_KEY);
-
-    if (savedData) {
-      return JSON.parse(savedData);
-    }
-    else {
-      return DEFAULT_SETTINGS;
-    }
-  },
-
-  loadSettings() {
-    process.nextTick(() => {
-      let settings = this.getSettings();
-      SettingsActionsCreators.receiveSettings(settings);
+  getSettings(done) {
+    localforage.getItem(SETTINGS_KEY, (err, value) => {
+      if (err || !value) {
+        done(DEFAULT_SETTINGS);
+      }
+      else {
+        done(value);
+      }
     });
   },
 
+  loadSettings() {
+    this.getSettings(settings =>
+      SettingsActionsCreators.receiveSettings(settings));
+  },
+
   setOption(option, value) {
-    let settings = this.getSettings();
-    settings[option] = value;
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    this.loadSettings();
+    this.getSettings(settings => {
+      settings[option] = value;
+      localforage.setItem(SETTINGS_KEY, settings, () => this.loadSettings());
+    });
   }
 };
 

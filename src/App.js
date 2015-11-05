@@ -16,7 +16,7 @@ render((
       <Route path='search' component={SearchPage} />
       <Route path='settings' component={SettingsPage} />
     </Route>
-    <Route path='/reader/:name' component={ReaderPage} />
-    <Route path='/reader/:name/:chapter' component={ReaderPage} />
+    <Route path='/reader/:name/:source' component={ReaderPage} />
+    <Route path='/reader/:name/:source/:chapter' component={ReaderPage} />
   </Router>
 ), document.querySelector('#root'));

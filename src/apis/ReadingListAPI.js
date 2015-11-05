@@ -1,18 +1,42 @@
+let localforage = require('localforage');
+let SettingsAPI = require('./SettingsAPI');
+let {STORAGE_KEY} = require('../constants/ReadingListConstants');
 let ReadingListActionsCreators = require('../actions/ReadingListActionsCreators');
 
-function loadReadingList(callback) {
-  chrome.storage.sync.get('readingList', data => {
-    let result = data.hasOwnProperty('readingList') ? data.readingList : [];
+function loadFromChromeSync(callback) {
+  chrome.storage.sync.get(STORAGE_KEY, data => {
+    let result = data && data.hasOwnProperty(STORAGE_KEY) ? data.readingList : [];
 
     callback(result);
   });
 }
 
+function loadFromLocalforage(callback) {
+  localforage.getItem(STORAGE_KEY, (err, data) => {
+    if (err) {
+      callback([]);
+      return;
+    }
+
+    callback(data ? data : []);
+  });
+}
+
+function loadReadingList(callback) {
+  SettingsAPI.getSettings(settings => {
+    if (settings.syncData) {
+      loadFromChromeSync(callback);
+    }
+    else {
+      loadFromLocalforage(callback);
+    }
+  });
+}
+
 let ReadingListAPI = {
   loadReadingList() {
-    loadReadingList(readingList => {
-      ReadingListActionsCreators.loadReadingList(readingList);
-    });
+    loadReadingList(readingList =>
+      ReadingListActionsCreators.loadReadingList(readingList));
   },
 
   getManga(mangaName, callback) {

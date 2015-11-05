@@ -1,12 +1,12 @@
 let React = require('react');
-let MangaAPI = require('../apis/MangaAPI');
-let ReaderAPI = require('../apis/ReaderAPI');
-let MangaStore = require('../stores/MangaStore');
 let PropTypes = React.PropTypes;
-let LoadingIcon = require('./LoadingIcon.react');
+let MangaAPI = require('../apis/MangaAPI');
+let MangaStore = require('../stores/MangaStore');
 let moment = require('moment');
 let {Link} = require('react-router');
-let utils = require('../utils');
+let parsersByName = require('../apis/parsers').byName;
+let LoadingIcon = require('./LoadingIcon.react');
+let {stopPropagation} = require('../utils');
 
 function formatDate(dateString) {
   return moment(new Date(dateString)).format('DD/MM/YYYY');
@@ -18,7 +18,8 @@ function pluralize(str, length) {
 
 function getStateFromStores(manga) {
   return {
-    mangaInfo: MangaStore.getMangaInfo(manga.title)
+    mangaInfo: MangaStore.getMangaInfo(manga.title),
+    selectedChapter: 1
   };
 }
 
@@ -36,6 +37,24 @@ let ChapterCountRow = React.createClass({
         <td>Chapters:</td>
         <td>{number} {dateString}</td>
       </tr>
+    );
+  }
+});
+
+let ChapterSelector = React.createClass({
+  render() {
+    let {length} = this.props;
+    let options = new Array(length);
+
+    for (let i = 0; i < length; i++) {
+      let value = i + 1;
+      options[i] = <option key={i} value={value}>{value}</option>;
+    }
+
+    return (
+      <select onChange={this.props.onChange} onClick={stopPropagation}>
+        {options}
+      </select>
     );
   }
 });
@@ -62,9 +81,15 @@ let MangaDetailsPanel = React.createClass({
     this.setState(getStateFromStores(this.props.manga));
   },
 
+  handleChange(e) {
+    this.setState({
+      selectedChapter: e.target.value
+    });
+  },
+
   render() {
     let {manga} = this.props;
-    let {mangaInfo} = this.state;
+    let {mangaInfo, selectedChapter} = this.state;
     let separator = ', ';
 
     if (!mangaInfo) {
@@ -78,6 +103,18 @@ let MangaDetailsPanel = React.createClass({
     if (mangaInfo.lastChapter) {
       chapterCountRow = <ChapterCountRow number={mangaInfo.lastChapter.number} date={mangaInfo.lastChapter.date} />;
     }
+
+    let sourcesList = manga.sources.map((source, i) => {
+      let {name} = source;
+      let url = `/reader/${manga.normalizedName}/${name}/${selectedChapter}?method=search`;
+
+      return (
+        <Link key={i} className='btn info-panel-toolbar-link' to={url}>
+          <img className='info-panel-toolbar-source-icon' src={parsersByName[name].icon} />
+          <span>{name}</span>
+        </Link>
+      );
+    });
 
     return (
       <div className='info-panel open-animation'>
@@ -104,11 +141,16 @@ let MangaDetailsPanel = React.createClass({
               <td>{mangaInfo.status}</td>
             </tr>
             {chapterCountRow}
+            <tr>
+              <td><strong>Start reading:</strong></td>
+              <td>
+                {sourcesList}
+                <strong>Chapter</strong>
+                <ChapterSelector length={mangaInfo.lastChapter.number} onChange={this.handleChange} />
+              </td>
+            </tr>
           </tbody>
         </table>
-        <div className="info-panel-toolbar">
-          <Link className='btn' onClick={utils.stopPropagation} to={`/reader/${manga.normalizedName}?method=search`}>Start reading</Link>
-        </div>
       </div>
     );
   }
