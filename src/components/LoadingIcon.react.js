@@ -8,11 +8,16 @@ let LoadingIcon = React.createClass({
 
   render() {
     let {text} = this.props;
+    let textElement = null;
+
+    if (!!text && text.length) {
+      textElement = <div className='loading-icon-text'>{text}</div>;
+    }
 
     return (
       <div className='loading-icon-holder'>
         <div className='loading-icon'><div></div></div>
-        {(!!text && text.length) && <div className='loading-icon-text'>{this.props.text}</div> || null}
+        {textElement}
       </div>
     );
   }

@@ -33,8 +33,18 @@ function loadMangaChapter(name, sourceName, chapterNumber, method) {
   });
 }
 
+function pageDidLoad() {
+  ReaderActionsCreators.pageDidLoad();
+}
+
+function resetLoadedPagesCount() {
+  ReaderActionsCreators.resetLoadedPagesCount();
+}
+
 let ReaderAPI = {
-  loadMangaChapter: loadMangaChapter
+  loadMangaChapter: loadMangaChapter,
+  pageDidLoad: pageDidLoad,
+  resetLoadedPagesCount: resetLoadedPagesCount
 };
 
 module.exports = ReaderAPI;
