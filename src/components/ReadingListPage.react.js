@@ -35,7 +35,7 @@ let ReadingListItem = React.createClass({
     }
 
     let nextChapterNumber = item.lastReadChapter + 1;
-    let nextChapterUrl = `/reader/${item.normalizedName}/${nextChapterNumber}`;
+    let nextChapterUrl = `/reader/${item.normalizedName}/${item.source.name}/${nextChapterNumber}`;
 
     return (
       <div className='reading-list-item'>
@@ -102,14 +102,19 @@ let ReadingListPage = React.createClass({
   },
 
   render() {
+    let content;
+
+    if (this.state.items.length) {
+      content = <ReadingList items={this.state.items} />;
+    }
+    else {
+      content = <EmptyReadingList />;
+    }
+
     return (
       <div className='reading-list-page'>
         <div className='reading-list-page-content'>
-          {
-            this.state.items.length
-              ? <ReadingList items={this.state.items} />
-              : <EmptyReadingList />
-          }
+          {content}
         </div>
       </div>
     );

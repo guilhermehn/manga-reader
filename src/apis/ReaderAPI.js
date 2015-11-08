@@ -23,7 +23,14 @@ function loadMangaChapter(name, sourceName, chapterNumber, method) {
 
   loadMangaByName(name, method, manga => {
     if (manga) {
-      let source = manga.sources.filter(source => source.name === sourceName)[0];
+      let source;
+
+      if (manga.sources) {
+        source = manga.sources.filter(source => source.name === sourceName)[0];
+      }
+      else {
+        source = manga.source;
+      }
 
       loadChapterPages(source, chapterNumber, pages => {
         manga.pages = pages;

@@ -5,9 +5,12 @@ let ReadingListActionsCreators = require('../actions/ReadingListActionsCreators'
 
 function loadFromChromeSync(callback) {
   chrome.storage.sync.get(STORAGE_KEY, data => {
-    let result = data && data.hasOwnProperty(STORAGE_KEY) ? data.readingList : [];
+    if (!data || !data.hasOwnProperty(STORAGE_KEY)) {
+      callback([]);
+      return;
+    }
 
-    callback(result);
+    callback(data[STORAGE_KEY]);
   });
 }
 

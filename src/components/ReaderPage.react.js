@@ -102,8 +102,9 @@ let ReaderPage = React.createClass({
 
     let {params, location} = this.props;
     let chapterNumber = parseInt(params.chapter);
+    let prevChapterUrl = url.resolve(location.pathname, `${parseInt(chapterNumber) - 1}${location.search}`);
     let nextChapterUrl = url.resolve(location.pathname, `${parseInt(chapterNumber) + 1}${location.search}`);
-    let prevChapterLink = <Link className='btn' to={nextChapterUrl}><i className='zmdi zmdi-fast-rewind'></i> Prev chapter</Link>;
+    let prevChapterLink = <Link className='btn' to={prevChapterUrl}><i className='zmdi zmdi-fast-rewind'></i> Prev chapter</Link>;
     let nextChapterLink = <Link className='btn' to={nextChapterUrl}>Next chapter <i className='zmdi zmdi-fast-forward'></i></Link>;
 
     return (

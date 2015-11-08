@@ -88,9 +88,7 @@ let MangaDetailsPanel = React.createClass({
   },
 
   render() {
-    let {manga} = this.props;
     let {mangaInfo, selectedChapter} = this.state;
-    let separator = ', ';
 
     if (!mangaInfo) {
       return (
@@ -98,10 +96,13 @@ let MangaDetailsPanel = React.createClass({
       );
     }
 
+    let {manga} = this.props;
     let chapterCountRow = null;
+    let separator = ', ';
+    let {lastChapter} = mangaInfo;
 
-    if (mangaInfo.lastChapter) {
-      chapterCountRow = <ChapterCountRow number={mangaInfo.lastChapter.number} date={mangaInfo.lastChapter.date} />;
+    if (lastChapter) {
+      chapterCountRow = <ChapterCountRow number={lastChapter.number} date={lastChapter.date} />;
     }
 
     let sourcesList = manga.sources.map((source, i) => {
@@ -146,7 +147,7 @@ let MangaDetailsPanel = React.createClass({
               <td>
                 {sourcesList}
                 <strong>Chapter</strong>
-                <ChapterSelector length={mangaInfo.lastChapter.number} onChange={this.handleChange} />
+                <ChapterSelector length={lastChapter.number} onChange={this.handleChange} />
               </td>
             </tr>
           </tbody>
