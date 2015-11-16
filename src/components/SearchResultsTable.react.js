@@ -3,6 +3,10 @@ let EmptySearchResult = require('./EmptySearchResult.react');
 let SearchInfo = require('./SearchInfo.react');
 let SearchResultsRow = require('./SearchResultsRow.react');
 
+function isInReadingList(readingList, mangaName) {
+  return readingList.some(item => item.normalizedName === mangaName);
+}
+
 let SearchResultsTable = React.createClass({
   getInitialState() {
     return {
@@ -23,7 +27,8 @@ let SearchResultsTable = React.createClass({
       results,
       term,
       waitingForSearch,
-      showSearchWarning
+      showSearchWarning,
+      readingList
     } = this.props;
 
     let {expandedRowIndex} = this.state;
@@ -40,6 +45,7 @@ let SearchResultsTable = React.createClass({
       return null;
     }
 
+
     return (
       <div className='search-results'>
         <SearchInfo resultsLength={results.length} term={term} />
@@ -47,7 +53,12 @@ let SearchResultsTable = React.createClass({
           <tbody>
             {
               results.map((result, i) =>
-                <SearchResultsRow manga={result} key={i} infoExpanded={expandedRowIndex === i} handleClick={this.toggleInfoPanelVisibility(i)} />)
+                <SearchResultsRow
+                  key={i}
+                  infoExpanded={expandedRowIndex === i}
+                  manga={result}
+                  isInReadingList={isInReadingList(readingList, result.normalizedName)}
+                  handleClick={this.toggleInfoPanelVisibility(i)} />)
             }
           </tbody>
         </table>
