@@ -31,7 +31,7 @@ const SearchResultsTable = React.createClass({
       readingList
     } = this.props;
 
-    let {expandedRowIndex} = this.state;
+    let { expandedRowIndex } = this.state;
 
     if (showSearchWarning) {
       return null;
@@ -44,7 +44,6 @@ const SearchResultsTable = React.createClass({
 
       return null;
     }
-
 
     return (
       <div className='search-results'>

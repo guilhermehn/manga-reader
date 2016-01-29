@@ -35,18 +35,19 @@ const loadUserSettingsMixin = {
     let value;
 
     switch (elem.type) {
-    case 'checkbox':
+    case 'checkbox': {
       value = elem.checked;
-      break;
-
-    case 'radio': {
-      value = this.getValueFromRadio(elem);
-
       break;
     }
 
-    default:
+    case 'radio': {
+      value = this.getValueFromRadio(elem);
+      break;
+    }
+
+    default: {
       value = elem.value;
+    }
     }
 
     return value;
@@ -84,7 +85,7 @@ const Checkbox = React.createClass({
   mixins: [loadUserSettingsMixin],
 
   render() {
-    let {id, label, value} = this.props;
+    let { id, label, value } = this.props;
 
     return (
       <Setting>
@@ -104,7 +105,7 @@ const RadioGroup = React.createClass({
       <Setting>
         {
           this.props.options.map((option) => {
-            let {id, value} = this.props;
+            let { id, value } = this.props;
             let key = `${id}_${option.value}`;
 
             return (
@@ -149,14 +150,14 @@ function createSections(sections, settings) {
           section.fields.map((field) => {
             let value = settings[field.id];
 
-            switch(field.type) {
-            case 'checkbox':
+            switch (field.type) {
+            case 'checkbox': {
               return <Checkbox id={field.id} key={field.id} label={field.label} value={value} />;
+            }
 
-            case 'radio':
+            case 'radio': {
               return <RadioGroup id={field.id} key={field.id} options={field.options} value={value} />;
-
-            default:
+            }
             }
           })
         }

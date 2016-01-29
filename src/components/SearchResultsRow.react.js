@@ -50,7 +50,6 @@ const SearchResultsRow = React.createClass({
       }
     }
 
-
     return (
       <tr onClick={handleClick}>
         <td>

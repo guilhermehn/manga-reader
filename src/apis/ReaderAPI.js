@@ -4,13 +4,15 @@ import ReadingListAPI from '../apis/ReadingListAPI';
 import ParsersAPI from '../apis/ParsersAPI';
 
 function loadMangaByName(name, method, done) {
-  switch(method) {
-  case 'search':
+  switch (method) {
+  case 'search': {
     done(SearchStore.getMangaByName(name));
     break;
+  }
 
-  default:
+  default: {
     ReadingListAPI.getManga(name, storedManga => done(storedManga));
+  }
   }
 }
 

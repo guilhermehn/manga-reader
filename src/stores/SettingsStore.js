@@ -30,12 +30,11 @@ let SettingsStore = Object.assign({}, EventEmitter.prototype, {
 });
 
 SettingsStore.dispatchToken = AppDispatcher.register((action) => {
-  switch(action.type) {
-  case ACTION_TYPES.RECEIVE_SETTINGS:
+  switch (action.type) {
+  case ACTION_TYPES.RECEIVE_SETTINGS: {
     SettingsStore.receiveSettings(action.settings);
     break;
-
-  default:
+  }
   }
 });
 

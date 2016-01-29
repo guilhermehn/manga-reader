@@ -18,7 +18,7 @@ const ProgressBar = React.createClass({
   },
 
   render() {
-    let {total, progress, showText, onComplete, hideOnComplete} = this.props;
+    let { total, progress, showText, onComplete, hideOnComplete } = this.props;
     let percent = (progress * 100) / total;
     let baseStyle = {};
 

@@ -30,12 +30,11 @@ function receiveReadingList(readingList) {
 }
 
 ReadingListStore.dispatchToken = AppDispatcher.register((action) => {
-  switch(action.type) {
-  case ACTION_TYPES.LOAD_READING_LIST:
+  switch (action.type) {
+  case ACTION_TYPES.LOAD_READING_LIST: {
     receiveReadingList(action.readingList);
     break;
-
-  default:
+  }
   }
 });
 

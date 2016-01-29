@@ -112,16 +112,19 @@ const MangaFox = {
       let lastChapterDate;
 
       switch (lastChapterDateString) {
-      case 'Today':
+      case 'Today': {
         lastChapterDate = moment(new Date());
         break;
+      }
 
-      case 'Yesterday':
+      case 'Yesterday': {
         lastChapterDate = moment(new Date()).subtract(1, 'days');
         break;
+      }
 
-      default:
+      default: {
         lastChapterDate = moment(lastChapterDateString, 'MMM DD, YYYY');
+      }
       }
 
       done({

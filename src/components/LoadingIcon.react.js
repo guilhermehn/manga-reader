@@ -6,7 +6,7 @@ const LoadingIcon = React.createClass({
   },
 
   render() {
-    let {text} = this.props;
+    let { text } = this.props;
     let textElement = null;
 
     if (!!text && text.length) {

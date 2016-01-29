@@ -19,7 +19,7 @@ const EmptyReadingList = React.createClass({
 
 const ReadingListItem = React.createClass({
   render() {
-    let {item} = this.props;
+    let { item } = this.props;
     let done = item.lastReadChapter === item.lastChapter.number;
     let lastChapterDate = new Date(item.lastChapter.date);
     let newChapterSinceLastRead = lastChapterDate > new Date(item.lastReadDate);

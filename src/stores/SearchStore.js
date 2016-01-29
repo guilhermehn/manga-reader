@@ -8,7 +8,7 @@ let _searchHistory = [];
 let _waitingForSearch = false;
 let _results = [];
 let _searchWarningVisible = false;
-let _selectedManga = null;
+let _selectedManga = null; // eslint-disable-line
 
 let SearchStore = Object.assign({}, EventEmitter.prototype, {
   emitChange() {
@@ -86,32 +86,36 @@ function selectedMangaToRead(manga) {
 }
 
 SearchStore.dispatchToken = AppDispatcher.register((action) => {
-  switch(action.type) {
-  case ACTION_TYPES.RECEIVE_SEARCH_RESULTS:
+  switch (action.type) {
+  case ACTION_TYPES.RECEIVE_SEARCH_RESULTS: {
     receiveSearchResults(action.results);
     break;
+  }
 
-  case ACTION_TYPES.DID_SENT_SEARCH:
+  case ACTION_TYPES.DID_SENT_SEARCH: {
     didSentSearch(action.term);
     break;
+  }
 
-  case ACTION_TYPES.ADD_TERM_TO_HISTORY:
+  case ACTION_TYPES.ADD_TERM_TO_HISTORY: {
     addSearchTermToHistory(action.term, action.dontEmit);
     break;
+  }
 
-  case ACTION_TYPES.SHOW_SEARCH_WARNING:
+  case ACTION_TYPES.SHOW_SEARCH_WARNING: {
     showSearchWarning();
     break;
+  }
 
-  case ACTION_TYPES.HIDE_SEARCH_WARNING:
+  case ACTION_TYPES.HIDE_SEARCH_WARNING: {
     hideSearchWarning();
     break;
+  }
 
-  case ACTION_TYPES.SELECTED_MANGA_TO_READ:
+  case ACTION_TYPES.SELECTED_MANGA_TO_READ: {
     selectedMangaToRead(action.manga);
     break;
-
-  default:
+  }
   }
 });
 

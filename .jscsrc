@@ -5,26 +5,23 @@
   "requireParenthesesAroundIIFE": true,
   "requireSpacesInConditionalExpression": true,
   "requireSpacesInFunctionExpression": {
-    "beforeOpeningRoundBrace": true,
     "beforeOpeningCurlyBrace": true
   },
   "requireSpacesInAnonymousFunctionExpression": {
-    "beforeOpeningRoundBrace": true,
     "beforeOpeningCurlyBrace": true
   },
   "requireSpacesInNamedFunctionExpression": {
-    "beforeOpeningRoundBrace": true,
     "beforeOpeningCurlyBrace": true
   },
   "requireSpacesInFunctionDeclaration": {
-    "beforeOpeningRoundBrace": true,
     "beforeOpeningCurlyBrace": true
   },
   "requireSpacesInFunction": {
-    "beforeOpeningRoundBrace": false,
     "beforeOpeningCurlyBrace": true
   },
-  "disallowSpacesInFunctionExpression": true,
+  "disallowSpacesInFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
   "disallowSpacesInCallExpression": true,
   "disallowMultipleVarDecl": true,
   "requireBlocksOnNewline": true,
@@ -35,7 +32,6 @@
   "disallowSpacesInsideParentheses": true,
   "requireSpacesInsideObjectBrackets": "allButNested",
   "disallowQuotedKeysInObjects": "allButReserved",
-  "disallowDanglingUnderscores": true,
   "requireSpaceBeforeObjectValues": true,
   "requireSpaceBeforeObjectValues": true,
   "requireCommaBeforeLineBreak": true,
@@ -56,7 +52,6 @@
   "requireSpaceAfterLineComment": true,
   "requireFunctionDeclarations": true,
   "disallowNewlineBeforeBlockStatements": true,
-  // "validateQuoteMarks": "'",
   "validateIndentation": 2,
   "validateParameterSeparator": ", ",
   "safeContextKeyword": ["self"]

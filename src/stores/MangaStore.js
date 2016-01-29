@@ -29,12 +29,11 @@ function receiveMangaInfo(manga, info) {
 }
 
 MangaStore.dispatchToken = AppDispatcher.register((action) => {
-  switch(action.type) {
-  case ACTION_TYPES.RECEIVE_MANGA_INFO:
+  switch (action.type) {
+  case ACTION_TYPES.RECEIVE_MANGA_INFO: {
     receiveMangaInfo(action.manga, action.info);
     break;
-
-  default:
+  }
   }
 });
 

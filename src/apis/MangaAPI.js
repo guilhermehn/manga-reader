@@ -1,6 +1,6 @@
 import MangaActionsCreators from '../actions/MangaActionsCreators';
 import MangaStore from '../stores/MangaStore';
-import parsers, {byName} from './parsers';
+import {byName} from './parsers';
 
 let MangaAPI = {
   getMangaInfo(manga) {

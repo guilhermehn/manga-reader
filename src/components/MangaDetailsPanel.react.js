@@ -7,7 +7,7 @@ import {byName} from '../apis/parsers';
 import LoadingIcon from './LoadingIcon.react';
 import {stopPropagation} from '../utils';
 
-const {PropTypes} = React;
+const { PropTypes } = React;
 
 function formatDate(dateString) {
   return moment(new Date(dateString)).format('DD/MM/YYYY');
@@ -26,14 +26,14 @@ function getStateFromStores(manga) {
 
 let ChapterCountRow = React.createClass({
   render() {
-    let {date, number} = this.props;
+    let { date, number } = this.props;
     let dateString = '';
 
     if (date) {
       dateString = `(released in ${formatDate(date)})`;
     }
 
-    return(
+    return (
       <tr>
         <td>Chapters:</td>
         <td>{number} {dateString}</td>
@@ -44,7 +44,7 @@ let ChapterCountRow = React.createClass({
 
 let ChapterSelector = React.createClass({
   render() {
-    let {length} = this.props;
+    let { length } = this.props;
     let options = new Array(length);
 
     for (let i = 0; i < length; i++) {
@@ -89,7 +89,7 @@ let MangaDetailsPanel = React.createClass({
   },
 
   render() {
-    let {mangaInfo, selectedChapter} = this.state;
+    let { mangaInfo, selectedChapter } = this.state;
 
     if (!mangaInfo) {
       return (
@@ -97,17 +97,17 @@ let MangaDetailsPanel = React.createClass({
       );
     }
 
-    let {manga} = this.props;
+    let { manga } = this.props;
     let chapterCountRow = null;
     let separator = ', ';
-    let {lastChapter} = mangaInfo;
+    let { lastChapter } = mangaInfo;
 
     if (lastChapter) {
       chapterCountRow = <ChapterCountRow number={lastChapter.number} date={lastChapter.date} />;
     }
 
     let sourcesList = manga.sources.map((source, i) => {
-      let {name} = source;
+      let { name } = source;
       let url = {
         pathname: `/reader/${manga.normalizedName}/${name}/${selectedChapter}`,
         query: {

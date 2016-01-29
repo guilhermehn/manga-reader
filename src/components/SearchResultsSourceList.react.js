@@ -4,7 +4,7 @@ import {stopPropagation} from '../utils';
 
 const SearchResultsSourceList = React.createClass({
   render() {
-    let {title, sources} = this.props;
+    let { title, sources } = this.props;
 
     let sourcesIcons = sources.map((source, i) => {
       let altText = `Read '${title}' from ${source.name}`;

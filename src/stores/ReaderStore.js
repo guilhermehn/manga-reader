@@ -56,24 +56,26 @@ function resetLoadedPagesCount() {
 }
 
 ReaderStore.dispatchToken = AppDispatcher.register((action) => {
-  switch(action.type) {
-  case ACTION_TYPES.RECEIVE_MANGA_WITH_PAGES:
+  switch (action.type) {
+  case ACTION_TYPES.RECEIVE_MANGA_WITH_PAGES: {
     receiveMangaWithPages(action.manga);
     break;
+  }
 
-  case ACTION_TYPES.STARTED_LOADING_MANGA:
+  case ACTION_TYPES.STARTED_LOADING_MANGA: {
     startedLoadingManga();
     break;
+  }
 
-  case ACTION_TYPES.PAGE_DID_LOAD:
+  case ACTION_TYPES.PAGE_DID_LOAD: {
     pageDidLoad();
     break;
+  }
 
-  case ACTION_TYPES.RESET_LOADED_PAGES_COUNT:
+  case ACTION_TYPES.RESET_LOADED_PAGES_COUNT: {
     resetLoadedPagesCount();
     break;
-
-  default:
+  }
   }
 });
 

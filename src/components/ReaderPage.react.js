@@ -39,17 +39,19 @@ const ReaderPage = React.createClass({
     location: React.PropTypes.object.isRequired
   },
 
+  getDefaultProps() {
+    return {
+      chapter: 1
+    };
+  },
+
   getInitialState() {
     return getStateFromStores(this.props.params.name);
   },
 
   loadManga() {
-    let {name, chapter, source} = this.props.params;
-    let {method} = this.props.location.query;
-
-    if (typeof chapter === 'undefined') {
-      chapter = 1;
-    }
+    let { name, chapter, source } = this.props.params;
+    let { method } = this.props.location.query;
 
     ReaderAPI.loadMangaChapter(name, source, chapter, method);
   },
@@ -85,7 +87,7 @@ const ReaderPage = React.createClass({
   },
 
   render() {
-    let {manga, doneLoadingManga, loadedPagesCount} = this.state;
+    let { manga, doneLoadingManga, loadedPagesCount } = this.state;
 
     if (!doneLoadingManga || !manga || !manga.hasOwnProperty('pages')) {
       let message;
@@ -103,7 +105,7 @@ const ReaderPage = React.createClass({
       );
     }
 
-    let {params, location} = this.props;
+    let { params, location } = this.props;
     let chapterNumber = parseInt(params.chapter);
     let prevChapterUrl = url.resolve(location.pathname, `${parseInt(chapterNumber) - 1}${location.search}`);
     let nextChapterUrl = url.resolve(location.pathname, `${parseInt(chapterNumber) + 1}${location.search}`);

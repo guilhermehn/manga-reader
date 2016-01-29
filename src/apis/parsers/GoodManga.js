@@ -13,7 +13,7 @@ let GoodManga = {
   languages : 'en',
 
   search(search, done) {
-    getPage('http://www.goodmanga.net/manga-search?key=' + search + '&search=Go', (page, body) => {
+    getPage('http://www.goodmanga.net/manga-search?key=' + search + '&search=Go', (page) => {
       let result = page
           .find('.series_list .right_col h3 a:first-child')
           .map((i, el) => {
@@ -27,58 +27,6 @@ let GoodManga = {
           .get();
 
       done(result);
-    });
-  },
-
-  getMangaList(search, callback) {
-    $.ajax({
-      url : 'http://www.goodmanga.net/manga-search?key=' + search + '&search=Go' + '',
-
-      beforeSend(xhr) {
-        xhr.setRequestHeader('Cache-Control', 'no-cache');
-        xhr.setRequestHeader('Pragma', 'no-cache');
-      },
-
-      success(data) {
-        let div = document.createElement('div');
-        div.innerHTML = data.replace(/<img/gi, '<noload');
-
-        let res = $(div)
-          .find('.series_list .right_col h3 a:first-child')
-          .map(function () {
-            let $this = $(this);
-
-            return [$this.text().trim(), $this.attr('href')];
-          })
-          .get();
-
-        callback('GoodManga', res);
-      }
-    });
-  },
-
-  getListChaps(urlManga, mangaName, obj, callback) {
-    $.ajax({
-      url : urlManga,
-
-      beforeSend(xhr) {
-        xhr.setRequestHeader('Cache-Control', 'no-cache');
-        xhr.setRequestHeader('Pragma', 'no-cache');
-      },
-
-      success(objResponse) {
-        let div = document.createElement('div');
-        div.innerHTML = objResponse.replace(/<img/gi, '<noload');
-
-        let res = [];
-
-        $('#chapters ul li a', div).each(function (index) {
-          let $this = $(this);
-          res[res.length] = [$this.text().trim(), $this.attr('href')];
-        });
-
-        callback(res, obj);
-      }
     });
   },
 

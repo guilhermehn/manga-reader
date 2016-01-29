@@ -1,6 +1,3 @@
-/* global chrome */
-'use strict';
-
 let Migration = {
   bookmarkId: null,
   canMigrate: false,
@@ -31,7 +28,7 @@ let Migration = {
         return JSON.parse(syncData.mangas);
       }
       catch (ex) {
-        console.error('Error loading the sync json:', ex.getStack());
+        // console.error('Error loading the sync json:', ex.getStack());
         return null;
       }
     }
@@ -73,4 +70,4 @@ let Migration = {
   }
 };
 
-module.exports = Migration;
+export default Migration;

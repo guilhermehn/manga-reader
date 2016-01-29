@@ -1,14 +1,14 @@
 import {DEFAULT_SETTINGS, LOCALSTORAGE_KEY} from './Constants';
 
-let settings = {};
+let settings = {}; // eslint-disable-line
 let userSettings = {};
 
 let Storage = {
-  updateGlobalSettings () {
+  updateGlobalSettings() {
     settings = Object.assign({}, DEFAULT_SETTINGS, userSettings);
   },
 
-  loadSettings () {
+  loadSettings() {
     let savedData = localStorage.getItem(LOCALSTORAGE_KEY);
 
     if (savedData) {
@@ -21,14 +21,14 @@ let Storage = {
     this.updateGlobalSettings();
   },
 
-  updateSettings (key, value) {
+  updateSettings(key, value) {
     userSettings[key] = value;
     this.updateGlobalSettings();
 
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(userSettings));
   },
 
-  clearUserSettings () {
+  clearUserSettings() {
     localStorage.removeItem(LOCALSTORAGE_KEY);
   },
 
