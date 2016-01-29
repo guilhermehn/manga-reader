@@ -5,7 +5,7 @@ let moment = require('moment');
 let _ = require('lodash');
 let url = require('url');
 
-let zeroLeftPad = _.curry(_.padLeft)(_, 3, '0');
+let zeroLeftPad = _.curry(_.padStart)(_, 3, '0');
 
 let MangaFox = {
   url: 'http://mangafox.me/',

@@ -1,9 +1,8 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
-let EventEmitter = require('events').EventEmitter;
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {EventEmitter} from 'events';
+import {ACTION_TYPES} from '../constants/ReadingListConstants';
+
 const CHANGE_EVENT = 'change';
-let {
-  ACTION_TYPES
-} = require('../constants/ReadingListConstants');
 
 let _readingList = [];
 
@@ -40,4 +39,4 @@ ReadingListStore.dispatchToken = AppDispatcher.register((action) => {
   }
 });
 
-module.exports = ReadingListStore;
+export default ReadingListStore;
