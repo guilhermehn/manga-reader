@@ -1,7 +1,6 @@
-let React = require('react');
-let PropTypes = React.PropTypes;
+import React, {PropTypes} from 'react';
 
-let LoadingIcon = React.createClass({
+const LoadingIcon = React.createClass({
   propTypes: {
     text: PropTypes.string
   },
@@ -23,4 +22,4 @@ let LoadingIcon = React.createClass({
   }
 });
 
-module.exports = LoadingIcon;
+export default LoadingIcon;

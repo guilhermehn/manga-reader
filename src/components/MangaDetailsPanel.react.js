@@ -1,12 +1,13 @@
-let React = require('react');
-let PropTypes = React.PropTypes;
-let MangaAPI = require('../apis/MangaAPI');
-let MangaStore = require('../stores/MangaStore');
-let moment = require('moment');
-let {Link} = require('react-router');
-let parsersByName = require('../apis/parsers').byName;
-let LoadingIcon = require('./LoadingIcon.react');
-let {stopPropagation} = require('../utils');
+import React from 'react';
+import MangaAPI from '../apis/MangaAPI';
+import MangaStore from '../stores/MangaStore';
+import moment from 'moment';
+import {Link} from 'react-router';
+import {byName} from '../apis/parsers';
+import LoadingIcon from './LoadingIcon.react';
+import {stopPropagation} from '../utils';
+
+const {PropTypes} = React;
 
 function formatDate(dateString) {
   return moment(new Date(dateString)).format('DD/MM/YYYY');
@@ -116,7 +117,7 @@ let MangaDetailsPanel = React.createClass({
 
       return (
         <Link key={i} className='btn info-panel-toolbar-link' to={url}>
-          <img className='info-panel-toolbar-source-icon' src={parsersByName[name].icon} />
+          <img className='info-panel-toolbar-source-icon' src={byName[name].icon} />
           <span>{name}</span>
         </Link>
       );

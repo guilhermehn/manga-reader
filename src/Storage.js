@@ -1,9 +1,4 @@
-'use strict';
-
-let {
-  DEFAULT_SETTINGS,
-  LOCALSTORAGE_KEY
-} = require('./Constants');
+import {DEFAULT_SETTINGS, LOCALSTORAGE_KEY} from './Constants';
 
 let settings = {};
 let userSettings = {};
@@ -42,4 +37,4 @@ let Storage = {
   }
 };
 
-module.exports = Storage;
+export default Storage;

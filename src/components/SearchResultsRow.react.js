@@ -1,7 +1,7 @@
-let React = require('react');
-let MangaDetailsPanel = require('./MangaDetailsPanel.react');
+import React from 'react';
+import MangaDetailsPanel from './MangaDetailsPanel.react';
 
-let SearchResultsRow = React.createClass({
+const SearchResultsRow = React.createClass({
   getDefaultProps() {
     return {
       infoExpanded: false,
@@ -63,4 +63,4 @@ let SearchResultsRow = React.createClass({
   }
 });
 
-module.exports = SearchResultsRow;
+export default SearchResultsRow;

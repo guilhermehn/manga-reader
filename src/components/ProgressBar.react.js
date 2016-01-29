@@ -1,8 +1,7 @@
-let React = require('react');
-let _ = require('lodash');
-let PropTypes = React.PropTypes;
+import React, {PropTypes} from 'react';
+import _ from 'lodash';
 
-let ProgressBar = React.createClass({
+const ProgressBar = React.createClass({
   propTypes: {
     total: PropTypes.number.isRequired,
     progress: PropTypes.number.isRequired,
@@ -46,4 +45,4 @@ let ProgressBar = React.createClass({
   }
 });
 
-module.exports = ProgressBar;
+export default ProgressBar;

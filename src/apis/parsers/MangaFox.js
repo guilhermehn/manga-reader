@@ -1,13 +1,13 @@
-let $ = require('cheerio');
-let {getPage} = require('./parserUtils');
-let Chapter = require('../../Chapter');
-let moment = require('moment');
-let _ = require('lodash');
-let url = require('url');
+import cheerio from 'cheerio';
+import {getPage} from './parserUtils';
+import Chapter from '../../Chapter';
+import moment from 'moment';
+import _ from 'lodash';
+import url from 'url';
 
-let zeroLeftPad = _.curry(_.padStart)(_, 3, '0');
+const zeroLeftPad = _.curry(_.padStart)(_, 3, '0');
 
-let MangaFox = {
+const MangaFox = {
   url: 'http://mangafox.me/',
   name: 'Manga Fox',
   icon: 'http://mangafox.me/favicon.ico',
@@ -23,7 +23,7 @@ let MangaFox = {
       }
 
       let result = page.find('#listing tr td:first-child a').map((i, el) => {
-        let $el = $(el);
+        let $el = cheerio(el);
 
         return {
           title: $el.html(),
@@ -51,7 +51,7 @@ let MangaFox = {
 
     getPage(url, (page) => {
       let res = page.find('ul.chlist h3, ul.chlist h4').map((i, el) => {
-        let $el = $(el);
+        let $el = cheerio(el);
         let chapterLink = $el.find('a');
         let chapterUrl = chapterLink.attr('href');
 
@@ -142,4 +142,4 @@ let MangaFox = {
   }
 };
 
-module.exports = MangaFox;
+export default MangaFox;

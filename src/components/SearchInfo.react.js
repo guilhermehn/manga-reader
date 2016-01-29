@@ -1,6 +1,6 @@
-let React = require('react');
+import React from 'react';
 
-let SearchInfo = React.createClass({
+const SearchInfo = React.createClass({
   render() {
     return (
       <div className='search-info'>
@@ -10,4 +10,4 @@ let SearchInfo = React.createClass({
   }
 });
 
-module.exports = SearchInfo;
+export default SearchInfo;

@@ -1,9 +1,8 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
-let EventEmitter = require('events').EventEmitter;
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {EventEmitter} from 'events';
+import {ACTION_TYPES} from '../constants/ReaderConstants';
+
 const CHANGE_EVENT = 'change';
-let {
-  ACTION_TYPES
-} = require('../constants/ReaderConstants');
 
 let _mangaWithPages = null;
 let _doneLoadingManga = false;
@@ -78,4 +77,4 @@ ReaderStore.dispatchToken = AppDispatcher.register((action) => {
   }
 });
 
-module.exports = ReaderStore;
+export default ReaderStore;

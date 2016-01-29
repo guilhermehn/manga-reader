@@ -1,8 +1,8 @@
-let React = require('react');
-let parsers = require('../apis/parsers');
-let {stopPropagation} = require('../utils');
+import React from 'react';
+import parsers from '../apis/parsers';
+import {stopPropagation} from '../utils';
 
-let SearchResultsSourceList = React.createClass({
+const SearchResultsSourceList = React.createClass({
   render() {
     let {title, sources} = this.props;
 
@@ -22,4 +22,4 @@ let SearchResultsSourceList = React.createClass({
   }
 });
 
-module.exports = SearchResultsSourceList;
+export default SearchResultsSourceList;

@@ -1,6 +1,6 @@
-let React = require('react');
+import React from 'react';
 
-let EmptySearchResult = React.createClass({
+const EmptySearchResult = React.createClass({
   render() {
     return (
       <strong>No manga contains the search term '{this.props.term}'</strong>
@@ -8,4 +8,4 @@ let EmptySearchResult = React.createClass({
   }
 });
 
-module.exports = EmptySearchResult;
+export default EmptySearchResult;

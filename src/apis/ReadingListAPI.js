@@ -1,7 +1,7 @@
-let localforage = require('localforage');
-let SettingsAPI = require('./SettingsAPI');
-let {STORAGE_KEY} = require('../constants/ReadingListConstants');
-let ReadingListActionsCreators = require('../actions/ReadingListActionsCreators');
+import localforage from 'localforage';
+import SettingsAPI from './SettingsAPI';
+import {STORAGE_KEY} from '../constants/ReadingListConstants';
+import ReadingListActionsCreators from '../actions/ReadingListActionsCreators';
 
 function loadFromChromeSync(callback) {
   chrome.storage.sync.get(STORAGE_KEY, data => {
@@ -36,7 +36,7 @@ function loadReadingList(callback) {
   });
 }
 
-let ReadingListAPI = {
+const ReadingListAPI = {
   loadReadingList() {
     loadReadingList(readingList =>
       ReadingListActionsCreators.loadReadingList(readingList));
@@ -56,4 +56,4 @@ let ReadingListAPI = {
   }
 };
 
-module.exports = ReadingListAPI;
+export default ReadingListAPI;

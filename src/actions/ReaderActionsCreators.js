@@ -1,10 +1,7 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {ACTION_TYPES} from '../constants/ReaderConstants';
 
-let {
-  ACTION_TYPES
-} = require('../constants/ReaderConstants');
-
-module.exports = {
+export default {
   startedLoadingManga() {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.STARTED_LOADING_MANGA

@@ -1,7 +1,7 @@
-let React = require('react');
-let SearchAPI = require('../apis/SearchAPI');
+import React from 'react';
+import SearchAPI from '../apis/SearchAPI';
 
-let SearchField = React.createClass({
+const SearchField = React.createClass({
   search() {
     let term = this.refs.searchTerm.value.trim();
 
@@ -38,4 +38,4 @@ let SearchField = React.createClass({
   }
 });
 
-module.exports = SearchField;
+export default SearchField;

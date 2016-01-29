@@ -1,10 +1,7 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {ACTION_TYPES} from '../constants/ReadingListConstants';
 
-let {
-  ACTION_TYPES
-} = require('../constants/ReadingListConstants');
-
-module.exports = {
+export default {
   loadReadingList(readingList) {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.LOAD_READING_LIST,

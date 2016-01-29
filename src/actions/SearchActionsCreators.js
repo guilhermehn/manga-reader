@@ -1,10 +1,7 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {ACTION_TYPES} from '../constants/SearchConstants';
 
-let {
-  ACTION_TYPES
-} = require('../constants/SearchConstants');
-
-module.exports = {
+export default {
   didSentSearch(term) {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.DID_SENT_SEARCH,

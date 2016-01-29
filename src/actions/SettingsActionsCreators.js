@@ -1,10 +1,7 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {ACTION_TYPES} from '../constants/SettingsConstants';
 
-let {
-  ACTION_TYPES
-} = require('../constants/SettingsConstants');
-
-module.exports = {
+export default {
   receiveSettings(settings) {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.RECEIVE_SETTINGS,

@@ -1,4 +1,4 @@
-let keyMirror = require('keymirror');
+import keyMirror from 'keymirror';
 
 const SETTINGS_SECTIONS = [
   {
@@ -125,14 +125,10 @@ const DEFAULT_SETTINGS = {
   dismissMigration: false
 };
 
-module.exports = {
-  SETTINGS_KEY: 'Settings',
+const SETTINGS_KEY = 'Settings';
 
-  SETTINGS_SECTIONS: SETTINGS_SECTIONS,
+const ACTION_TYPES = keyMirror({
+  RECEIVE_SETTINGS: null
+});
 
-  DEFAULT_SETTINGS: DEFAULT_SETTINGS,
-
-  ACTION_TYPES: keyMirror({
-    RECEIVE_SETTINGS: null
-  })
-};
+export {SETTINGS_KEY, SETTINGS_SECTIONS, DEFAULT_SETTINGS, ACTION_TYPES};

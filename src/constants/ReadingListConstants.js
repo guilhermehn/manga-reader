@@ -1,8 +1,9 @@
-let keyMirror = require('keymirror');
+import keyMirror from 'keymirror';
 
-module.exports = {
-  STORAGE_KEY: 'readingList',
-  ACTION_TYPES: keyMirror({
-    LOAD_READING_LIST: null
-  })
-};
+const STORAGE_KEY = 'readingList';
+
+const ACTION_TYPES = keyMirror({
+  LOAD_READING_LIST: null
+});
+
+export {STORAGE_KEY, ACTION_TYPES};

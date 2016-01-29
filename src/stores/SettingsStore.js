@@ -1,9 +1,8 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
-let EventEmitter = require('events').EventEmitter;
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {EventEmitter} from 'events';
+import {ACTION_TYPES} from '../constants/SettingsConstants';
+
 const CHANGE_EVENT = 'change';
-let {
-  ACTION_TYPES
-} = require('../constants/SettingsConstants');
 
 let _settings = {};
 
@@ -40,4 +39,4 @@ SettingsStore.dispatchToken = AppDispatcher.register((action) => {
   }
 });
 
-module.exports = SettingsStore;
+export default SettingsStore;

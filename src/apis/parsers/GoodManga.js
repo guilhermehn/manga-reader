@@ -1,10 +1,10 @@
-let $ = require('cheerio');
-let {getPage} = require('./parserUtils');
-let Chapter = require('../../Chapter');
-let moment = require('moment');
-let {resolve} = require('url');
-let {join} = require('path');
-let {last} = require('lodash');
+import cheerio from 'cheerio';
+import {getPage} from './parserUtils';
+import Chapter from '../../Chapter';
+import moment from 'moment';
+import {resolve} from 'url';
+import {join} from 'path';
+import {last} from 'lodash';
 
 let GoodManga = {
   url: 'http://www.goodmanga.net/',
@@ -17,7 +17,7 @@ let GoodManga = {
       let result = page
           .find('.series_list .right_col h3 a:first-child')
           .map((i, el) => {
-            let $el = $(el);
+            let $el = cheerio(el);
 
             return {
               title: $el.text().trim(),

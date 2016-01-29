@@ -1,8 +1,7 @@
-let React = require('react');
-let PropTypes = React.PropTypes;
-let SearchAPI = require('../apis/SearchAPI');
+import React, {PropTypes} from 'react';
+import SearchAPI from '../apis/SearchAPI';
 
-let SearchWarning = React.createClass({
+const SearchWarning = React.createClass({
   propTypes: {
     term: PropTypes.string
   },
@@ -28,4 +27,4 @@ let SearchWarning = React.createClass({
   }
 });
 
-module.exports = SearchWarning;
+export default SearchWarning;

@@ -1,13 +1,13 @@
-let React = require('react');
-let EmptySearchResult = require('./EmptySearchResult.react');
-let SearchInfo = require('./SearchInfo.react');
-let SearchResultsRow = require('./SearchResultsRow.react');
+import React from 'react';
+import EmptySearchResult from './EmptySearchResult.react';
+import SearchInfo from './SearchInfo.react';
+import SearchResultsRow from './SearchResultsRow.react';
 
 function isInReadingList(readingList, mangaName) {
   return readingList.some(item => item.normalizedName === mangaName);
 }
 
-let SearchResultsTable = React.createClass({
+const SearchResultsTable = React.createClass({
   getInitialState() {
     return {
       expandedRowIndex: null
@@ -67,4 +67,4 @@ let SearchResultsTable = React.createClass({
   }
 });
 
-module.exports = SearchResultsTable;
+export default SearchResultsTable;

@@ -1,6 +1,6 @@
-let MangaActionsCreators = require('../actions/MangaActionsCreators');
-let MangaStore = require('../stores/MangaStore');
-let parsers = require('./parsers');
+import MangaActionsCreators from '../actions/MangaActionsCreators';
+import MangaStore from '../stores/MangaStore';
+import parsers, {byName} from './parsers';
 
 let MangaAPI = {
   getMangaInfo(manga) {
@@ -12,7 +12,7 @@ let MangaAPI = {
     }
 
     let source = manga.sources[0];
-    let parser = parsers.byName[source.name];
+    let parser = byName[source.name];
 
     parser.getMangaInfo(source, (info) => {
       MangaActionsCreators.receiveMangaInfo(manga, info);

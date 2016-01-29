@@ -1,11 +1,8 @@
-let localforage = require('localforage');
-let SettingsActionsCreators = require('../actions/SettingsActionsCreators');
-let {
-  SETTINGS_KEY,
-  DEFAULT_SETTINGS
-} = require('../constants/SettingsConstants');
+import localforage from 'localforage';
+import SettingsActionsCreators from '../actions/SettingsActionsCreators';
+import {SETTINGS_KEY, DEFAULT_SETTINGS} from '../constants/SettingsConstants';
 
-let SettingsAPI = {
+const SettingsAPI = {
   getSettings(done) {
     localforage.getItem(SETTINGS_KEY, (err, value) => {
       if (err || !value) {
@@ -30,4 +27,4 @@ let SettingsAPI = {
   }
 };
 
-module.exports = SettingsAPI;
+export default SettingsAPI;

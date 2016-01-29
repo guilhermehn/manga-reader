@@ -31,6 +31,6 @@ const MENU_ITEMS = [
   }
 ];
 
-module.exports = {
-  menuItems: MENU_ITEMS
+export {
+  MENU_ITEMS as menuItems
 };

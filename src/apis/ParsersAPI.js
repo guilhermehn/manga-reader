@@ -1,13 +1,13 @@
-let async = require('async');
-let parserUtils = require('./parsers/parserUtils');
-let parsers = require('./parsers');
+import async from 'async';
+import {normalizeName} from './parsers/parserUtils';
+import parsers, {byName} from './parsers';
 
 function mergeSearchResults(resultCollection) {
   let siteByNormalizedMangaName = {};
 
   resultCollection.forEach(parserResult => {
     parserResult.results.forEach((source) => {
-      let name = parserUtils.normalizeName(source.title);
+      let name = normalizeName(source.title);
       source.name = parserResult.parserName;
 
       if (siteByNormalizedMangaName.hasOwnProperty(name)) {
@@ -53,12 +53,12 @@ function search(term, done) {
 }
 
 function getChapterPages(source, chapterNumber, done) {
-  parsers.byName[source.name].getChapterPages(source.url, chapterNumber, done);
+  byName[source.name].getChapterPages(source.url, chapterNumber, done);
 }
 
-let ParsersAPI = {
+const ParsersAPI = {
   search: search,
   getChapterPages: getChapterPages
 };
 
-module.exports = ParsersAPI;
+export default ParsersAPI;

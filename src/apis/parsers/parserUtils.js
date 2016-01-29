@@ -1,19 +1,17 @@
-let request = require('superagent');
-let cheerio = require('cheerio');
+import superagent from 'superagent';
+import cheerio from 'cheerio';
 
-let parserUtils = {
-  getPage(url, done) {
-    request
-      .get(url)
-      .end((err, res) => {
-        let page = cheerio(res.text);
-        done(page, res.text);
-      });
-  },
+function getPage(url, done) {
+  superagent
+    .get(url)
+    .end((err, res) => {
+      let page = cheerio(res.text);
+      done(page, res.text);
+    });
+}
 
-  normalizeName(name) {
-    return name.toLowerCase().replace(/[\W]/g, '');
-  }
-};
+function normalizeName(name) {
+  return name.toLowerCase().replace(/[\W]/g, '');
+}
 
-module.exports = parserUtils;
+export {getPage, normalizeName};

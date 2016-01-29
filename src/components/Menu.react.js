@@ -1,7 +1,7 @@
-let React = require('react');
-let {Link} = require('react-router');
+import React from 'react';
+import {Link} from 'react-router';
 
-let MenuItem = React.createClass({
+const MenuItem = React.createClass({
   render() {
     let {route, iconClassname, title} = this.props;
 
@@ -15,7 +15,7 @@ let MenuItem = React.createClass({
   }
 });
 
-let Menu = React.createClass({
+const Menu = React.createClass({
   render() {
     let menuItems = this.props.items.map((item, i) =>
       <MenuItem key={i} {...item} />);
@@ -28,4 +28,4 @@ let Menu = React.createClass({
   }
 });
 
-module.exports = Menu;
+export default Menu;

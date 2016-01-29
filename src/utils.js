@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   stopPropagation(e) {
     e.stopPropagation();
   }

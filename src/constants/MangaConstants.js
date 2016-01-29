@@ -1,9 +1,7 @@
-let keyMirror = require('keymirror');
+import keyMirror from 'keymirror';
 
-let MangaConstants = {
-  ACTION_TYPES: keyMirror({
-    RECEIVE_MANGA_INFO: null
-  })
-};
+const ACTION_TYPES = keyMirror({
+  RECEIVE_MANGA_INFO: null
+});
 
-module.exports = MangaConstants;
+export {ACTION_TYPES};

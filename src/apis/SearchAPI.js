@@ -1,7 +1,7 @@
-let SearchActionsCreators = require('../actions/SearchActionsCreators');
-let ParsersAPI = require('./ParsersAPI');
+import SearchActionsCreators from '../actions/SearchActionsCreators';
+import ParsersAPI from './ParsersAPI';
 
-let SearchAPI = {
+const SearchAPI = {
   search(term) {
     SearchActionsCreators.didSentSearch(term);
 
@@ -23,4 +23,4 @@ let SearchAPI = {
   }
 };
 
-module.exports = SearchAPI;
+export default SearchAPI;

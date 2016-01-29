@@ -1,10 +1,7 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {ACTION_TYPES} from '../constants/MangaConstants';
 
-let {
-  ACTION_TYPES
-} = require('../constants/MangaConstants');
-
-module.exports = {
+export default {
   receiveMangaInfo(manga, info) {
     AppDispatcher.dispatch({
       type: ACTION_TYPES.RECEIVE_MANGA_INFO,

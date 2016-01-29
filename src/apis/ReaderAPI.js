@@ -1,7 +1,7 @@
-let ReaderActionsCreators = require('../actions/ReaderActionsCreators');
-let SearchStore = require('../stores/SearchStore');
-let ReadingListAPI = require('../apis/ReadingListAPI');
-let ParsersAPI = require('../apis/ParsersAPI');
+import ReaderActionsCreators from '../actions/ReaderActionsCreators';
+import SearchStore from '../stores/SearchStore';
+import ReadingListAPI from '../apis/ReadingListAPI';
+import ParsersAPI from '../apis/ParsersAPI';
 
 function loadMangaByName(name, method, done) {
   switch(method) {
@@ -48,10 +48,10 @@ function resetLoadedPagesCount() {
   ReaderActionsCreators.resetLoadedPagesCount();
 }
 
-let ReaderAPI = {
+const ReaderAPI = {
   loadMangaChapter: loadMangaChapter,
   pageDidLoad: pageDidLoad,
   resetLoadedPagesCount: resetLoadedPagesCount
 };
 
-module.exports = ReaderAPI;
+export default ReaderAPI;

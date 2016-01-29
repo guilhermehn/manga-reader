@@ -17,11 +17,8 @@ const DEFAULT_SETTINGS = {
   dismissMigration: false
 };
 
-const Constants = {
-  DEFAULT_ROUTE: 'search',
-  PAGE_MOUNT_POINT: document.querySelector('.content'),
-  LOCALSTORAGE_KEY: 'UserSettings',
-  DEFAULT_SETTINGS: DEFAULT_SETTINGS
-};
+const DEFAULT_ROUTE = 'search';
+const PAGE_MOUNT_POINT = document.querySelector('.content');
+const LOCALSTORAGE_KEY = 'UserSettings';
 
-export default Constants;
+export {DEFAULT_SETTINGS, DEFAULT_ROUTE, PAGE_MOUNT_POINT, LOCALSTORAGE_KEY};

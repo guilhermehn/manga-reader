@@ -1,8 +1,8 @@
-var React = require('react');
-let Menu = require('./Menu.react');
-let {menuItems} = require('../constants/MenuConstants');
+import React from 'react';
+import Menu from './Menu.react';
+import {menuItems} from '../constants/MenuConstants';
 
-var HeaderComponent = React.createClass({
+const HeaderComponent = React.createClass({
   render() {
     return (
       <header className='control-panel-header'>
@@ -15,4 +15,4 @@ var HeaderComponent = React.createClass({
   }
 });
 
-module.exports = HeaderComponent;
+export default HeaderComponent;

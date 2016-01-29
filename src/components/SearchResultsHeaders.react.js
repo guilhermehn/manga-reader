@@ -1,6 +1,6 @@
-let React = require('react');
+import React from 'react';
 
-let SearchResultsHeaders = React.createClass({
+const SearchResultsHeaders = React.createClass({
   render() {
     return (
       <tr>
@@ -11,4 +11,4 @@ let SearchResultsHeaders = React.createClass({
   }
 });
 
-module.exports = SearchResultsHeaders;
+export default SearchResultsHeaders;

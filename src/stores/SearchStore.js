@@ -1,9 +1,8 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
-let EventEmitter = require('events').EventEmitter;
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {EventEmitter} from 'events';
+import {ACTION_TYPES} from '../constants/SearchConstants';
+
 const CHANGE_EVENT = 'change';
-let {
-  ACTION_TYPES
-} = require('../constants/SearchConstants');
 
 let _searchHistory = [];
 let _waitingForSearch = false;
