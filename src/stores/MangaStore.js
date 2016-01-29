@@ -1,9 +1,7 @@
-let AppDispatcher = require('../dispatcher/AppDispatcher');
-let EventEmitter = require('events').EventEmitter;
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import {EventEmitter} from 'events';
+import {ACTION_TYPES} from '../constants/MangaConstants';
 const CHANGE_EVENT = 'change';
-let {
-  ACTION_TYPES
-} = require('../constants/MangaConstants');
 
 let _mangaInfo = {};
 
@@ -40,4 +38,4 @@ MangaStore.dispatchToken = AppDispatcher.register((action) => {
   }
 });
 
-module.exports = MangaStore;
+export default MangaStore;

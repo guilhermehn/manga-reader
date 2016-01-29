@@ -1,16 +1,16 @@
-let React = require('react'); // eslint-disable-line
-let {render} = require('react-dom');
-let {Router, Route} = require('react-router');
-let ControlPanel = require('./components/ControlPanel.react');
-let ReadingListPage = require('./components/ReadingListPage.react');
-let SearchPage = require('./components/SearchPage.react');
-let SettingsPage = require('./components/SettingsPage.react');
-let ReaderPage = require('./components/ReaderPage.react');
-let Storage = require('./Storage');
+import React from 'react'; // eslint-disable-line
+import {render} from 'react-dom';
+import {Router, Route, hashHistory} from 'react-router';
+import ControlPanel from './components/ControlPanel.react';
+import ReadingListPage from './components/ReadingListPage.react';
+import SearchPage from './components/SearchPage.react';
+import SettingsPage from './components/SettingsPage.react';
+import ReaderPage from './components/ReaderPage.react';
+import Storage from './Storage';
 Storage.init();
 
-render((
-  <Router>
+const routes = (
+  <Router history={hashHistory}>
     <Route path='/' component={ControlPanel}>
       <Route path='reading' component={ReadingListPage} />
       <Route path='search' component={SearchPage} />
@@ -19,4 +19,6 @@ render((
     <Route path='/reader/:name/:source' component={ReaderPage} />
     <Route path='/reader/:name/:source/:chapter' component={ReaderPage} />
   </Router>
-), document.querySelector('#root'));
+);
+
+render(routes, document.querySelector('#root'));

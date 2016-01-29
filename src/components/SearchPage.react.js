@@ -1,11 +1,11 @@
-let React = require('react');
-let LoadingIcon = require('./LoadingIcon.react');
-let SearchStore = require('../stores/SearchStore');
-let SearchWarning = require('./SearchWarning.react');
-let SearchField = require('./SearchField.react');
-let SearchResultsTable = require('./SearchResultsTable.react');
-let ReadingListAPI = require('../apis/ReadingListAPI');
-let ReadingListStore = require('../stores/ReadingListStore');
+import React from 'react';
+import LoadingIcon from './LoadingIcon.react';
+import SearchStore from '../stores/SearchStore';
+import SearchWarning from './SearchWarning.react';
+import SearchField from './SearchField.react';
+import SearchResultsTable from './SearchResultsTable.react';
+import ReadingListAPI from '../apis/ReadingListAPI';
+import ReadingListStore from '../stores/ReadingListStore';
 
 function getStateFromStores() {
   return {
@@ -17,7 +17,7 @@ function getStateFromStores() {
   };
 }
 
-let SearchPage = React.createClass({
+const SearchPage = React.createClass({
   getInitialState() {
     return getStateFromStores();
   },
@@ -55,4 +55,4 @@ let SearchPage = React.createClass({
   }
 });
 
-module.exports = SearchPage;
+export default SearchPage;

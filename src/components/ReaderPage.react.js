@@ -1,14 +1,14 @@
-let React = require('react');
-let ReaderAPI = require('../apis/ReaderAPI');
-let SettingsAPI = require('../apis/SettingsAPI');
-let ReaderStore = require('../stores/ReaderStore');
-let SettingsStore = require('../stores/SettingsStore');
-let LoadingIcon = require('./LoadingIcon.react');
-let ProgressBar = require('./ProgressBar.react');
-let {Link, History} = require('react-router');
-let url = require('url');
+import React from 'react';
+import ReaderAPI from '../apis/ReaderAPI';
+import SettingsAPI from '../apis/SettingsAPI';
+import ReaderStore from '../stores/ReaderStore';
+import SettingsStore from '../stores/SettingsStore';
+import LoadingIcon from './LoadingIcon.react';
+import ProgressBar from './ProgressBar.react';
+import {Link} from 'react-router';
+import url from 'url';
 
-let Page = React.createClass({
+const Page = React.createClass({
   handleLoad() {
     this.props.onLoad(null);
   },
@@ -33,8 +33,11 @@ function getStateFromStores() {
   };
 }
 
-let ReaderPage = React.createClass({
-  mixins: [History],
+const ReaderPage = React.createClass({
+  propTypes: {
+    params: React.PropTypes.object.isRequired,
+    location: React.PropTypes.object.isRequired
+  },
 
   getInitialState() {
     return getStateFromStores(this.props.params.name);
@@ -136,4 +139,4 @@ let ReaderPage = React.createClass({
   }
 });
 
-module.exports = ReaderPage;
+export default ReaderPage;

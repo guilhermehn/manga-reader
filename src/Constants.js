@@ -24,4 +24,4 @@ const Constants = {
   DEFAULT_SETTINGS: DEFAULT_SETTINGS
 };
 
-module.exports = Constants;
+export default Constants;

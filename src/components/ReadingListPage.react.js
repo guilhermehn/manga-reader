@@ -1,12 +1,12 @@
-let React = require('react');
-let ProgressBar = require('./ProgressBar.react');
-let ReadingListAPI = require('../apis/ReadingListAPI');
-let parsers = require('../apis/parsers');
-let ReadingListStore = require('../stores/ReadingListStore');
-let {Link} = require('react-router');
-let moment = require('moment');
+import React from 'react';
+import ProgressBar from './ProgressBar.react';
+import ReadingListAPI from '../apis/ReadingListAPI';
+import parsers from '../apis/parsers';
+import ReadingListStore from '../stores/ReadingListStore';
+import {Link} from 'react-router';
+import moment from 'moment';
 
-let EmptyReadingList = React.createClass({
+const EmptyReadingList = React.createClass({
   render() {
     return (
       <div className='reading-list-empty'>
@@ -17,7 +17,7 @@ let EmptyReadingList = React.createClass({
   }
 });
 
-let ReadingListItem = React.createClass({
+const ReadingListItem = React.createClass({
   render() {
     let {item} = this.props;
     let done = item.lastReadChapter === item.lastChapter.number;
@@ -65,7 +65,7 @@ let ReadingListItem = React.createClass({
   }
 });
 
-let ReadingList = React.createClass({
+const ReadingList = React.createClass({
   render() {
     return (
       <div className='reading-list-items'>
@@ -83,7 +83,7 @@ function getStateFromStores() {
   };
 }
 
-let ReadingListPage = React.createClass({
+const ReadingListPage = React.createClass({
   getInitialState() {
     return getStateFromStores();
   },
@@ -121,4 +121,4 @@ let ReadingListPage = React.createClass({
   }
 });
 
-module.exports = ReadingListPage;
+export default ReadingListPage;

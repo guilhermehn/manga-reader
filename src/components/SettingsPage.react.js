@@ -1,12 +1,8 @@
-'use strict';
-
-let React = require('react');
-let _ = require('lodash');
-let SettingsStore = require('../stores/SettingsStore');
-let SettingsAPI = require('../apis/SettingsAPI');
-let {
-  SETTINGS_SECTIONS
-} = require('../constants/SettingsConstants');
+import React from 'react';
+import _ from 'lodash';
+import SettingsStore from '../stores/SettingsStore';
+import SettingsAPI from '../apis/SettingsAPI';
+import {SETTINGS_SECTIONS} from '../constants/SettingsConstants';
 
 function getStateFromStores() {
   return {
@@ -18,7 +14,7 @@ function dismissMigration() {
   SettingsAPI.setOption('dismissMigration', true);
 }
 
-let loadUserSettingsMixin = {
+const loadUserSettingsMixin = {
   getInitialState() {
     return {
       value: this.props.value
@@ -62,7 +58,7 @@ let loadUserSettingsMixin = {
   }
 };
 
-let MigrationNotice = React.createClass({
+const MigrationNotice = React.createClass({
   render() {
     return (
       <div className='notice'>
@@ -74,7 +70,7 @@ let MigrationNotice = React.createClass({
   }
 });
 
-let Setting = React.createClass({
+const Setting = React.createClass({
   render() {
     return (
       <div className='settings-option'>
@@ -84,7 +80,7 @@ let Setting = React.createClass({
   }
 });
 
-let Checkbox = React.createClass({
+const Checkbox = React.createClass({
   mixins: [loadUserSettingsMixin],
 
   render() {
@@ -100,7 +96,7 @@ let Checkbox = React.createClass({
   }
 });
 
-let RadioGroup = React.createClass({
+const RadioGroup = React.createClass({
   mixins: [loadUserSettingsMixin],
 
   render() {
@@ -123,7 +119,7 @@ let RadioGroup = React.createClass({
   }
 });
 
-let SettingsSection = React.createClass({
+const SettingsSection = React.createClass({
   render() {
     return (
       <section className='settings-section'>
@@ -134,7 +130,7 @@ let SettingsSection = React.createClass({
   }
 });
 
-let SettingsContent = React.createClass({
+const SettingsContent = React.createClass({
   render() {
     return (
       <section className='page-content'>
@@ -169,7 +165,7 @@ function createSections(sections, settings) {
   });
 }
 
-let SettingsPage = React.createClass({
+const SettingsPage = React.createClass({
   getInitialState() {
     return getStateFromStores();
   },
@@ -222,4 +218,4 @@ let SettingsPage = React.createClass({
   }
 });
 
-module.exports = SettingsPage;
+export default SettingsPage;

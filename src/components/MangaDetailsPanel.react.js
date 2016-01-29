@@ -107,7 +107,12 @@ let MangaDetailsPanel = React.createClass({
 
     let sourcesList = manga.sources.map((source, i) => {
       let {name} = source;
-      let url = `/reader/${manga.normalizedName}/${name}/${selectedChapter}?method=search`;
+      let url = {
+        pathname: `/reader/${manga.normalizedName}/${name}/${selectedChapter}`,
+        query: {
+          method: 'search'
+        }
+      };
 
       return (
         <Link key={i} className='btn info-panel-toolbar-link' to={url}>

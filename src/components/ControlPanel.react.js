@@ -1,7 +1,7 @@
-let React = require('react'); // eslint-disable-line
-let ControlPanelHeader = require('./ControlPanelHeader.react');
+import React from 'react';
+import ControlPanelHeader from './ControlPanelHeader.react';
 
-let ControlPanel = React.createClass({
+const ControlPanel = React.createClass({
   render() {
     return (
       <div className='control-panel'>
@@ -14,4 +14,4 @@ let ControlPanel = React.createClass({
   }
 });
 
-module.exports = ControlPanel;
+export default ControlPanel;

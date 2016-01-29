@@ -10,4 +10,4 @@ class Chapter {
   }
 }
 
-module.exports = Chapter;
+export default Chapter;
