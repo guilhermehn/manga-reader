@@ -4,6 +4,7 @@
   "description": "AllMangaReader Rebirth",
   "main": "./src/App.js",
   "scripts": {
+    "lint": "eslint src/ && jscs src/ --esnext",
     "js": "browserify . | uglifyjs -cm > ./build/main.js",
     "js:watch": "watchify -v -d ./src/App.js -o ./build/main.js",
     "css": "stylus ./styl/main.styl -p | myth -c > ./build/main.css",
