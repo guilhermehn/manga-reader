@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 
-const SearchInfo = React.createClass({
-  render() {
-    return (
-      <div className='search-info'>
-        { this.props.resultsLength } mangas were found for { `'${ this.props.term }'` }
-      </div>
-    )
-  }
-})
+const SearchInfo = ({ resultsLength, term }) => (
+  <div className='search-info'>
+    { resultsLength } mangas were found for { `'${ term }'` }
+  </div>
+)
+
+SearchInfo.propTypes = {
+  resultsLength: PropTypes.number.isRequired,
+  term: PropTypes.string.isRequired
+}
 
 export default SearchInfo

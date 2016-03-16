@@ -1,25 +1,34 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import parsers from '../apis/parsers'
 import { stopPropagation } from '../utils'
 
-const SearchResultsSourceList = React.createClass({
-  render() {
-    let { title, sources } = this.props
+const SearchResultsSourceListItem = ({ url, name, title }) => {
+  <a
+    href={ url }
+    target='_blank'
+    title={ `Read '${ title }' from ${ name }` }
+    onClick={ stopPropagation }>
+    <img src={ parsers.byName[name].icon } />
+  </a>
+}
 
-    let sourcesIcons = sources.map((source, i) => {
-      let altText = `Read '${ title }' from ${ source.name }`
+const SearchResultsSourceList = ({ title, sources }) => {
+  return (
+    <span className='ta-right'>
+      {
+        sources.map((source, i) =>
+          <SearchResultsSourceListItem {...source} key={ i } title={ title } />)
+      }
+    </span>
+  )
+}
 
-      return (
-        <a key={ i } href={ source.url } target='_blank' title={ altText } onClick={ stopPropagation }>
-          <img src={ parsers.byName[source.name].icon } alt={ altText } />
-        </a>
-      )
-    })
-
-    return (
-      <span className='ta-right'>{ sourcesIcons }</span>
-    )
-  }
-})
+SearchResultsSourceList.propTypes = {
+  title: PropTypes.string,
+  sources: PropTypes.arrayOf(PropTypes.shape({
+    url: PropTypes.string,
+    name: PropTypes.string
+  }))
+}
 
 export default SearchResultsSourceList

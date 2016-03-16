@@ -1,31 +1,28 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 
-const MenuItem = React.createClass({
-  render() {
-    let { route, iconClassname, title } = this.props
+const MenuItem = ({ route, iconClassname, title }) => (
+  <li>
+    <Link to={ `/${ route }` } className='menu-item' activeClassName='menu-item-active'>
+      <span><i className={ `zmdi zmd-lg ${ iconClassname }` }></i>{ title }</span>
+    </Link>
+  </li>
+)
 
-    return (
-      <li>
-        <Link to={ `/${ route }` } className='menu-item' activeClassName='menu-item-active'>
-          <span><i className={ `zmdi zmd-lg ${ iconClassname }` }></i>{ title }</span>
-        </Link>
-      </li>
-    )
-  }
-})
+MenuItem.propTypes = {
+  route: PropTypes.string.isRequired,
+  iconClassname: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired
+}
 
-const Menu = React.createClass({
-  render() {
-    let menuItems = this.props.items.map((item, i) =>
-      <MenuItem key={ i } { ...item } />)
+const Menu = ({ items }) => (
+  <div className='menu'>
+    <ul>{ items.map((item, i) => <MenuItem key={ i } { ...item } />) }</ul>
+  </div>
+)
 
-    return (
-      <div className='menu'>
-        <ul>{ menuItems }</ul>
-      </div>
-    )
-  }
-})
+Menu.propTypes = {
+  items: PropTypes.array.isRequired
+}
 
 export default Menu

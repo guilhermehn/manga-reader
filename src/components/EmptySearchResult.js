@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 
-const EmptySearchResult = React.createClass({
-  render() {
-    return (
-      <strong>No manga contains the search term '{ this.props.term }'</strong>
-    )
-  }
-})
+const EmptySearchResult = ({ term }) => (
+  <strong>No manga contains the search term '{ term }'</strong>
+)
+
+EmptySearchResult.propTypes = {
+  term: PropTypes.string.isRequired
+}
 
 export default EmptySearchResult

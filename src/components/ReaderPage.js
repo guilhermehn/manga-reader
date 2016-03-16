@@ -1,31 +1,18 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import _ from 'lodash'
 import ReaderAPI from '../apis/ReaderAPI'
 import SettingsAPI from '../apis/SettingsAPI'
 import ReaderStore from '../stores/ReaderStore'
 import SettingsStore from '../stores/SettingsStore'
+import Page from './Page'
 import LoadingIcon from './LoadingIcon'
 import ProgressBar from './ProgressBar'
 import { Link } from 'react-router'
 import url from 'url'
 
-const Page = React.createClass({
-  handleLoad() {
-    this.props.onLoad(null)
-  },
-
-  handleError(e) {
-    this.props.onLoad(e)
-  },
-
-  render() {
-    return (
-      <div className='reader-manga-page'>
-        <img src={ this.props.src } onLoad={ this.handleLoad } onError={ this.handleError } />
-      </div>
-    )
-  }
-})
+function pageDoneLoading() {
+  ReaderAPI.pageDidLoad()
+}
 
 function getStateFromStores() {
   return {
@@ -45,8 +32,8 @@ function createChapterUrl(pathname, number, query) {
 
 const ReaderPage = React.createClass({
   propTypes: {
-    params: React.PropTypes.object.isRequired,
-    location: React.PropTypes.object.isRequired
+    params: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
   },
 
   getDefaultProps() {
@@ -86,10 +73,6 @@ const ReaderPage = React.createClass({
       ReaderAPI.resetLoadedPagesCount()
       this.loadManga()
     }
-  },
-
-  tickProgressBar() {
-    ReaderAPI.pageDidLoad()
   },
 
   _onChange() {
@@ -141,7 +124,7 @@ const ReaderPage = React.createClass({
         <section className='reader-manga-pages'>
           {
             manga.pages.map((pageUrl, i) =>
-              <Page key={ i } src={ pageUrl } onLoad={ this.tickProgressBar } onError={ this.tickProgressBar } />)
+              <Page key={ i } src={ pageUrl } onLoad={ pageDoneLoading } onError={ pageDoneLoading } />)
           }
         </section>
 

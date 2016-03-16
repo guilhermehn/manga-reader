@@ -1,25 +1,22 @@
 import React, { PropTypes } from 'react'
 
-const LoadingIcon = React.createClass({
-  propTypes: {
-    text: PropTypes.string
-  },
+const LoadingIcon = ({ text }) => {
+  let textElement = null
 
-  render() {
-    let { text } = this.props
-    let textElement = null
-
-    if (!!text && text.length) {
-      textElement = <div className='loading-icon-text'>{ text }</div>
-    }
-
-    return (
-      <div className='loading-icon-holder'>
-        <div className='loading-icon'><div></div></div>
-        { textElement }
-      </div>
-    )
+  if (!!text && text.length) {
+    textElement = <div className='loading-icon-text'>{ text }</div>
   }
-})
+
+  return (
+    <div className='loading-icon-holder'>
+      <div className='loading-icon'><div></div></div>
+      { textElement }
+    </div>
+  )
+}
+
+LoadingIcon.propTypes = {
+  text: PropTypes.string
+}
 
 export default LoadingIcon
