@@ -1,40 +1,40 @@
-import {DEFAULT_SETTINGS, LOCALSTORAGE_KEY} from './Constants';
+import { DEFAULT_SETTINGS, LOCALSTORAGE_KEY } from './Constants'
 
 let settings = {}; // eslint-disable-line
-let userSettings = {};
+let userSettings = {}
 
 let Storage = {
   updateGlobalSettings() {
-    settings = Object.assign({}, DEFAULT_SETTINGS, userSettings);
+    settings = Object.assign({}, DEFAULT_SETTINGS, userSettings)
   },
 
   loadSettings() {
-    let savedData = localStorage.getItem(LOCALSTORAGE_KEY);
+    let savedData = localStorage.getItem(LOCALSTORAGE_KEY)
 
     if (savedData) {
-      userSettings = JSON.parse(savedData);
+      userSettings = JSON.parse(savedData)
     }
     else {
-      userSettings = {};
+      userSettings = {}
     }
 
-    this.updateGlobalSettings();
+    this.updateGlobalSettings()
   },
 
   updateSettings(key, value) {
-    userSettings[key] = value;
-    this.updateGlobalSettings();
+    userSettings[key] = value
+    this.updateGlobalSettings()
 
-    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(userSettings));
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(userSettings))
   },
 
   clearUserSettings() {
-    localStorage.removeItem(LOCALSTORAGE_KEY);
+    localStorage.removeItem(LOCALSTORAGE_KEY)
   },
 
   init() {
-    this.loadSettings();
+    this.loadSettings()
   }
-};
+}
 
-export default Storage;
+export default Storage

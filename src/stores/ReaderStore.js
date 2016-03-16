@@ -1,82 +1,82 @@
-import AppDispatcher from '../dispatcher/AppDispatcher';
-import {EventEmitter} from 'events';
-import {ACTION_TYPES} from '../constants/ReaderConstants';
+import AppDispatcher from '../dispatcher/AppDispatcher'
+import { EventEmitter } from 'events'
+import { ACTION_TYPES } from '../constants/ReaderConstants'
 
-const CHANGE_EVENT = 'change';
+const CHANGE_EVENT = 'change'
 
-let _mangaWithPages = null;
-let _doneLoadingManga = false;
-let _loadedPagesCount = 0;
+let _mangaWithPages = null
+let _doneLoadingManga = false
+let _loadedPagesCount = 0
 
 let ReaderStore = Object.assign({}, EventEmitter.prototype, {
   emitChange() {
-    this.emit(CHANGE_EVENT);
+    this.emit(CHANGE_EVENT)
   },
 
   addChangeListener(callback) {
-    this.on(CHANGE_EVENT, callback);
+    this.on(CHANGE_EVENT, callback)
   },
 
   removeChangeListener(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
+    this.removeListener(CHANGE_EVENT, callback)
   },
 
   doneLoadingManga() {
-    return _doneLoadingManga;
+    return _doneLoadingManga
   },
 
   getManga() {
-    return _mangaWithPages;
+    return _mangaWithPages
   },
 
   getLoadedPagesCount() {
-    return _loadedPagesCount;
+    return _loadedPagesCount
   }
-});
+})
 
 function receiveMangaWithPages(manga) {
-  _mangaWithPages = manga;
-  _doneLoadingManga = true;
-  ReaderStore.emitChange();
+  _mangaWithPages = manga
+  _doneLoadingManga = true
+  ReaderStore.emitChange()
 }
 
 function startedLoadingManga() {
-  _doneLoadingManga = false;
-  ReaderStore.emitChange();
+  _doneLoadingManga = false
+  ReaderStore.emitChange()
 }
 
 function pageDidLoad() {
-  _loadedPagesCount += 1;
-  ReaderStore.emitChange();
+  _loadedPagesCount += 1
+  ReaderStore.emitChange()
 }
 
 function resetLoadedPagesCount() {
-  _loadedPagesCount = 0;
-  ReaderStore.emitChange();
+  _loadedPagesCount = 0
+  ReaderStore.emitChange()
 }
 
 ReaderStore.dispatchToken = AppDispatcher.register((action) => {
   switch (action.type) {
   case ACTION_TYPES.RECEIVE_MANGA_WITH_PAGES: {
-    receiveMangaWithPages(action.manga);
-    break;
+    receiveMangaWithPages(action.manga)
+    break
   }
 
   case ACTION_TYPES.STARTED_LOADING_MANGA: {
-    startedLoadingManga();
-    break;
+    startedLoadingManga()
+    break
   }
 
   case ACTION_TYPES.PAGE_DID_LOAD: {
-    pageDidLoad();
-    break;
+    pageDidLoad()
+    break
   }
 
   case ACTION_TYPES.RESET_LOADED_PAGES_COUNT: {
-    resetLoadedPagesCount();
-    break;
+    resetLoadedPagesCount()
+    break
   }
   }
-});
+})
 
-export default ReaderStore;
+export default ReaderStore

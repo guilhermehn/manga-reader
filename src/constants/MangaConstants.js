@@ -1,7 +1,7 @@
-import keyMirror from 'keymirror';
+import keyMirror from 'keymirror'
 
 const ACTION_TYPES = keyMirror({
   RECEIVE_MANGA_INFO: null
-});
+})
 
-export {ACTION_TYPES};
+export { ACTION_TYPES }

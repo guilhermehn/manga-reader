@@ -1,4 +1,4 @@
-import keyMirror from 'keymirror';
+import keyMirror from 'keymirror'
 
 const SETTINGS_SECTIONS = [
   {
@@ -104,7 +104,7 @@ const SETTINGS_SECTIONS = [
       }
     ]
   }
-];
+]
 
 const DEFAULT_SETTINGS = {
   syncData: false,
@@ -123,12 +123,12 @@ const DEFAULT_SETTINGS = {
   feedbackLink: true,
   showDevOptions: false,
   dismissMigration: false
-};
+}
 
-const SETTINGS_KEY = 'Settings';
+const SETTINGS_KEY = 'Settings'
 
 const ACTION_TYPES = keyMirror({
   RECEIVE_SETTINGS: null
-});
+})
 
-export {SETTINGS_KEY, SETTINGS_SECTIONS, DEFAULT_SETTINGS, ACTION_TYPES};
+export { SETTINGS_KEY, SETTINGS_SECTIONS, DEFAULT_SETTINGS, ACTION_TYPES }

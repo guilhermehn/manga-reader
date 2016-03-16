@@ -15,10 +15,10 @@ const DEFAULT_SETTINGS = {
   feedbackLink: true,
   showDevOptions: false,
   dismissMigration: false
-};
+}
 
-const DEFAULT_ROUTE = 'search';
-const PAGE_MOUNT_POINT = document.querySelector('.content');
-const LOCALSTORAGE_KEY = 'UserSettings';
+const DEFAULT_ROUTE = 'search'
+const PAGE_MOUNT_POINT = document.querySelector('.content')
+const LOCALSTORAGE_KEY = 'UserSettings'
 
-export {DEFAULT_SETTINGS, DEFAULT_ROUTE, PAGE_MOUNT_POINT, LOCALSTORAGE_KEY};
+export { DEFAULT_SETTINGS, DEFAULT_ROUTE, PAGE_MOUNT_POINT, LOCALSTORAGE_KEY }

@@ -1,11 +1,11 @@
-import cheerio from 'cheerio';
-import {getPage} from './parserUtils';
-import Chapter from '../../Chapter';
-import moment from 'moment';
-import _ from 'lodash';
-import url from 'url';
+import cheerio from 'cheerio'
+import { getPage } from './parserUtils'
+import Chapter from '../../Chapter'
+import moment from 'moment'
+import _ from 'lodash'
+import url from 'url'
 
-const zeroLeftPad = _.curry(_.padStart)(_, 3, '0');
+const zeroLeftPad = _.curry(_.padStart)(_, 3, '0')
 
 const MangaFox = {
   url: 'http://mangafox.me/',
@@ -14,55 +14,55 @@ const MangaFox = {
   languages: 'en',
 
   search(search, done, accumulator, nextUrl) {
-    let urlManga = nextUrl ? nextUrl : `${this.url}search.php?name=${search}&advopts=1`;
+    let urlManga = nextUrl ? nextUrl : `${ this.url }search.php?name=${ search }&advopts=1`
 
     getPage(urlManga, (page, body) => {
       if (body.indexOf('No Manga Series') !== -1) {
-        done([]);
-        return;
+        done([])
+        return
       }
 
       let result = page.find('#listing tr td:first-child a').map((i, el) => {
-        let $el = cheerio(el);
+        let $el = cheerio(el)
 
         return {
           title: $el.html(),
           url: $el.attr('href')
-        };
-      }).get();
+        }
+      }).get()
 
-      let partialResult = Array.isArray(accumulator) ? accumulator.concat(result) : result;
-      let nextPageLink = page.find('#nav li:last-child a');
+      let partialResult = Array.isArray(accumulator) ? accumulator.concat(result) : result
+      let nextPageLink = page.find('#nav li:last-child a')
 
       if (nextPageLink.length) {
         // MangaFox has a limited searchs
         setTimeout(() => {
-          this.search(search, done, partialResult, `${this.url}${nextPageLink.attr('href').substring(1)}`);
-        }, 6000);
+          this.search(search, done, partialResult, `${ this.url }${ nextPageLink.attr('href').substring(1) }`)
+        }, 6000)
       }
       else {
-        done(partialResult);
+        done(partialResult)
       }
-    });
+    })
   },
 
   getListOfChapters(manga, done) {
-    let url = manga.url + '?no_warning=1';
+    let url = manga.url + '?no_warning=1'
 
     getPage(url, (page) => {
       let res = page.find('ul.chlist h3, ul.chlist h4').map((i, el) => {
-        let $el = cheerio(el);
-        let chapterLink = $el.find('a');
-        let chapterUrl = chapterLink.attr('href');
+        let $el = cheerio(el)
+        let chapterLink = $el.find('a')
+        let chapterUrl = chapterLink.attr('href')
 
         if (chapterUrl.indexOf('/manga/') !== -1) {
-          let number = chapterLink.text().substr(manga.title.length + 1);
-          let volume = $el.parents('ul.chlist').prev('div.slide').children('h3').contents(':not(span)').text().trim().substr(7).trim();
-          let title = $el.find('span.title').text().trim();
-          let url = chapterUrl.substr(0, chapterUrl.lastIndexOf('/') + 1);
+          let number = chapterLink.text().substr(manga.title.length + 1)
+          let volume = $el.parents('ul.chlist').prev('div.slide').children('h3').contents(':not(span)').text().trim().substr(7).trim()
+          let title = $el.find('span.title').text().trim()
+          let url = chapterUrl.substr(0, chapterUrl.lastIndexOf('/') + 1)
 
           if (url.substr(url.length - 2, 2) === '//') {
-            url = url.substr(0, url.length - 1);
+            url = url.substr(0, url.length - 1)
           }
 
           return {
@@ -70,20 +70,20 @@ const MangaFox = {
             volume: volume.length && parseInt(volume) || null,
             title: title.length || null,
             url: url
-          };
+          }
         }
-      }).get();
+      }).get()
 
-      done(res);
-    });
+      done(res)
+    })
   },
 
   getChapterPages(mangaUrl, chapterNumber, done) {
-    let number = zeroLeftPad(chapterNumber);
-    let chapterUrl = url.resolve(mangaUrl, `c${number}/1.html`);
+    let number = zeroLeftPad(chapterNumber)
+    let chapterUrl = url.resolve(mangaUrl, `c${ number }/1.html`)
 
     getPage(chapterUrl, (page) => {
-      let firstPageUrl = page.find('#viewer img').attr('src');
+      let firstPageUrl = page.find('#viewer img').attr('src')
       let pagesList = page
         .find('select.m')
         .eq(0)
@@ -92,38 +92,38 @@ const MangaFox = {
         .get()
         .filter(pageNumber => pageNumber > 0)
         .map(pageNumber => {
-          let n = pageNumber.toString();
-          return firstPageUrl.replace(/(\d+)(\.jpg)$/, zeroLeftPad(n) + '.jpg');
-        });
+          let n = pageNumber.toString()
+          return firstPageUrl.replace(/(\d+)(\.jpg)$/, zeroLeftPad(n) + '.jpg')
+        })
 
-      done(pagesList);
-    });
+      done(pagesList)
+    })
   },
 
   getMangaInfo(manga, done) {
     getPage(manga.url, (page) => {
-      let infoCells = page.find('#title > table tr:nth-child(2) > td');
-      let lastVolume = page.find('.volume').contents(':not(span)').text().trim();
-      let chapterList = page.find('.chlist').eq(0);
-      let lastChapterEl = chapterList.find('li:first-child');
-      let lastChapterLinkEl = lastChapterEl.find('h3 a');
-      let lastChapterTitleEl = lastChapterLinkEl.next('.title');
-      let lastChapterDateString = lastChapterEl.find('.date').text().trim();
-      let lastChapterDate;
+      let infoCells = page.find('#title > table tr:nth-child(2) > td')
+      let lastVolume = page.find('.volume').contents(':not(span)').text().trim()
+      let chapterList = page.find('.chlist').eq(0)
+      let lastChapterEl = chapterList.find('li:first-child')
+      let lastChapterLinkEl = lastChapterEl.find('h3 a')
+      let lastChapterTitleEl = lastChapterLinkEl.next('.title')
+      let lastChapterDateString = lastChapterEl.find('.date').text().trim()
+      let lastChapterDate
 
       switch (lastChapterDateString) {
       case 'Today': {
-        lastChapterDate = moment(new Date());
-        break;
+        lastChapterDate = moment(new Date())
+        break
       }
 
       case 'Yesterday': {
-        lastChapterDate = moment(new Date()).subtract(1, 'days');
-        break;
+        lastChapterDate = moment(new Date()).subtract(1, 'days')
+        break
       }
 
       default: {
-        lastChapterDate = moment(lastChapterDateString, 'MMM DD, YYYY');
+        lastChapterDate = moment(lastChapterDateString, 'MMM DD, YYYY')
       }
       }
 
@@ -140,9 +140,9 @@ const MangaFox = {
           url: lastChapterLinkEl.attr('href'),
           date: lastChapterDate.toString()
         })
-      });
-    });
+      })
+    })
   }
-};
+}
 
-export default MangaFox;
+export default MangaFox

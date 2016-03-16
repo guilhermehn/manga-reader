@@ -1,5 +1,8 @@
 module.exports = {
-  extends: 'eslint:recommended',
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended'
+  ],
 
   globals: {
     chrome: true
@@ -8,11 +11,11 @@ module.exports = {
   rules: {
     indent: [2, 2],
     quotes: [2, 'single'],
-    semi: [2, 'always'],
+    semi: [2, 'never'],
     'comma-dangle': [1, 'never'],
     'no-cond-assign': [2],
-    'jsx-quotes': [2, 'prefer-single'],
     'no-spaced-func': [2],
+    'no-multiple-empty-lines': [2, {'max': 1}],
     curly: [2],
     eqeqeq: [2]
   },
@@ -23,13 +26,15 @@ module.exports = {
     browser: true
   },
 
-  ecmaFeatures: {
-    modules: true,
-    jsx: true,
-    experimentalObjectRestSpread: true
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 6,
+    ecmaFeatures: {
+      jsx: true
+    }
   },
 
   plugins: [
     'react'
   ]
-};
+}

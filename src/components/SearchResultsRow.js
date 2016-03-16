@@ -1,5 +1,5 @@
-import React from 'react';
-import MangaDetailsPanel from './MangaDetailsPanel.react';
+import React from 'react'
+import MangaDetailsPanel from './MangaDetailsPanel'
 
 const SearchResultsRow = React.createClass({
   getDefaultProps() {
@@ -7,11 +7,11 @@ const SearchResultsRow = React.createClass({
       infoExpanded: false,
       isInReadingList: false,
       handleClick() {}
-    };
+    }
   },
 
   componentDidUpdate(oldProps, newProps) {
-    let propsOk = oldProps && newProps;
+    let propsOk = oldProps && newProps
 
     if (propsOk
       && oldProps.manga
@@ -19,7 +19,7 @@ const SearchResultsRow = React.createClass({
       && oldProps.manga.normalizedName !== newProps.manga.normalizedName) {
       this.setState({
         infoExpanded: false
-      });
+      })
     }
   },
 
@@ -29,37 +29,37 @@ const SearchResultsRow = React.createClass({
       infoExpanded,
       handleClick,
       isInReadingList
-    } = this.props;
+    } = this.props
 
-    let readingCheck = null;
+    let readingCheck = null
 
     if (isInReadingList) {
       if (!infoExpanded) {
         readingCheck = (
           <span>
-            <i className='zmdi zmdi-check'></i>{' '}
+            <i className='zmdi zmdi-check'></i>{ ' ' }
           </span>
-        );
+        )
       }
       else {
         readingCheck = (
           <div className='reading-list-check'>
             <i className='zmdi zmdi-check'></i> In reading list
           </div>
-        );
+        )
       }
     }
 
     return (
-      <tr onClick={handleClick}>
+      <tr onClick={ handleClick }>
         <td>
-          {readingCheck}
-          {infoExpanded ? <h3 className='info-panel-title'>{manga.title}</h3> : manga.title}
-          {infoExpanded && <MangaDetailsPanel manga={manga} />}
+          { readingCheck }
+          { infoExpanded ? <h3 className='info-panel-title'>{ manga.title }</h3> : manga.title }
+          { infoExpanded && <MangaDetailsPanel manga={ manga } /> }
         </td>
       </tr>
-    );
+    )
   }
-});
+})
 
-export default SearchResultsRow;
+export default SearchResultsRow

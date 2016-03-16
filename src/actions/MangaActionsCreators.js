@@ -1,5 +1,5 @@
-import AppDispatcher from '../dispatcher/AppDispatcher';
-import {ACTION_TYPES} from '../constants/MangaConstants';
+import AppDispatcher from '../dispatcher/AppDispatcher'
+import { ACTION_TYPES } from '../constants/MangaConstants'
 
 export default {
   receiveMangaInfo(manga, info) {
@@ -7,6 +7,6 @@ export default {
       type: ACTION_TYPES.RECEIVE_MANGA_INFO,
       manga: manga,
       info: info
-    });
+    })
   }
-};
+}

@@ -1,5 +1,5 @@
-import React from 'react';
-import ControlPanelHeader from './ControlPanelHeader.react';
+import React from 'react'
+import ControlPanelHeader from './ControlPanelHeader'
 
 const ControlPanel = React.createClass({
   render() {
@@ -7,11 +7,11 @@ const ControlPanel = React.createClass({
       <div className='control-panel'>
         <ControlPanelHeader />
         <div className='control-panel-content'>
-          {this.props.children}
+          { this.props.children }
         </div>
       </div>
-    );
+    )
   }
-});
+})
 
-export default ControlPanel;
+export default ControlPanel

@@ -29,8 +29,8 @@ const MENU_ITEMS = [
     title: 'Help',
     iconClassname: 'zmdi-help'
   }
-];
+]
 
 export {
   MENU_ITEMS as menuItems
-};
+}

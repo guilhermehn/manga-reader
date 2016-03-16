@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React, { PropTypes } from 'react'
 
 const LoadingIcon = React.createClass({
   propTypes: {
@@ -6,20 +6,20 @@ const LoadingIcon = React.createClass({
   },
 
   render() {
-    let { text } = this.props;
-    let textElement = null;
+    let { text } = this.props
+    let textElement = null
 
     if (!!text && text.length) {
-      textElement = <div className='loading-icon-text'>{text}</div>;
+      textElement = <div className='loading-icon-text'>{ text }</div>
     }
 
     return (
       <div className='loading-icon-holder'>
         <div className='loading-icon'><div></div></div>
-        {textElement}
+        { textElement }
       </div>
-    );
+    )
   }
-});
+})
 
-export default LoadingIcon;
+export default LoadingIcon

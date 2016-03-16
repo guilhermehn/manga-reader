@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const SearchResultsHeaders = React.createClass({
   render() {
@@ -7,8 +7,8 @@ const SearchResultsHeaders = React.createClass({
         <th className='ta-left'>Title</th>
         <th className='ta-right'>Sources</th>
       </tr>
-    );
+    )
   }
-});
+})
 
-export default SearchResultsHeaders;
+export default SearchResultsHeaders

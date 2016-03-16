@@ -1,5 +1,1 @@
-export default {
-  stopPropagation(e) {
-    e.stopPropagation();
-  }
-};
+export const stopPropagation = (event) => event.stopPropagation()
