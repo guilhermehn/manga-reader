@@ -49,7 +49,7 @@ const SearchPage = React.createClass({
         <SearchField lastSearchTerm={ term } />
         { showSearchWarning && <SearchWarning term={ term } /> }
         { waitingForSearch && <LoadingIcon text={ `Searching for '${ term }'...` } /> }
-        <SearchResultsTable { ...this.state } />
+        { !showSearchWarning && <SearchResultsTable { ...this.state } /> }
       </div>
     )
   }

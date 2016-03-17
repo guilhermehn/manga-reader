@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import EmptySearchResult from './EmptySearchResult'
 import SearchInfo from './SearchInfo'
 import SearchResultsRow from './SearchResultsRow'
@@ -8,6 +8,13 @@ function isInReadingList(readingList, mangaName) {
 }
 
 const SearchResultsTable = React.createClass({
+  propTypes: {
+    results: PropTypes.array,
+    term: PropTypes.string,
+    waitingForSearch: PropTypes.bool,
+    readingList: PropTypes.array
+  },
+
   getInitialState() {
     return {
       expandedRowIndex: null
@@ -27,15 +34,10 @@ const SearchResultsTable = React.createClass({
       results,
       term,
       waitingForSearch,
-      showSearchWarning,
       readingList
     } = this.props
 
     let { expandedRowIndex } = this.state
-
-    if (showSearchWarning) {
-      return null
-    }
 
     if (!results.length) {
       if (term && !waitingForSearch) {

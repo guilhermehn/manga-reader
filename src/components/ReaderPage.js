@@ -1,17 +1,29 @@
 import React, { PropTypes } from 'react'
 import _ from 'lodash'
+import url from 'url'
+
 import ReaderAPI from '../apis/ReaderAPI'
 import SettingsAPI from '../apis/SettingsAPI'
+
 import ReaderStore from '../stores/ReaderStore'
 import SettingsStore from '../stores/SettingsStore'
-import Page from './Page'
-import LoadingIcon from './LoadingIcon'
+
+import Reader from './reader/Reader'
 import ProgressBar from './ProgressBar'
-import { Link } from 'react-router'
-import url from 'url'
+import ReaderNotice from './reader/ReaderNotice'
+import ReaderHeader from './reader/ReaderHeader'
+import PagesList from './reader/PagesList'
+import ReaderFooter from './reader/ReaderFooter'
 
 function pageDoneLoading() {
   ReaderAPI.pageDidLoad()
+}
+
+function createChapterUrl(pathname, number, query) {
+  return {
+    pathname: url.resolve(pathname, `${ number }`),
+    query: query
+  }
 }
 
 function getStateFromStores() {
@@ -20,13 +32,6 @@ function getStateFromStores() {
     manga: ReaderStore.getManga(),
     doneLoadingManga: ReaderStore.doneLoadingManga(),
     loadedPagesCount: ReaderStore.getLoadedPagesCount()
-  }
-}
-
-function createChapterUrl(pathname, number, query) {
-  return {
-    pathname: url.resolve(pathname, `${ number }`),
-    query: query
   }
 }
 
@@ -83,18 +88,16 @@ const ReaderPage = React.createClass({
     const { manga, doneLoadingManga, loadedPagesCount } = this.state
 
     if (!doneLoadingManga || !manga || !manga.hasOwnProperty('pages')) {
-      let message
+      let message = ''
 
       if (!doneLoadingManga) {
         message = 'Loading manga'
       }
 
       return (
-        <div className='reader'>
-          <div className='reader-notice open-animation'>
-            <LoadingIcon text={ message } />
-          </div>
-        </div>
+        <Reader>
+          <ReaderNotice message={ message } />
+        </Reader>
       )
     }
 
@@ -102,38 +105,18 @@ const ReaderPage = React.createClass({
     const chapterNumber = parseInt(params.chapter)
     const resolve = _.curry(createChapterUrl)(location.pathname, _, location.query)
 
-    const prevChapterLink = (
-      <Link className='btn' to={ resolve(chapterNumber - 1) }>
-          <i className='zmdi zmdi-fast-rewind'></i> Prev chapter
-      </Link>
-    )
-
-    const nextChapterLink = (
-      <Link className='btn' to={ resolve(chapterNumber + 1) }>
-        Next chapter <i className='zmdi zmdi-fast-forward'></i>
-      </Link>
-    )
-
     return (
-      <div className='reader'>
+      <Reader>
         <ProgressBar total={ manga.pages.length } progress={ loadedPagesCount } hideOnComplete={ true } />
-        <header className='reader-header'>
-          <h1>{ manga.title } - Chapter { params.chapter }</h1>
-        </header>
+        <ReaderHeader title={ manga.title } chapter={ params.chapter } />
 
-        <section className='reader-manga-pages'>
-          {
-            manga.pages.map((pageUrl, i) =>
-              <Page key={ i } src={ pageUrl } onLoad={ pageDoneLoading } onError={ pageDoneLoading } />)
-          }
-        </section>
+        <PagesList pages={ manga.pages } onLoad={ pageDoneLoading } onError={ pageDoneLoading } />
 
-        <nav className='reader-nav'>
-          { params.chapter > 1 && prevChapterLink }
-          <strong>End of chapter { chapterNumber }</strong>
-          { nextChapterLink }
-        </nav>
-      </div>
+        <ReaderFooter
+          chapterNumber={ chapterNumber }
+          prevChapterUrl={ resolve(chapterNumber - 1) }
+          nextChapterUrl={ resolve(chapterNumber + 1) } />
+      </Reader>
     )
   }
 })
