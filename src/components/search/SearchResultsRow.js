@@ -1,25 +1,19 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import MangaDetailsPanel from './MangaDetailsPanel'
 
 const SearchResultsRow = React.createClass({
+  propTypes: {
+    manga: PropTypes.object.isRequired,
+    infoExpanded: PropTypes.bool.isRequired,
+    handleClick: PropTypes.func,
+    isInReadingList: PropTypes.bool
+  },
+
   getDefaultProps() {
     return {
       infoExpanded: false,
       isInReadingList: false,
       handleClick() {}
-    }
-  },
-
-  componentDidUpdate(oldProps, newProps) {
-    let propsOk = oldProps && newProps
-
-    if (propsOk
-      && oldProps.manga
-      && newProps.manga
-      && oldProps.manga.normalizedName !== newProps.manga.normalizedName) {
-      this.setState({
-        infoExpanded: false
-      })
     }
   },
 

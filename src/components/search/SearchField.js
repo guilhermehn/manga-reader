@@ -1,5 +1,5 @@
 import React,  { PropTypes } from 'react'
-import SearchAPI from '../apis/SearchAPI'
+import SearchAPI from '../../apis/SearchAPI'
 
 function search(term, lastSearchTerm) {
   if (term.length === 0 || term === lastSearchTerm) {
@@ -20,7 +20,7 @@ function search(term, lastSearchTerm) {
 const SearchField = ({ lastSearchTerm }) => {
   let searchInput
 
-  const setNode = (node) => {
+  const ref = (node) => {
     searchInput = node
   }
 
@@ -41,7 +41,7 @@ const SearchField = ({ lastSearchTerm }) => {
         placeholder={ 'Search for mangas' }
         onKeyPress={ onKeyPress }
         className='search-input'
-        ref={ setNode } />
+        ref={ ref } />
       <button
         title='Search'
         className='search-btn'

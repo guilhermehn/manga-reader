@@ -1,9 +1,9 @@
 import React from 'react'
 import LoadingIcon from './LoadingIcon'
 import SearchStore from '../stores/SearchStore'
-import SearchWarning from './SearchWarning'
-import SearchField from './SearchField'
-import SearchResultsTable from './SearchResultsTable'
+import SearchWarning from './search/SearchWarning'
+import SearchField from './search/SearchField'
+import SearchResultsTable from './search/SearchResultsTable'
 import ReadingListAPI from '../apis/ReadingListAPI'
 import ReadingListStore from '../stores/ReadingListStore'
 

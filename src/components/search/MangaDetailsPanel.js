@@ -1,15 +1,13 @@
 import React, { PropTypes } from 'react'
-import MangaAPI from '../apis/MangaAPI'
-import MangaStore from '../stores/MangaStore'
-import moment from 'moment'
-import { Link } from 'react-router'
-import { byName } from '../apis/parsers'
-import LoadingIcon from './LoadingIcon'
-import { stopPropagation } from '../utils'
 
-function formatDate(dateString) {
-  return moment(new Date(dateString)).format('DD/MM/YYYY')
-}
+import SourcesButtonList from './SourcesButtonList'
+import ChapterSelector from './ChapterSelector'
+import ChapterCountRow from './ChapterCountRow'
+import LoadingIcon from '../LoadingIcon'
+
+import MangaAPI from '../../apis/MangaAPI'
+import MangaStore from '../../stores/MangaStore'
+import { byName } from '../../apis/parsers'
 
 function pluralize(str, length) {
   return length > 1 ? str : `${ str }s`
@@ -22,47 +20,7 @@ function getStateFromStores(manga) {
   }
 }
 
-let ChapterCountRow = React.createClass({
-  render() {
-    let { date, number } = this.props
-    let dateString = ''
-
-    if (date) {
-      dateString = `(released in ${ formatDate(date) })`
-    }
-
-    return (
-      <tr>
-        <td>Chapters:</td>
-        <td>{ number } { dateString }</td>
-      </tr>
-    )
-  }
-})
-
-let ChapterSelector = React.createClass({
-  propTypes: {
-    length: PropTypes.number.isRequired
-  },
-
-  render() {
-    let { length } = this.props
-    let options = new Array(length)
-
-    for (let i = 0; i < length; i++) {
-      let value = i + 1
-      options[i] = <option key={ i } value={ value }>{ value }</option>
-    }
-
-    return (
-      <select onChange={ this.props.onChange } onClick={ stopPropagation }>
-        { options }
-      </select>
-    )
-  }
-})
-
-let MangaDetailsPanel = React.createClass({
+const MangaDetailsPanel = React.createClass({
   getInitialState() {
     return getStateFromStores(this.props.manga)
   },
@@ -100,30 +58,13 @@ let MangaDetailsPanel = React.createClass({
     }
 
     let { manga } = this.props
+    let { lastChapter } = mangaInfo
     let chapterCountRow = null
     let separator = ', '
-    let { lastChapter } = mangaInfo
 
     if (lastChapter) {
       chapterCountRow = <ChapterCountRow number={ lastChapter.number } date={ lastChapter.date } />
     }
-
-    let sourcesList = manga.sources.map((source, i) => {
-      let { name } = source
-      let url = {
-        pathname: `/reader/${ manga.normalizedName }/${ name }/${ selectedChapter }`,
-        query: {
-          method: 'search'
-        }
-      }
-
-      return (
-        <Link key={ i } className='btn info-panel-toolbar-link' to={ url }>
-          <img className='info-panel-toolbar-source-icon' src={ byName[name].icon } />
-          <span>{ name }</span>
-        </Link>
-      )
-    })
 
     return (
       <div className='info-panel open-animation'>
@@ -153,7 +94,11 @@ let MangaDetailsPanel = React.createClass({
             <tr>
               <td><strong>Start reading:</strong></td>
               <td>
-                { sourcesList }
+                <SourcesButtonList
+                  chapter={ selectedChapter }
+                  normalizedName={ manga.normalizedName }
+                  sources={ manga.sources }
+                  parsers={ byName } />
                 <strong>Chapter</strong>
                 <ChapterSelector length={ lastChapter.number } onChange={ this.handleChange } />
               </td>
