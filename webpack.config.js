@@ -1,5 +1,8 @@
 module.exports = {
-  entry: './src/App.js',
+  entry: {
+    javascript: './src/App.js',
+    html: './index.html'
+  },
 
   resolve: {
     extensions: ['', '.js', '.jsx', '.json']
@@ -24,6 +27,10 @@ module.exports = {
       {
         test: /\.json$/,
         loader: 'json-loader'
+      },
+      {
+        test: /\.html$/,
+        loader: 'file?name=[name].[ext]'
       }
     ]
   },
