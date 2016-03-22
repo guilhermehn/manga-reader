@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react'
+import MaterialIcon from 'react-material-iconic-font'
 
 const Warning = ({ title, message, onCancel, onProceed, cancelText='Cancel', proceedText='Continue' }) => (
   <div className='notice open-animation'>
-    <h3><i className='zmdi zmdi-alert-triangle'></i> { title }</h3>
+    <h3><MaterialIcon type='alert-triangle' /> { title }</h3>
     <p>{ message }</p>
     <button type='button' className='btn-confirm' onClick={ onProceed }>{ proceedText }</button>
     <button type='button' onClick={ onCancel }>{ cancelText }</button>

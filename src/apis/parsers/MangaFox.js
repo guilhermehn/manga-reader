@@ -2,10 +2,11 @@ import cheerio from 'cheerio'
 import { getPage } from './parserUtils'
 import Chapter from '../../Chapter'
 import moment from 'moment'
-import _ from 'lodash'
+import curry from 'lodash.curry'
+import padStart from 'lodash.padStart'
 import url from 'url'
 
-const zeroLeftPad = _.curry(_.padStart)(_, 3, '0')
+const zeroLeftPad = curry(padStart)(curry.placeholder, 3, '0')
 
 const MangaFox = {
   url: 'http://mangafox.me/',
@@ -14,7 +15,7 @@ const MangaFox = {
   languages: 'en',
 
   search(search, done, accumulator, nextUrl) {
-    let urlManga = nextUrl ? nextUrl : `${ this.url }search.php?name=${ search }&advopts=1`
+    let urlManga = nextUrl ? nextUrl : url.resolve(this.url, `search.php?name=${ search }&advopts=1`)
 
     getPage(urlManga, (page, body) => {
       if (body.indexOf('No Manga Series') !== -1) {

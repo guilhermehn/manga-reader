@@ -2,33 +2,33 @@ const MENU_ITEMS = [
   {
     route: 'reading',
     title: 'Reading list',
-    iconClassname: 'zmdi-view-list'
+    icon: 'view-list'
   },
   {
     route: 'search',
     title: 'Search',
-    iconClassname: 'zmdi-search'
+    icon: 'search'
   },
-  {
+  /*{
     route: 'bookmarks',
     title: 'Bookmarks',
-    iconClassname: 'zmdi-bookmark'
+    icon: 'bookmark'
   },
   {
     route: 'import-export',
     title: 'Import/Export',
-    iconClassname: 'zmdi-import-export'
-  },
+    icon: 'import-export'
+  },*/
   {
     route: 'settings',
     title: 'Settings',
-    iconClassname: 'zmdi-settings'
-  },
+    icon: 'settings'
+  }/*,
   {
     route: 'help',
     title: 'Help',
-    iconClassname: 'zmdi-help'
-  }
+    icon: 'help'
+  }*/
 ]
 
 export {

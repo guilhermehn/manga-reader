@@ -1,4 +1,5 @@
 import React,  { PropTypes } from 'react'
+import MaterialIcon from 'react-material-iconic-font'
 import SearchAPI from '../../apis/SearchAPI'
 
 function search(term, lastSearchTerm) {
@@ -46,7 +47,7 @@ const SearchField = ({ lastSearchTerm }) => {
         title='Search'
         className='search-btn'
         onClick={ onClick }>
-        <i className='zmdi zmdi-lg zmdi-search'></i>
+        <MaterialIcon type='search' large />
       </button>
     </div>
   )

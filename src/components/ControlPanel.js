@@ -1,10 +1,14 @@
 import React , { PropTypes } from 'react'
-import ControlPanelHeader from './ControlPanelHeader'
+import ControlPanelHeader from './control-panel/ControlPanelHeader'
+import { menuItems } from '../constants/MenuConstants'
+import { block } from 'bem-generator'
+
+const b = block('control-panel')
 
 const ControlPanel = ({ children }) => (
-  <div className='control-panel'>
-    <ControlPanelHeader />
-    <div className='control-panel-content'>
+  <div className={ b }>
+    <ControlPanelHeader menuItems={ menuItems } />
+    <div className={ b.element('content') }>
       { children }
     </div>
   </div>

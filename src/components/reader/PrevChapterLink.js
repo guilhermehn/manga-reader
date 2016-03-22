@@ -1,9 +1,10 @@
 import React from 'react'
+import MaterialIcon from 'react-material-iconic-font'
 import ChapterLink from './ChapterLink'
 
 const PrevChapterLink = (props) => (
   <ChapterLink {...props}>
-    <span><i className='zmdi zmdi-fast-rewind'></i> Prev chapter</span>
+    <span><MaterialIcon type='fast-rewind' /> Prev chapter</span>
   </ChapterLink>
 )
 

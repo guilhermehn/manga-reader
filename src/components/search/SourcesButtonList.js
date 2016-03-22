@@ -11,7 +11,7 @@ function createUrlObject(normalizedName, name, chapter) {
 }
 
 const SourcesButtonList = ({ chapter, normalizedName, sources, parsers }) => (
-  <div>
+  <div className='sources-list'>
     {
       sources.map((source, i) => {
         let { name } = source

@@ -4,7 +4,7 @@ import Chapter from '../../Chapter'
 import moment from 'moment'
 import { resolve } from 'url'
 import { join } from 'path'
-import { last } from 'lodash'
+import last from 'lodash.last'
 
 let GoodManga = {
   url: 'http://www.goodmanga.net/',

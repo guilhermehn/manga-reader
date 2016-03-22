@@ -1,13 +1,24 @@
 import React, { PropTypes } from 'react'
 
-import SourcesButtonList from './SourcesButtonList'
-import ChapterSelector from './ChapterSelector'
-import ChapterCountRow from './ChapterCountRow'
 import LoadingIcon from '../LoadingIcon'
+import ChapterCountRow from './ChapterCountRow'
+import ChapterSelector from './ChapterSelector'
+import SourcesButtonList from './SourcesButtonList'
+import AddToReadingListRow from './AddToReadingListRow'
 
 import MangaAPI from '../../apis/MangaAPI'
+import ReadingListAPI from '../../apis/ReadingListAPI'
 import MangaStore from '../../stores/MangaStore'
 import { byName } from '../../apis/parsers'
+import { stopPropagation } from '../../utils'
+
+function addToReadingList(manga) {
+  return (e) => {
+    stopPropagation(e)
+
+    ReadingListAPI.addToReadingList(manga)
+  }
+}
 
 function pluralize(str, length) {
   return length > 1 ? str : `${ str }s`
@@ -26,7 +37,8 @@ const MangaDetailsPanel = React.createClass({
   },
 
   propTypes: {
-    manga: PropTypes.object.isRequired
+    manga: PropTypes.object.isRequired,
+    isInReadingList: PropTypes.bool.isRequired
   },
 
   componentDidMount() {
@@ -42,9 +54,9 @@ const MangaDetailsPanel = React.createClass({
     this.setState(getStateFromStores(this.props.manga))
   },
 
-  handleChange(e) {
+  handleChange(value) {
     this.setState({
-      selectedChapter: e.target.value
+      selectedChapter: value
     })
   },
 
@@ -57,7 +69,7 @@ const MangaDetailsPanel = React.createClass({
       )
     }
 
-    let { manga } = this.props
+    let { manga, isInReadingList } = this.props
     let { lastChapter } = mangaInfo
     let chapterCountRow = null
     let separator = ', '
@@ -99,10 +111,22 @@ const MangaDetailsPanel = React.createClass({
                   normalizedName={ manga.normalizedName }
                   sources={ manga.sources }
                   parsers={ byName } />
-                <strong>Chapter</strong>
-                <ChapterSelector length={ lastChapter.number } onChange={ this.handleChange } />
               </td>
             </tr>
+            <tr>
+              <td>
+                <label htmlFor='chapterSelector'>
+                  <strong>Chapter:</strong>
+                </label>
+              </td>
+              <td>
+                <ChapterSelector
+                  id='chapterSelector'
+                  length={ lastChapter.number }
+                  onChange={ this.handleChange } />
+              </td>
+            </tr>
+            { !isInReadingList && <AddToReadingListRow onClick={ addToReadingList(manga) } />}
           </tbody>
         </table>
       </div>
@@ -110,4 +134,4 @@ const MangaDetailsPanel = React.createClass({
   }
 })
 
-module.exports = MangaDetailsPanel
+export default MangaDetailsPanel

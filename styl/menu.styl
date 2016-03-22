@@ -1,4 +1,6 @@
-.menu
+blockName = '.menu'
+
+{blockName}
   padding menu-padding
 
   ul
@@ -17,7 +19,7 @@
     &:last-child
       margin-right 0
 
-.menu-item
+{blockName}__item
   display block
   padding menu-item-padding
   border-radius 5px
@@ -25,7 +27,7 @@
   color menu-item-color
   transition all .1s ease-out
 
-  &:hover:not(.menu-item-active)
+  &:hover:not({blockName}-item-active)
     color color-secondary-1-lighter
     background-color darken(menu-item-active-bg-color, 10%)
 
@@ -36,7 +38,7 @@
   span
     line-height menu-item-height
 
-.menu-item-active
-  color color-secondary-1-lighter
-  background-color menu-item-active-bg-color
-  cursor default
+  &__item--active
+    color color-secondary-1-lighter
+    background-color menu-item-active-bg-color
+    cursor default

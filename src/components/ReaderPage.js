@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import _ from 'lodash'
+import curry from 'lodash.curry'
 import url from 'url'
 
 import ReaderAPI from '../apis/ReaderAPI'
@@ -103,7 +103,7 @@ const ReaderPage = React.createClass({
 
     const { params, location } = this.props
     const chapterNumber = parseInt(params.chapter)
-    const resolve = _.curry(createChapterUrl)(location.pathname, _, location.query)
+    const resolve = curry(createChapterUrl)(location.pathname, curry.placeholder, location.query)
 
     return (
       <Reader>

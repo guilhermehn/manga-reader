@@ -1,59 +1,53 @@
 import React, { PropTypes } from 'react'
 import MangaDetailsPanel from './MangaDetailsPanel'
+import MaterialIcon from 'react-material-iconic-font'
 
-const SearchResultsRow = React.createClass({
-  propTypes: {
-    manga: PropTypes.object.isRequired,
-    infoExpanded: PropTypes.bool.isRequired,
-    handleClick: PropTypes.func,
-    isInReadingList: PropTypes.bool
-  },
+const SearchResultsRow = ({ manga, handleClick, infoExpanded = false, isInReadingList = false }) => {
+  let readingCheck = null
+  let title
 
-  getDefaultProps() {
-    return {
-      infoExpanded: false,
-      isInReadingList: false,
-      handleClick() {}
+  if (isInReadingList) {
+    let icon = <MaterialIcon type='check' />
+
+    if (!infoExpanded) {
+      readingCheck = (
+        <span>
+          {icon}
+        </span>
+      )
     }
-  },
-
-  render() {
-    let {
-      manga,
-      infoExpanded,
-      handleClick,
-      isInReadingList
-    } = this.props
-
-    let readingCheck = null
-
-    if (isInReadingList) {
-      if (!infoExpanded) {
-        readingCheck = (
-          <span>
-            <i className='zmdi zmdi-check'></i>{ ' ' }
-          </span>
-        )
-      }
-      else {
-        readingCheck = (
-          <div className='reading-list-check'>
-            <i className='zmdi zmdi-check'></i> In reading list
-          </div>
-        )
-      }
+    else {
+      readingCheck = (
+        <div className='reading-list-check'>
+          {icon} In reading list
+        </div>
+      )
     }
-
-    return (
-      <tr onClick={ handleClick }>
-        <td>
-          { readingCheck }
-          { infoExpanded ? <h3 className='info-panel-title'>{ manga.title }</h3> : manga.title }
-          { infoExpanded && <MangaDetailsPanel manga={ manga } /> }
-        </td>
-      </tr>
-    )
   }
-})
+
+  if (infoExpanded) {
+    title = <h3 className='info-panel-title'>{ manga.title }</h3>
+  }
+  else {
+    title = <span className='search-results-table-title'>{ manga.title }</span>
+  }
+
+  return (
+    <tr onClick={ handleClick }>
+      <td>
+        { readingCheck }
+        { title }
+        { infoExpanded && <MangaDetailsPanel manga={ manga } isInReadingList={ isInReadingList } /> }
+      </td>
+    </tr>
+  )
+}
+
+SearchResultsRow.propTypes = {
+  manga: PropTypes.object.isRequired,
+  handleClick: PropTypes.func.isRequired,
+  infoExpanded: PropTypes.bool,
+  isInReadingList: PropTypes.bool
+}
 
 export default SearchResultsRow

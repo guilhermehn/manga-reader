@@ -1,5 +1,4 @@
 import React from 'react'
-import _ from 'lodash'
 
 import SettingsStore from '../stores/SettingsStore'
 import SettingsAPI from '../apis/SettingsAPI'
@@ -19,48 +18,6 @@ function getStateFromStores() {
 
 function dismissMigration() {
   SettingsAPI.setOption('dismissMigration', true)
-}
-
-const loadUserSettingsMixin = {
-  getInitialState() {
-    return {
-      value: this.props.value
-    }
-  },
-
-  getValueFromRadio(elem) {
-    let radios = elem.parentElement.querySelectorAll(`input[name='${ elem.name }']`)
-    let checked = _.slice(radios).filter(radio => radio.checked)
-
-    return checked.length === 1 ? checked[0].value : null
-  },
-
-  getValue(elem) {
-    let value
-
-    switch (elem.type) {
-    case 'checkbox': {
-      value = elem.checked
-      break
-    }
-
-    case 'radio': {
-      value = this.getValueFromRadio(elem)
-      break
-    }
-
-    default: {
-      value = elem.value
-    }
-    }
-
-    return value
-  },
-
-  onChange(e) {
-    let newValue = this.getValue(e.target)
-    SettingsAPI.setOption(this.props.id, newValue)
-  }
 }
 
 const SettingsPage = React.createClass({
