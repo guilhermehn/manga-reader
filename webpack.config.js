@@ -22,7 +22,7 @@ module.exports = {
           cacheDirectory: true,
           presets: ['react', 'es2015']
         },
-        exclude: /node_modules/
+        exclude: [/node_modules/]
       },
       {
         test: /\.json$/,
@@ -35,5 +35,7 @@ module.exports = {
     ]
   },
 
-  plugins: []
+  plugins: [],
+
+  devtool: 'source-map'
 }
